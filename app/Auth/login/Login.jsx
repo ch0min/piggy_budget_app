@@ -36,12 +36,12 @@ const Login = ({ navigation }) => {
 					<Text style={styles.subheading}>Please, sign in your account</Text>
 
 					<View style={styles.textInputContainer}>
-						<Text>Email</Text>
+						<Text style={styles.headingInput}>Email</Text>
 						<View style={styles.textInput}>
 							<TextInput label="Email" placeholder="email@address.com" onChangeText={(text) => setEmail(text)} value={email} autoCapitalize={"none"} />
 						</View>
 
-						<Text>Password</Text>
+						<Text style={styles.headingInput}>Password</Text>
 						<View style={styles.textInput}>
 							<TextInput label="Password" placeholder="password" onChangeText={(text) => setPassword(text)} value={password} autoCapitalize={"none"} />
 						</View>
@@ -93,6 +93,10 @@ const styles = StyleSheet.create({
 		borderTopLeftRadius: 30,
 		borderTopRightRadius: 30,
 		backgroundColor: colors.WHITE,
+	},
+	headingInput: {
+		margin: 5,
+		fontSize: 14,
 	},
 	textInputContainer: {
 		marginTop: 30,
