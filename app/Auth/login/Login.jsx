@@ -43,7 +43,7 @@ const Login = ({ navigation }) => {
 
 						<Text style={styles.headingInput}>Password</Text>
 						<View style={styles.textInput}>
-							<TextInput label="Password" placeholder="password" onChangeText={(text) => setPassword(text)} value={password} autoCapitalize={"none"} />
+							<TextInput label="Password" placeholder="**********" onChangeText={(text) => setPassword(text)} value={password} autoCapitalize={"none"} />
 						</View>
 					</View>
 

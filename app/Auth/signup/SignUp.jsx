@@ -10,14 +10,16 @@ import logo2 from "../../../assets/images/logo2.png";
 import ExecuteBtn from "../../../components/Buttons/executeBtn";
 import TextBtn from "../../../components/Auth/textBtn";
 
+import { Button, Input } from "react-native-elements";
+
 const SignUp = ({ navigation }) => {
 	const [loading, setLoading] = useState(false);
 
-	const [firstName, setFirstName] = useState("");
-	const [lastName, setLastName] = useState("");
+	// const [firstName, setFirstName] = useState("");
+	// const [lastName, setLastName] = useState("");
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
-	const [avatarUrl, setAvatarUrl] = useState("");
+	// const [avatarUrl, setAvatarUrl] = useState("");
 
 	const signUpWithEmail = async () => {
 		setLoading(true);
@@ -25,11 +27,11 @@ const SignUp = ({ navigation }) => {
 			data: { session },
 			error,
 		} = await supabase.auth.signUp({
-			firstName: firstName,
-			lastName: lastName,
+			// firstName: firstName,
+			// lastName: lastName,
 			email: email,
 			password: password,
-			avatarUrl: avatarUrl,
+			// avatarUrl: avatarUrl,
 		});
 
 		if (error) Alert.alert(error.message);
@@ -49,7 +51,7 @@ const SignUp = ({ navigation }) => {
 
 			<View style={styles.subContainer}>
 				<View style={styles.textInputContainer}>
-					<Text style={styles.headingInput}>First Name</Text>
+					{/* <Text style={styles.headingInput}>First Name</Text>
 					<View style={styles.textInput}>
 						<TextInput label="FirstName" placeholder="ex. John" onChangeText={(text) => setFirstName(text)} value={firstName} autoCapitalize={"words"} />
 					</View>
@@ -57,7 +59,7 @@ const SignUp = ({ navigation }) => {
 					<Text style={styles.headingInput}>Last Name</Text>
 					<View style={styles.textInput}>
 						<TextInput label="LastName" placeholder="ex. Doe" onChangeText={(text) => setLastName(text)} value={lastName} autoCapitalize={"words"} />
-					</View>
+					</View> */}
 
 					<Text style={styles.headingInput}>Email</Text>
 					<View style={styles.textInput}>
@@ -129,5 +131,3 @@ const styles = StyleSheet.create({
 });
 
 export default SignUp;
-
-// re_Yur1GXq6_PHbcs82zR4yv1Zt9scNdsm1V

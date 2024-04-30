@@ -3,7 +3,7 @@ import { supabase } from "../../../utils/supabase";
 import { StyleSheet, View, Alert } from "react-native";
 import { Button, Input } from "react-native-elements";
 
-const Account = ({ session }) => {
+const Account = ({ session, navigation }) => {
 	const [loading, setLoading] = useState(true);
 	const [username, setUsername] = useState("");
 	const [website, setWebsite] = useState("");
@@ -28,6 +28,8 @@ const Account = ({ session }) => {
 				setWebsite(data.website);
 				setAvatarUrl(data.avatar_url);
 			}
+
+			navigation.navigate("Home");
 		} catch (error) {
 			if (error instanceof Error) {
 				Alert.alert(error.message);
@@ -66,12 +68,15 @@ const Account = ({ session }) => {
 
 	return (
 		<View style={styles.container}>
+
 			<View style={[styles.verticallySpaced, styles.mt20]}>
 				<Input label="Email" value={session?.user?.email} disabled />
 			</View>
+
 			<View style={styles.verticallySpaced}>
 				<Input label="Username" value={username || ""} onChangeText={(text) => setUsername(text)} />
 			</View>
+
 			<View style={styles.verticallySpaced}>
 				<Input label="Website" value={website || ""} onChangeText={(text) => setWebsite(text)} />
 			</View>
@@ -83,6 +88,7 @@ const Account = ({ session }) => {
 			<View style={styles.verticallySpaced}>
 				<Button title="Sign Out" onPress={() => supabase.auth.signOut()} />
 			</View>
+			
 		</View>
 	);
 };
