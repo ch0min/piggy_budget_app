@@ -49,7 +49,7 @@ const Login = ({ navigation }) => {
 					</View>
 
 					<ExecuteBtn execFunction={signInWithEmail} btnText={"Continue"} />
-					<TextBtn navigation={navigation} navigateTo={"SignUp"} text={"Not a Member yet?"} colorText={colors.BLACK} btnText={"SIGN UP"} />
+					<TextBtn navigation={navigation} navigateTo={"Signup"} text={"Not a Member yet?"} colorText={colors.BLACK} btnText={"SIGN UP"} />
 				</View>
 			</LinearGradient>
 		</KeyboardAwareScrollView>

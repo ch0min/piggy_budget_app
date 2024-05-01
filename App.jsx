@@ -5,13 +5,13 @@ import { supabase } from "./utils/supabase";
 
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { NavigationContainer } from "@react-navigation/native";
-import Landing from "./app/Landing/Landing";
-import Login from "./app/Auth/login/Login";
-import SignUp from "./app/Auth/signup/SignUp";
-import Account from "./app/Auth/login/Account";
-import Home from "./app/(tabs)/Home/Home";
-import VerifyEmail from "./app/Auth/signup/VerifyEmail";
-import CompleteProfile from "./app/Auth/signup/CompleteProfile";
+import Landing from "./app/landing/Landing";
+import Login from "./app/auth/login/Login";
+import Signup from "./app/auth/signup/Signup";
+import Account from "./app/auth/login/Account";
+import Home from "./app/(tabs)/home/Home";
+import VerifyEmail from "./app/auth/signup/VerifyEmail";
+import CompleteProfile from "./app/auth/signup/CompleteProfile";
 
 const Stack = createNativeStackNavigator();
 
@@ -43,9 +43,8 @@ const App = () => {
 						}}
 					>
 						<Stack.Screen name="Landing" component={Landing}></Stack.Screen>
-						<Stack.Screen name="SignUp" component={SignUp}></Stack.Screen>
+						<Stack.Screen name="Signup" component={Signup}></Stack.Screen>
 						<Stack.Screen name="Login" component={Login}></Stack.Screen>
-						{/* <Stack.Screen name="Account" component={Account}></Stack.Screen> */}
 						<Stack.Screen name="Home" component={Home}></Stack.Screen>
 						<Stack.Screen name="VerifyEmail" component={VerifyEmail}></Stack.Screen>
 						<Stack.Screen name="CompleteProfile" component={CompleteProfile}></Stack.Screen>

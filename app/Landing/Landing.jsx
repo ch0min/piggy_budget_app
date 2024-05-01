@@ -15,7 +15,7 @@ const Landing = ({ navigation }) => {
 				<Text style={styles.subheading}>Let's get control of your economy!</Text>
 				<Image source={logo} style={styles.logo} />
 
-				<NavigateBtn navigation={navigation} navigateTo={"SignUp"} btnText={"Continue"} />
+				<NavigateBtn navigation={navigation} navigateTo={"Signup"} btnText={"Let's Get Started"} />
 				<TextBtn navigation={navigation} navigateTo={"Login"} text={"Already a Member?"} colorText={colors.WHITE} btnText={"SIGN IN"} />
 			</View>
 		</LinearGradient>

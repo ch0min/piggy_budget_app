@@ -26,3 +26,10 @@ EXTRA DEPENDENCIES:
 -  react-native-reanimated: used for animations.
 
 npm install react-native-keyboard-aware-scroll-view --save
+
+
+
+
+
+BUG HELP:
+- AsyncStorage.clear().then(() => console.log('Local storage cleared!'));

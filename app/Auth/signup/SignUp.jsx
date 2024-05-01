@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { Alert, StyleSheet, View, Text, TouchableOpacity, TextInput, Image } from "react-native";
 import { supabase } from "../../../utils/supabase";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { LinearGradient } from "expo-linear-gradient";
 import colors from "../../../utils/colors";
 import arrowLeft from "../../../assets/images/arrowLeft.png";
 import logo2 from "../../../assets/images/logo2.png";
@@ -10,17 +11,16 @@ import logo2 from "../../../assets/images/logo2.png";
 import ExecuteBtn from "../../../components/Buttons/executeBtn";
 import TextBtn from "../../../components/Auth/textBtn";
 
-import { Button, Input } from "react-native-elements";
-
-const SignUp = ({ navigation }) => {
+const Signup = ({ navigation }) => {
 	const [loading, setLoading] = useState(false);
-	// const [username, setUsername] = useState("");
 
-	// const [firstName, setFirstName] = useState("");
-	// const [lastName, setLastName] = useState("");
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
-	// const [avatarUrl, setAvatarUrl] = useState("");
+
+	const [username, setUsername] = useState("");
+	const [firstName, setFirstName] = useState("");
+	const [lastName, setLastName] = useState("");
+	const [avatarUrl, setAvatarUrl] = useState("");
 
 	const handleSignUp = async () => {
 		setLoading(true);
@@ -37,12 +37,8 @@ const SignUp = ({ navigation }) => {
 			Alert.alert("Sign up Error", error.message);
 		} else {
 			Alert.alert("Success", "Please check your email to verify your account.");
-			navigation.navigate("VerifyEmail", {email})
+			navigation.navigate("VerifyEmail", { email });
 		}
-
-		// if (error) Alert.alert(error.message);
-		// if (!session) Alert.alert("Please check your inbox for email verification.");
-		// setLoading(false);
 	};
 
 	return (
@@ -57,7 +53,7 @@ const SignUp = ({ navigation }) => {
 
 			<View style={styles.subContainer}>
 				<View style={styles.textInputContainer}>
-					{/* <Text style={styles.headingInput}>Username</Text>
+					<Text style={styles.headingInput}>Username</Text>
 					<View style={styles.textInput}>
 						<TextInput label="Username" placeholder="ex. Chocho" onChangeText={(text) => setUsername(text)} value={username} autoCapitalize={"none"} />
 					</View>
@@ -65,12 +61,12 @@ const SignUp = ({ navigation }) => {
 					<Text style={styles.headingInput}>First Name</Text>
 					<View style={styles.textInput}>
 						<TextInput label="FirstName" placeholder="ex. John" onChangeText={(text) => setFirstName(text)} value={firstName} autoCapitalize={"words"} />
-					</View> */}
+					</View>
 
-					{/* <Text style={styles.headingInput}>Last Name</Text>
+					<Text style={styles.headingInput}>Last Name</Text>
 					<View style={styles.textInput}>
-						<TextInput label="LastName" placeholder="ex. Doe" onChangeText={(text) => setLastName(text)} value={lastName} autoCapitalize={"words"} />
-					</View> */}
+						<TextInput label="LastName" placeholder="ex. Doe" onChangeText={(text) => setLastName(text)} valusetLae={lastName} autoCapitalize={"words"} />
+					</View>
 
 					<Text style={styles.headingInput}>Email</Text>
 					<View style={styles.textInput}>
@@ -82,7 +78,7 @@ const SignUp = ({ navigation }) => {
 						<TextInput label="Password" placeholder="**********" onChangeText={(text) => setPassword(text)} value={password} autoCapitalize={"none"} />
 					</View>
 				</View>
-				<ExecuteBtn execFunction={handleSignUp} btnText={"Sign Up"} />
+				<ExecuteBtn execFunction={handleSignUp} btnText={"Sign up"} />
 				<TextBtn navigation={navigation} navigateTo={"Login"} text={"Already a Member?"} colorText={colors.BLACK} btnText={"SIGN IN"} />
 			</View>
 		</KeyboardAwareScrollView>
@@ -141,4 +137,4 @@ const styles = StyleSheet.create({
 	},
 });
 
-export default SignUp;
+export default Signup;
