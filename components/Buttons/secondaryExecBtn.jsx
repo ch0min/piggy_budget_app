@@ -1,11 +1,11 @@
 import React from "react";
-import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
+import { StyleSheet, View, Text, TouchableOpacity, Image } from "react-native";
 import colors from "../../utils/colors";
 
-const NavigateBtn = ({ navigation, navigateTo, btnText }) => {
+const ExecuteBtn = ({ loading, execFunction, btnText }) => {
 	return (
 		<View style={styles.btnContainer}>
-			<TouchableOpacity style={styles.btn} onPress={() => navigation.navigate(navigateTo)}>
+			<TouchableOpacity style={styles.btn} onPress={execFunction} disabled={loading}>
 				<Text style={styles.btnText}>{btnText}</Text>
 			</TouchableOpacity>
 		</View>
@@ -14,8 +14,9 @@ const NavigateBtn = ({ navigation, navigateTo, btnText }) => {
 
 const styles = StyleSheet.create({
 	btnContainer: {
-		width: "90%",
-		marginTop: 50,
+		alignSelf: "flex-end",
+		width: "45%",
+		marginRight: "2%",
 	},
 	btn: {
 		padding: 20,
@@ -30,4 +31,4 @@ const styles = StyleSheet.create({
 	},
 });
 
-export default NavigateBtn;
+export default ExecuteBtn;

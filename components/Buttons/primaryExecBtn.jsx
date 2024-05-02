@@ -2,10 +2,10 @@ import React from "react";
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 import colors from "../../utils/colors";
 
-const ExecuteBtn = ({ execFunction, btnText }) => {
+const ExecuteBtn = ({ loading, execFunction, btnText }) => {
 	return (
 		<View style={styles.btnContainer}>
-			<TouchableOpacity style={styles.btn} onPress={execFunction}>
+			<TouchableOpacity style={styles.btn} onPress={execFunction} disabled={loading}>
 				<Text style={styles.btnText}>{btnText}</Text>
 			</TouchableOpacity>
 		</View>

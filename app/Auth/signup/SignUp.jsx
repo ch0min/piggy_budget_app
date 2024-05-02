@@ -1,42 +1,68 @@
 import React, { useState } from "react";
-import { Alert, StyleSheet, View, Text, TouchableOpacity, TextInput, Image } from "react-native";
+import { StyleSheet, View, Text, TouchableOpacity, TextInput, Image } from "react-native";
 import { supabase } from "../../../utils/supabase";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import colors from "../../../utils/colors";
+import logo from "../../../assets/images/logo.png";
 import arrowLeft from "../../../assets/images/arrowLeft.png";
-import logo2 from "../../../assets/images/logo2.png";
-
-import ExecuteBtn from "../../../components/Buttons/executeBtn";
+import PrimaryExecBtn from "../../../components/Buttons/primaryExecBtn";
 import TextBtn from "../../../components/Auth/textBtn";
+import { isValidEmail, isPasswordStrongEnough } from "../../../utils/customValidationHelpers";
 
 const Signup = ({ navigation }) => {
 	const [loading, setLoading] = useState(false);
-
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
+	const [confirmPassword, setConfirmPassword] = useState("");
+	const [message, setMessage] = useState("");
 
-	const [username, setUsername] = useState("");
-	const [firstName, setFirstName] = useState("");
-	const [lastName, setLastName] = useState("");
-	const [avatarUrl, setAvatarUrl] = useState("");
-
-	const handleSignUp = async () => {
+	const signUp = async () => {
 		setLoading(true);
-		const {
-			data: { session },
-			error,
-		} = await supabase.auth.signUp({
+		const { data, error } = await supabase.auth.signUp({
 			email,
 			password,
 		});
+
+		let authError = null;
+
+		// User exists, but is fake. See https://supabase.com/docs/reference/javascript/auth-signup
+		if (data.user && data.user.identities && data.user.identities.length === 0) {
+			authError = {
+				name: "AuthApiError",
+				message: "User already exists",
+			};
+		} else if (error) {
+			authError = {
+				name: error.name,
+				message: error.message,
+			};
+		}
 		setLoading(false);
+		return { auth: data, error: authError };
+	};
+
+	const handleSignUp = async () => {
+		setMessage("");
+
+		// Validation
+		if (!isValidEmail(email)) {
+			setMessage("Please enter a valid email address.");
+			return;
+		}
+		if (password !== confirmPassword) {
+			setMessage("The passwords do not match. Please try again.");
+			return;
+		}
+		if (!isPasswordStrongEnough(password)) {
+			setMessage("Password must be atleast 6 characters long.");
+			return;
+		}
+
+		const { auth, error } = await signUp();
 
 		if (error) {
-			Alert.alert("Sign up Error", error.message);
+			setMessage(error.message);
 		} else {
-			Alert.alert("Success", "Please check your email to verify your account.");
 			navigation.navigate("VerifyEmail", { email });
 		}
 	};
@@ -47,27 +73,12 @@ const Signup = ({ navigation }) => {
 				<TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
 					<Image style={styles.arrowLeft} source={arrowLeft} />
 				</TouchableOpacity>
-				<Image style={styles.logo} source={logo2} />
+				<Image style={styles.logo} source={logo} />
 			</View>
-			<Text style={styles.heading}>Create your Account</Text>
+			<Text style={styles.heading}>Create Account</Text>
 
 			<View style={styles.subContainer}>
 				<View style={styles.textInputContainer}>
-					<Text style={styles.headingInput}>Username</Text>
-					<View style={styles.textInput}>
-						<TextInput label="Username" placeholder="ex. Chocho" onChangeText={(text) => setUsername(text)} value={username} autoCapitalize={"none"} />
-					</View>
-
-					<Text style={styles.headingInput}>First Name</Text>
-					<View style={styles.textInput}>
-						<TextInput label="FirstName" placeholder="ex. John" onChangeText={(text) => setFirstName(text)} value={firstName} autoCapitalize={"words"} />
-					</View>
-
-					<Text style={styles.headingInput}>Last Name</Text>
-					<View style={styles.textInput}>
-						<TextInput label="LastName" placeholder="ex. Doe" onChangeText={(text) => setLastName(text)} valusetLae={lastName} autoCapitalize={"words"} />
-					</View>
-
 					<Text style={styles.headingInput}>Email</Text>
 					<View style={styles.textInput}>
 						<TextInput label="Email" placeholder="ex. email@address.com" onChangeText={(text) => setEmail(text)} value={email} autoCapitalize={"none"} />
@@ -75,11 +86,33 @@ const Signup = ({ navigation }) => {
 
 					<Text style={styles.headingInput}>Password</Text>
 					<View style={styles.textInput}>
-						<TextInput label="Password" placeholder="**********" onChangeText={(text) => setPassword(text)} value={password} autoCapitalize={"none"} />
+						<TextInput label="Password" placeholder="**********" onChangeText={(text) => setPassword(text)} value={password} secureTextEntry={true} />
+					</View>
+
+					<Text style={styles.headingInput}>Confirm Password</Text>
+					<View style={styles.textInput}>
+						<TextInput
+							label="Password"
+							placeholder="**********"
+							onChangeText={(text) => setConfirmPassword(text)}
+							value={confirmPassword}
+							secureTextEntry={true}
+						/>
 					</View>
 				</View>
-				<ExecuteBtn execFunction={handleSignUp} btnText={"Sign up"} />
-				<TextBtn navigation={navigation} navigateTo={"Login"} text={"Already a Member?"} colorText={colors.BLACK} btnText={"SIGN IN"} />
+
+				{message ? <Text style={styles.message}>{message}</Text> : null}
+				<View style={styles.btnContainer}>
+					<PrimaryExecBtn loading={loading} execFunction={handleSignUp} btnText={loading ? "Loading.." : "Sign up"} />
+					<TextBtn
+						loading={loading}
+						navigation={navigation}
+						navigateTo={"Login"}
+						text={"Already a Member?"}
+						colorText={colors.BLACK}
+						btnText={"SIGN IN"}
+					/>
+				</View>
 			</View>
 		</KeyboardAwareScrollView>
 	);
@@ -96,17 +129,17 @@ const styles = StyleSheet.create({
 		width: "100%",
 		alignItems: "center",
 		justifyContent: "space-between",
-		margin: 65,
+		margin: "15%",
 	},
 	arrowLeft: {
 		width: 30,
 		height: 30,
-		marginLeft: 50,
+		marginLeft: "25%",
 	},
 	logo: {
 		width: 35,
 		height: 35,
-		marginRight: 50,
+		marginRight: "7%",
 	},
 	heading: {
 		fontSize: 28,
@@ -134,6 +167,14 @@ const styles = StyleSheet.create({
 		padding: 15,
 		borderRadius: 10,
 		backgroundColor: colors.LIGHT,
+	},
+	message: {
+		textAlign: "left",
+		fontSize: 14,
+		color: colors.RED,
+	},
+	btnContainer: {
+		marginTop: "10%",
 	},
 });
 

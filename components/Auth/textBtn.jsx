@@ -2,11 +2,11 @@ import React from "react";
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 import colors from "../../utils/colors";
 
-const TextBtn = ({ navigation, navigateTo, text, colorText, btnText }) => {
+const TextBtn = ({ loading, navigation, navigateTo, text, colorText, btnText }) => {
 	return (
 		<View style={styles.btnLogin}>
 			<Text style={[styles.btnLoginText, { color: colorText }]}>{text}</Text>
-			<TouchableOpacity onPress={() => navigation.navigate(navigateTo)}>
+			<TouchableOpacity onPress={() => navigation.navigate(navigateTo)} disabled={loading}>
 				<Text style={styles.btnSignInText}> {btnText}</Text>
 			</TouchableOpacity>
 		</View>
@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
 	},
 	btnSignInText: {
 		fontWeight: "bold",
-		color: colors.PRIMARY,
+		color: colors.SECONDARY,
 	},
 });
 

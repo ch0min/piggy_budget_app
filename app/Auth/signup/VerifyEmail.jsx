@@ -1,32 +1,84 @@
-import React from "react";
-import { View, Text, Button, Alert, StyleSheet } from "react-native";
+import React, { useState, useEffect } from "react";
+import { StyleSheet, View, Text, Image } from "react-native";
+import colors from "../../../utils/colors";
+import { LinearGradient } from "expo-linear-gradient";
+import logo from "../../../assets/images/logo2.png";
 
 const VerifyEmail = ({ navigation }) => {
-	const checkEmailVerification = async () => {
-		const session = supabase.auth.session();
+	const [countdown, setCountdown] = useState(10); // Start countdown from 3 seconds
 
-		// Refresh session to get the latest user info
-		await supabase.auth.refreshSession();
+	useEffect(() => {
+		const timer = setTimeout(() => {
+			navigation.navigate("Landing");
+		}, 11000);
 
-		if (session && session.user.email_confirmed_at) {
-			navigation.navigate("Login"); // Navigate only if email is verified
-		} else {
-			Alert.alert("Verification Pending", "Please verify your email before proceeding.");
-		}
-	};
+		const countdownTimer = setInterval(() => {
+			setCountdown((currentCountdown) => {
+				if (currentCountdown <= 1) {
+					clearInterval(countdownTimer);
+					return 0;
+				}
+				return currentCountdown - 1;
+			});
+		}, 1000);
+
+		return () => {
+			clearTimeout(timer);
+			clearInterval(countdownTimer);
+		};
+	}, []);
 
 	return (
-		<View style={styles.container}>
-			<Text>Thank you for signing up!</Text>
-			<Text>Please verify your email by clicking the link we have sent you.</Text>
-			<Button title="I've Verified My Email" onPress={checkEmailVerification} />
-		</View>
+		<LinearGradient colors={[colors.SECONDARY, colors.PRIMARY]} locations={[0.3, 1.0]} style={styles.container}>
+			<View style={styles.subContainer}>
+				<Text style={styles.heading}>Thank you for signing up!</Text>
+				<Text style={styles.subheading}>Please check your email to verify your account.</Text>
+				<Image source={logo} style={styles.logo} />
+
+				<Text style={styles.redirectedHeading}>You will be redirected, shortly.</Text>
+				<Text style={styles.countdown}>Redirecting in {countdown}...</Text>
+			</View>
+		</LinearGradient>
 	);
 };
 
 const styles = StyleSheet.create({
 	container: {
-		marginTop: 100,
+		flex: 1,
+		alignItems: "center",
+		backgroundColor: colors.WHITE,
+	},
+	subContainer: {
+		alignItems: "center",
+		width: "100%",
+		height: "100%",
+		marginTop: 150,
+	},
+	heading: {
+		fontSize: 26,
+		fontWeight: "bold",
+		color: colors.WHITE,
+	},
+	subheading: {
+		marginTop: "2%",
+		fontSize: 16,
+		color: colors.GRAY,
+	},
+	logo: {
+		marginTop: "15%",
+		width: 200,
+		height: 200,
+	},
+	redirectedHeading: {
+		marginTop: "25%",
+		fontSize: 16,
+		color: colors.GRAY,
+	},
+	countdown: {
+		marginTop: 20,
+		fontSize: 20,
+		fontWeight: "bold",
+		color: colors.WHITE,
 	},
 });
 

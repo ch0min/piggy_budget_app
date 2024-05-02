@@ -1,22 +1,22 @@
 import React from "react";
-import { StyleSheet, View, Text, Image, TouchableOpacity } from "react-native";
+import { StyleSheet, View, Text, Image } from "react-native";
 import colors from "../../utils/colors";
 import { LinearGradient } from "expo-linear-gradient";
 import logo from "../../assets/images/logo.png";
 
-import NavigateBtn from "../../components/Buttons/navigateBtn";
-import TextBtn from "../../components/Auth/textBtn";
+import PrimaryNavBtn from "../../components/Buttons/primaryNavBtn";
+import SecondaryNavBtn from "../../components/Buttons/secondaryNavBtn";
 
 const Landing = ({ navigation }) => {
 	return (
-		<LinearGradient colors={[colors.SECONDARY, colors.PRIMARY, colors.WHITE]} style={styles.container}>
+		<LinearGradient colors={[colors.SECONDARY, colors.PRIMARY]} locations={[0.3, 1.0]} style={styles.container}>
 			<View style={styles.subContainer}>
 				<Text style={styles.heading}>Welcome to Piggy</Text>
 				<Text style={styles.subheading}>Let's get control of your economy!</Text>
 				<Image source={logo} style={styles.logo} />
 
-				<NavigateBtn navigation={navigation} navigateTo={"Signup"} btnText={"Let's Get Started"} />
-				<TextBtn navigation={navigation} navigateTo={"Login"} text={"Already a Member?"} colorText={colors.WHITE} btnText={"SIGN IN"} />
+				<PrimaryNavBtn navigation={navigation} navigateTo={"Signup"} btnText={"Get Started"} />
+				<SecondaryNavBtn navigation={navigation} navigateTo={"Login"} btnText={"Login"} />
 			</View>
 		</LinearGradient>
 	);
@@ -33,9 +33,6 @@ const styles = StyleSheet.create({
 		width: "100%",
 		height: "100%",
 		marginTop: 350,
-	},
-	textContainer: {
-		margin: 10,
 	},
 	heading: {
 		alignSelf: "flex-start",
@@ -58,7 +55,7 @@ const styles = StyleSheet.create({
 	logo: {
 		width: 250,
 		height: 250,
-		marginTop: 50,
+		marginVertical: "12%",
 
 		// Shadow for iOS
 		shadowColor: "#000",
