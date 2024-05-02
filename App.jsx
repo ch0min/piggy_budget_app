@@ -1,6 +1,6 @@
 import "react-native-url-polyfill/auto";
 import { useState, useEffect } from "react";
-import { StyleSheet, View, Text } from "react-native";
+import { StyleSheet, View, Text, ActivityIndicator } from "react-native";
 import { supabase } from "./utils/supabase";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -17,39 +17,65 @@ import CompleteProfile from "./app/auth/login/CompleteProfile";
 const Stack = createNativeStackNavigator();
 
 const App = () => {
+	const [loading, setLoading] = useState(false);
 	const [session, setSession] = useState(null);
+	const [profileCompleted, setProfileCompleted] = useState(false);
+
 	useEffect(() => {
 		supabase.auth.getSession().then(({ data: { session } }) => {
 			setSession(session);
+			fetchProfile(session);
 		});
 
 		supabase.auth.onAuthStateChange((_event, session) => {
 			setSession(session);
+			fetchProfile(session);
 		});
 	}, []);
+
+	const fetchProfile = async (session) => {
+		if (session && session.user) {
+			const { data, error } = await supabase.from("profiles").select("profile_completed").eq("id", session.user.id).single();
+
+			setLoading(true);
+			if (error) {
+				console.error("Error fetching profile:", error.message);
+				return;
+			}
+
+			if (data) {
+				setProfileCompleted(data.profile_completed);
+			}
+		}
+	};
 
 	return (
 		<View style={styles.container}>
 			<NavigationContainer>
-				{session && session.user ? (
-					<CompleteProfile key={session.user.id} session={session} />
-				) : (
-					<Stack.Navigator
-						initialRouteName="Landing"
-						screenOptions={{
-							headerShown: false,
-							gestureEnabled: false,
-							// gestureDirection: "horizontal",
-						}}
-					>
-						<Stack.Screen name="Landing" component={Landing}></Stack.Screen>
-						<Stack.Screen name="Signup" component={Signup}></Stack.Screen>
-						<Stack.Screen name="Login" component={Login}></Stack.Screen>
-						<Stack.Screen name="Home" component={Home}></Stack.Screen>
-						<Stack.Screen name="VerifyEmail" component={VerifyEmail}></Stack.Screen>
-						<Stack.Screen name="CompleteProfile" component={CompleteProfile}></Stack.Screen>
-					</Stack.Navigator>
-				)}
+				<Stack.Navigator
+					initialRouteName="Landing"
+					screenOptions={{
+						headerShown: false,
+						gestureEnabled: false,
+					}}
+				>
+					{session && session.user ? (
+						<>
+							{profileCompleted ? (
+								<Stack.Screen name="Home" children={() => <Home session={session} />} />
+							) : (
+								<Stack.Screen name="CompleteProfile" children={({ navigation }) => <CompleteProfile session={session} navigation={navigation} />} />
+							)}
+						</>
+					) : (
+						<>
+							<Stack.Screen name="Landing" component={Landing} />
+							<Stack.Screen name="Signup" component={Signup} />
+							<Stack.Screen name="Login" component={Login} />
+							<Stack.Screen name="VerifyEmail" component={VerifyEmail} />
+						</>
+					)}
+				</Stack.Navigator>
 			</NavigationContainer>
 		</View>
 	);
