@@ -1,79 +1,31 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Alert, StyleSheet, View, Text, TextInput, Button } from "react-native";
-import { supabase } from "../../../utils/supabase";
+import { useUser } from "../../../context/UserContext";
 import colors from "../../../utils/colors";
 import PrimaryExecBtn from "../../../components/Buttons/primaryExecBtn";
 
-const CompleteProfile = ({ session, navigation, setProfileCompleted }) => {
-	const [loading, setLoading] = useState(false);
+const CompleteProfile = ({ navigation }) => {
+	const { loading, profileCompleted, updateProfile } = useUser();
 	const [avatarUrl, setAvatarUrl] = useState("");
 	const [firstName, setFirstName] = useState("");
 	const [lastName, setLastName] = useState("");
 
-	useEffect(() => {
-		if (session) {
-			getProfile();
+	const handleUpdateProfile = async () => {
+		if (!avatarUrl || !firstName || !lastName) {
+			Alert.alert("Please fill out all fields.");
+			return;
 		}
-	}, [session]);
 
-	// Make these functions reusable
-	const getProfile = async () => {
-		try {
-			setLoading(true);
-			if (!session?.user) throw new Error("No user on the session!");
+		const updates = {
+			avatar_url: avatarUrl,
+			first_name: firstName,
+			last_name: lastName,
+			profile_completed: true,
+		};
 
-			const { data, error, status } = await supabase
-			.from("profiles")
-			.select(`avatar_url, first_name, last_name`)
-			.eq("id", session?.user.id)
-			.single();
-			if (error && status !== 406) {
-				throw error;
-			}
-			if (data) {
-				setAvatarUrl(data.avatar_url);
-				setFirstName(data.first_name);
-				setLastName(data.last_name);
-			}
-		} catch (error) {
-			if (error instanceof Error) {
-				Alert.alert(error.message);
-			}
-		} finally {
-			setLoading(false);
-		}
-	};
-
-	const updateProfile = async () => {
-		try {
-			if (!session?.user) throw new Error("No user on the session!");
-			if (!avatarUrl || !firstName || !lastName) {
-				Alert.alert("Please fill out all fields.");
-				return;
-			}
-
-			setLoading(true);
-
-			const updates = {
-				id: session?.user.id,
-				updated_at: new Date(),
-				avatar_url: avatarUrl,
-				first_name: firstName,
-				last_name: lastName,
-				profile_completed: true,
-			};
-
-			const { error } = await supabase.from("profiles").upsert(updates);
-
-			if (error) throw error;
-			setProfileCompleted(true);
+		await updateProfile(updates);
+		if (profileCompleted) {
 			navigation.navigate("HomeTabs");
-		} catch (error) {
-			if (error instanceof Error) {
-				Alert.alert(error.message);
-			}
-		} finally {
-			setLoading(false);
 		}
 	};
 
@@ -97,12 +49,11 @@ const CompleteProfile = ({ session, navigation, setProfileCompleted }) => {
 					</View>
 				</View>
 
-				<PrimaryExecBtn loading={loading} execFunction={updateProfile} btnText={loading ? "Loading.." : "Update"} />
-
-				{/* DELETE THIS */}
-				<View>
-					<Button title="Sign Out" onPress={() => supabase.auth.signOut()} />
-				</View>
+				<PrimaryExecBtn
+					loading={loading}
+					execFunction={handleUpdateProfile}
+					btnText={loading ? "Loading.." : "Update"}
+				/>
 			</View>
 		</View>
 	);

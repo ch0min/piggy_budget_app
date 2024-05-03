@@ -1,6 +1,6 @@
 **_ TODO _**
 
-NY CATEGORY SAMMENSÆTNING AF HVER TABLE
+-  FIX LOGIN
 
 -  ÆNDRE ALT MARGIN OSV TIL PERCENTAGE
 -  CompleteProfile er et must, så derfor kan en user kun fortsætte efter udfyldelse.
@@ -18,7 +18,7 @@ NY CATEGORY SAMMENSÆTNING AF HVER TABLE
 -  Email redirection
 -  Put all crud functions in on helper file.
 -  Hvorfor bruge expo router vs react native navigation?
--  useContext?
+-  useContext for navigation?
 -  Fix props til children?
 
 MINOR BUGS:
@@ -43,6 +43,8 @@ MINOR BUGS:
 -  Landing Page
 -  Signup Page
 -  Login Page
+-  Implementer UseContext for User.
+   -  Signup, Login
 
 **_ EXTRA DEPENDENCIES _**
 

@@ -1,44 +1,30 @@
 import React, { useState } from "react";
 import { StyleSheet, View, Text, TextInput, TouchableOpacity, Image } from "react-native";
-import { supabase } from "../../../utils/supabase";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useUser } from "../../../context/UserContext";
+
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { LinearGradient } from "expo-linear-gradient";
 import colors from "../../../utils/colors";
-import loginBg from "../../../assets/images/ChooseAvatarScreen.png";
 import logo2 from "../../../assets/images/logo2.png";
-import logo from "../../../assets/images/logo.png";
 import arrowLeft from "../../../assets/images/arrowLeft.png";
 
 import PrimaryExecBtn from "../../../components/Buttons/primaryExecBtn";
 import TextBtn from "../../../components/Auth/textBtn";
 
 const Login = ({ navigation }) => {
-	const [loading, setLoading] = useState(false);
+	const { loading, signIn } = useUser();
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [message, setMessage] = useState("");
 
-	const signInWithEmail = async () => {
+	const handleSignIn = async () => {
 		if (!email || !password) {
-			setMessage("Please enter both email and password.");
+			setMessage("Please enter both email and password");
 			return;
 		}
-
-		setLoading(true);
-		const { error } = await supabase.auth.signInWithPassword({
-			email: email,
-			password: password,
-		});
-
+		const { error } = await signIn(email, password);
 		if (error) {
-			if (error.status === 400 && error.message === "Invalid login credentials") {
-				setMessage("No account found with these credentials.");
-			} else {
-				setMessage("error.message");
-			}
+			setMessage("Invalid email or password");
 		}
-		setLoading(false);
 	};
 
 	return (
@@ -59,20 +45,38 @@ const Login = ({ navigation }) => {
 					<View style={styles.textInputContainer}>
 						<Text style={styles.headingInput}>Email</Text>
 						<View style={styles.textInput}>
-							<TextInput label="Email" placeholder="piggy@address.com" onChangeText={(text) => setEmail(text)} value={email} autoCapitalize={"none"} />
+							<TextInput
+								label="Email"
+								placeholder="piggy@address.com"
+								onChangeText={(text) => setEmail(text)}
+								value={email}
+								autoCapitalize={"none"}
+							/>
 						</View>
 
 						<Text style={styles.headingInput}>Password</Text>
 						<View style={styles.textInput}>
-							<TextInput label="Password" placeholder="**********" onChangeText={(text) => setPassword(text)} value={password} secureTextEntry={true} />
+							<TextInput
+								label="Password"
+								placeholder="**********"
+								onChangeText={(text) => setPassword(text)}
+								value={password}
+								secureTextEntry={true}
+							/>
 						</View>
 					</View>
 
 					{message ? <Text style={styles.message}>{message}</Text> : null}
 
 					<View style={styles.btnContainer}>
-						<PrimaryExecBtn execFunction={signInWithEmail} btnText={"Login"} />
-						<TextBtn navigation={navigation} navigateTo={"Signup"} text={"Not a Member yet?"} colorText={colors.BLACK} btnText={"SIGN UP"} />
+						<PrimaryExecBtn execFunction={handleSignIn} btnText={"Login"} />
+						<TextBtn
+							navigation={navigation}
+							navigateTo={"Signup"}
+							text={"Not a Member yet?"}
+							colorText={colors.BLACK}
+							btnText={"SIGN UP"}
+						/>
 					</View>
 				</View>
 			</View>

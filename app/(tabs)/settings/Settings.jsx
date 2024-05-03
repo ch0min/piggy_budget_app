@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { StyleSheet, View, Text, Button } from "react-native";
-import { supabase } from "../../../utils/supabase";
+import { useUser } from "../../../context/UserContext";
 
 const Settings = () => {
+	const { signOut } = useUser();
+
 	return (
 		<View>
 			<View style={styles.verticallySpaced}>
-				<Button title="Sign Out" onPress={() => supabase.auth.signOut()} />
+				<Button title="Sign Out" onPress={signOut} />
 			</View>
 		</View>
 	);

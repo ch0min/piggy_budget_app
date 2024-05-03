@@ -1,45 +1,22 @@
 import React, { useState } from "react";
 import { StyleSheet, View, Text, TouchableOpacity, TextInput, Image } from "react-native";
-import { supabase } from "../../../utils/supabase";
+import { useUser } from "../../../context/UserContext";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { isValidEmail, isPasswordStrongEnough } from "../../../utils/customValidationHelpers";
+
 import colors from "../../../utils/colors";
 import logo from "../../../assets/images/logo.png";
 import arrowLeft from "../../../assets/images/arrowLeft.png";
 import PrimaryExecBtn from "../../../components/Buttons/primaryExecBtn";
 import TextBtn from "../../../components/Auth/textBtn";
-import { isValidEmail, isPasswordStrongEnough } from "../../../utils/customValidationHelpers";
 
 const Signup = ({ navigation }) => {
-	const [loading, setLoading] = useState(false);
+	const { loading, signUp } = useUser();
+
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [confirmPassword, setConfirmPassword] = useState("");
 	const [message, setMessage] = useState("");
-
-	const signUp = async () => {
-		setLoading(true);
-		const { data, error } = await supabase.auth.signUp({
-			email,
-			password,
-		});
-
-		let authError = null;
-
-		// User exists, but is fake. See https://supabase.com/docs/reference/javascript/auth-signup
-		if (data.user && data.user.identities && data.user.identities.length === 0) {
-			authError = {
-				name: "AuthApiError",
-				message: "User already exists",
-			};
-		} else if (error) {
-			authError = {
-				name: error.name,
-				message: error.message,
-			};
-		}
-		setLoading(false);
-		return { auth: data, error: authError };
-	};
 
 	const handleSignUp = async () => {
 		setMessage("");
@@ -58,7 +35,7 @@ const Signup = ({ navigation }) => {
 			return;
 		}
 
-		const { auth, error } = await signUp();
+		const { error } = await signUp(email, password);
 
 		if (error) {
 			setMessage(error.message);
@@ -81,12 +58,24 @@ const Signup = ({ navigation }) => {
 				<View style={styles.textInputContainer}>
 					<Text style={styles.headingInput}>Email</Text>
 					<View style={styles.textInput}>
-						<TextInput label="Email" placeholder="ex. email@address.com" onChangeText={(text) => setEmail(text)} value={email} autoCapitalize={"none"} />
+						<TextInput
+							label="Email"
+							placeholder="ex. email@address.com"
+							onChangeText={(text) => setEmail(text)}
+							value={email}
+							autoCapitalize={"none"}
+						/>
 					</View>
 
 					<Text style={styles.headingInput}>Password</Text>
 					<View style={styles.textInput}>
-						<TextInput label="Password" placeholder="**********" onChangeText={(text) => setPassword(text)} value={password} secureTextEntry={true} />
+						<TextInput
+							label="Password"
+							placeholder="**********"
+							onChangeText={(text) => setPassword(text)}
+							value={password}
+							secureTextEntry={true}
+						/>
 					</View>
 
 					<Text style={styles.headingInput}>Confirm Password</Text>
@@ -103,7 +92,11 @@ const Signup = ({ navigation }) => {
 
 				{message ? <Text style={styles.message}>{message}</Text> : null}
 				<View style={styles.btnContainer}>
-					<PrimaryExecBtn loading={loading} execFunction={handleSignUp} btnText={loading ? "Loading.." : "Sign up"} />
+					<PrimaryExecBtn
+						loading={loading}
+						execFunction={handleSignUp}
+						btnText={loading ? "Loading.." : "Sign up"}
+					/>
 					<TextBtn
 						loading={loading}
 						navigation={navigation}
