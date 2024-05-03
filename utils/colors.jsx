@@ -5,6 +5,7 @@ export default {
 	GRAY: "#E0E0E0",
 	PRIMARY: "#FE9395",
 	SECONDARY: "#FD608A",
+	TERTIARY: "#fdd0d5",
 	RED: "#FF555D",
-	// COLOR_LIST: ["#4F75FE", "#13C38B", "#9F3CFE", "#FF555D", "#FF7D4F"]
+	CATEGORY_COLOR_LIST: ["#B2BEB5", "#F890CB", "#73AEF0", "#B5D244", "#FFC300", "#FF555D", "#7F00FF"],
 };

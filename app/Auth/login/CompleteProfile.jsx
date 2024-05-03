@@ -4,7 +4,7 @@ import { supabase } from "../../../utils/supabase";
 import colors from "../../../utils/colors";
 import PrimaryExecBtn from "../../../components/Buttons/primaryExecBtn";
 
-const CompleteProfile = ({ session, navigation }) => {
+const CompleteProfile = ({ session, navigation, setProfileCompleted }) => {
 	const [loading, setLoading] = useState(false);
 	const [avatarUrl, setAvatarUrl] = useState("");
 	const [firstName, setFirstName] = useState("");
@@ -22,7 +22,11 @@ const CompleteProfile = ({ session, navigation }) => {
 			setLoading(true);
 			if (!session?.user) throw new Error("No user on the session!");
 
-			const { data, error, status } = await supabase.from("profiles").select(`avatar_url, first_name, last_name`).eq("id", session?.user.id).single();
+			const { data, error, status } = await supabase
+			.from("profiles")
+			.select(`avatar_url, first_name, last_name`)
+			.eq("id", session?.user.id)
+			.single();
 			if (error && status !== 406) {
 				throw error;
 			}
@@ -62,7 +66,8 @@ const CompleteProfile = ({ session, navigation }) => {
 			const { error } = await supabase.from("profiles").upsert(updates);
 
 			if (error) throw error;
-			navigation.navigate("Home");
+			setProfileCompleted(true);
+			navigation.navigate("HomeTabs");
 		} catch (error) {
 			if (error instanceof Error) {
 				Alert.alert(error.message);
@@ -94,6 +99,7 @@ const CompleteProfile = ({ session, navigation }) => {
 
 				<PrimaryExecBtn loading={loading} execFunction={updateProfile} btnText={loading ? "Loading.." : "Update"} />
 
+				{/* DELETE THIS */}
 				<View>
 					<Button title="Sign Out" onPress={() => supabase.auth.signOut()} />
 				</View>

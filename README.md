@@ -1,5 +1,7 @@
 **_ TODO _**
 
+NY CATEGORY SAMMENSÆTNING AF HVER TABLE
+
 -  ÆNDRE ALT MARGIN OSV TIL PERCENTAGE
 -  CompleteProfile er et must, så derfor kan en user kun fortsætte efter udfyldelse.
 -  Home Page
@@ -13,9 +15,15 @@
 -  Brugt CAPTCHA til BRUTEFORCE!!!!!
 -  SPLASH SCREEN
 -  Pass loading as a prop down from App.jsx to children
+-  Email redirection
+-  Put all crud functions in on helper file.
+-  Hvorfor bruge expo router vs react native navigation?
+-  useContext?
+-  Fix props til children?
 
 MINOR BUGS:
-- Sometimes when you login you will quickly see the CompleteProfile Screen.
+
+-  Sometimes when you login you will quickly see the CompleteProfile Screen.
 
 **_ SECURITY TEST _**
 
@@ -43,6 +51,7 @@ MINOR BUGS:
 -  react-native-gesture-handler: used for gestures.
 -  react-native-reanimated: used for animations.
 -  react-native-svg: used for SVG's.
+-  react-native-pie-chart: pie chart.
 
 npm install react-native-keyboard-aware-scroll-view --save
 

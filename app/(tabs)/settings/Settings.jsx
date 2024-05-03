@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { StyleSheet, View, Text, Button } from "react-native";
 import { supabase } from "../../../utils/supabase";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const Home = () => {
+const Settings = () => {
 	return (
-		<View style={styles.container}>
-			<Text>Home</Text>
+		<View>
 			<View style={styles.verticallySpaced}>
 				<Button title="Sign Out" onPress={() => supabase.auth.signOut()} />
 			</View>
@@ -15,9 +13,6 @@ const Home = () => {
 };
 
 const styles = StyleSheet.create({
-	container: {
-		marginTop: 100,
-	},
 	verticallySpaced: {
 		marginTop: 20,
 		paddingTop: 4,
@@ -26,4 +21,4 @@ const styles = StyleSheet.create({
 	},
 });
 
-export default Home;
+export default Settings;
