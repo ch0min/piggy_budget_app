@@ -1,11 +1,7 @@
 **_ TODO _**
-
--  FIX LOGIN
+-  IDAG FØRST: FIX NY BRUGER FETCHING AF USERPROFILE DATA
 
 -  ÆNDRE ALT MARGIN OSV TIL PERCENTAGE
--  CompleteProfile er et must, så derfor kan en user kun fortsætte efter udfyldelse.
--  Home Page
--  Sign Up Boarding Page with more options like profile picture and so on.
 -  Change colors
 -  Change fonts
 -  Fix details on both iOS and Android so they look the same.
@@ -14,12 +10,10 @@
 -  Skift alt til dansk?
 -  Brugt CAPTCHA til BRUTEFORCE!!!!!
 -  SPLASH SCREEN
--  Pass loading as a prop down from App.jsx to children
 -  Email redirection
--  Put all crud functions in on helper file.
 -  Hvorfor bruge expo router vs react native navigation?
 -  useContext for navigation?
--  Fix props til children?
+-  Tilføj loading indicator.
 
 MINOR BUGS:
 
@@ -40,11 +34,11 @@ MINOR BUGS:
 
 **_ DONE _**
 
--  Landing Page
--  Signup Page
--  Login Page
--  Implementer UseContext for User.
-   -  Signup, Login
+-  Landing Screen
+-  Signup Screen
+-  Login Screen
+-  VerifyEmail Screen
+-  Implementer UseContext for User
 
 **_ EXTRA DEPENDENCIES _**
 

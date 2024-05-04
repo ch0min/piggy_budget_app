@@ -1,6 +1,7 @@
 import React from "react";
 import { StyleSheet, View, Text } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { useUser } from "../../context/UserContext";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import Colors from "../../utils/colors";
 
@@ -14,7 +15,10 @@ import Settings from "./settings/Settings";
 
 const Tab = createBottomTabNavigator();
 
-const HomeTabs = ({ session, navigation }) => {
+const HomeTabs = ({ navigation }) => {
+	const {loading, session} = useUser()
+	
+
 	return (
 		<View style={styles.container}>
 			<Tab.Navigator
