@@ -1,5 +1,4 @@
 **_ TODO _**
--  IDAG FØRST: FIX NY BRUGER FETCHING AF USERPROFILE DATA
 
 -  ÆNDRE ALT MARGIN OSV TIL PERCENTAGE
 -  Change colors
@@ -14,6 +13,7 @@
 -  Hvorfor bruge expo router vs react native navigation?
 -  useContext for navigation?
 -  Tilføj loading indicator.
+-  ADD SHADOW ON ANDROID
 
 MINOR BUGS:
 
@@ -48,6 +48,8 @@ MINOR BUGS:
 -  react-native-reanimated: used for animations.
 -  react-native-svg: used for SVG's.
 -  react-native-pie-chart: pie chart.
+-  react-native-picker/picker: used for scroll wheel picker.
+
 
 npm install react-native-keyboard-aware-scroll-view --save
 

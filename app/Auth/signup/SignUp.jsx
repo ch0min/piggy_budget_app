@@ -7,8 +7,8 @@ import { isValidEmail, isPasswordStrongEnough } from "../../../utils/customValid
 import colors from "../../../utils/colors";
 import logo from "../../../assets/images/logo.png";
 import arrowLeft from "../../../assets/images/arrowLeft.png";
-import PrimaryExecBtn from "../../../components/Buttons/primaryExecBtn";
-import TextBtn from "../../../components/Auth/textBtn";
+import PrimaryExecBtn from "../../../components/buttons/primaryExecBtn";
+import TextBtn from "../../../components/auth/textBtn";
 
 const Signup = ({ navigation }) => {
 	const { loading, signUp } = useUser();

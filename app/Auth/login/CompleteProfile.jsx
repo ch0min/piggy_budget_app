@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Alert, StyleSheet, View, Text, TextInput, Button } from "react-native";
 import { useUser } from "../../../context/UserContext";
 import colors from "../../../utils/colors";
-import PrimaryExecBtn from "../../../components/Buttons/primaryExecBtn";
+import PrimaryExecBtn from "../../../components/buttons/primaryExecBtn";
 
 const CompleteProfile = ({ navigation }) => {
   const { loading, profileCompleted, updateProfile } = useUser();

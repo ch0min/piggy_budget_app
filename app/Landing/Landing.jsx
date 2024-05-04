@@ -4,8 +4,8 @@ import colors from "../../utils/colors";
 import { LinearGradient } from "expo-linear-gradient";
 import logo from "../../assets/images/logo.png";
 
-import PrimaryNavBtn from "../../components/Buttons/primaryNavBtn";
-import SecondaryNavBtn from "../../components/Buttons/secondaryNavBtn";
+import PrimaryNavBtn from "../../components/buttons/primaryNavBtn";
+import SecondaryNavBtn from "../../components/buttons/secondaryNavBtn";
 
 const Landing = ({ navigation }) => {
 	return (

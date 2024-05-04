@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "budget-buddy-app",
-    "slug": "budget-buddy-app",
+    "name": "Piggy - Budget Tracker",
+    "slug": "Piggy - Budget Tracker",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -21,7 +21,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.piggy.reactnativeapp"
     },
     "web": {
       "favicon": "./assets/favicon.png"

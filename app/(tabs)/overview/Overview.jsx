@@ -9,39 +9,26 @@ import PieGraph from "../../../components/graphs/PieGraph";
 import { Ionicons } from "@expo/vector-icons";
 
 const Overview = () => {
-  const { loading, session, categoryList, getCategoryList } = useUser();
+	const { loading, session, categoryList, getCategoryList } = useUser();
 
-  useEffect(() => {
-    if (session?.user) {
-      getCategoryList();
-    }
-  }, [session]);
-
-  return (
-    <View style={styles.container}>
-      {/* <ScrollView refrefreshControl={<RefreshControl onRefresh={() => getCategoriesList()} refreshing={loading} />}> */}
-
-      <OverviewHeader session={session} />
-
-      <View style={styles.graphContainer}>
-        <PieGraph categoryList={categoryList} />
-      </View>
-      {/* </ScrollView> */}
-    </View>
-  );
+	return (
+		<View style={styles.container}>
+			<Text>Overview</Text>
+		</View>
+	);
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  // subContainer: {
-  // 	flex: 1,
-  // },
-  graphContainer: {
-    marginTop: -75,
-    padding: 20,
-  },
+	container: {
+		flex: 1,
+	},
+	// subContainer: {
+	// 	flex: 1,
+	// },
+	graphContainer: {
+		marginTop: -75,
+		padding: 20,
+	},
 });
 
 export default Overview;

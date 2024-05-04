@@ -14,8 +14,8 @@ import colors from "../../../utils/colors";
 import logo2 from "../../../assets/images/logo2.png";
 import arrowLeft from "../../../assets/images/arrowLeft.png";
 
-import PrimaryExecBtn from "../../../components/Buttons/primaryExecBtn";
-import TextBtn from "../../../components/Auth/textBtn";
+import PrimaryExecBtn from "../../../components/buttons/primaryExecBtn";
+import TextBtn from "../../../components/auth/textBtn";
 
 const Login = ({ navigation }) => {
   const { signIn } = useUser();

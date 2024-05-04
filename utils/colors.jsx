@@ -3,6 +3,8 @@ export default {
 	WHITE: "#FAFAFA",
 	LIGHT: "#F8F8F8",
 	GRAY: "#E0E0E0",
+	GRAYBLUE: "#F4F3F8",
+	DARKGRAY: "#C9C9C9",
 	PRIMARY: "#FE9395",
 	SECONDARY: "#FD608A",
 	TERTIARY: "#fdd0d5",
