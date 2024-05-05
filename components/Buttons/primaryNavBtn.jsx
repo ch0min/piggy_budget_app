@@ -2,7 +2,7 @@ import React from "react";
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 import colors from "../../utils/colors";
 
-const NavigateBtn = ({ loading, navigation, navigateTo, btnText }) => {
+const primaryNavBtn = ({ loading, navigation, navigateTo, btnText }) => {
 	return (
 		<View style={styles.btnContainer}>
 			<TouchableOpacity style={styles.btn} onPress={() => navigation.navigate(navigateTo)} disabled={loading}>
@@ -29,4 +29,4 @@ const styles = StyleSheet.create({
 	},
 });
 
-export default NavigateBtn;
+export default primaryNavBtn;

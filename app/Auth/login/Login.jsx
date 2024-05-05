@@ -23,7 +23,6 @@ const Login = ({ navigation }) => {
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
 
-
   const handleSignIn = async () => {
     if (!email || !password) {
       setMessage("Please enter both email and password");

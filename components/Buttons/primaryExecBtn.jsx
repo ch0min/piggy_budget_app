@@ -2,7 +2,7 @@ import React from "react";
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 import colors from "../../utils/colors";
 
-const ExecuteBtn = ({ loading, execFunction, btnText }) => {
+const PrimaryExecBtn = ({ loading, execFunction, btnText }) => {
 	return (
 		<View style={styles.btnContainer}>
 			<TouchableOpacity style={styles.btn} onPress={execFunction} disabled={loading}>
@@ -30,4 +30,4 @@ const styles = StyleSheet.create({
 	},
 });
 
-export default ExecuteBtn;
+export default PrimaryExecBtn;
