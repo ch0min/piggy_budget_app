@@ -12,6 +12,7 @@ import Signup from "./auth/signup/SignUp";
 import VerifyEmail from "./auth/signup/VerifyEmail";
 import CompleteProfile from "./auth/login/CompleteProfile";
 import HomeTabs from "./(tabs)/HomeTabs";
+import Categories from "./(tabs)/categories/Categories";
 import AddCategory from "./(tabs)/categories/AddCategory";
 
 const Stack = createNativeStackNavigator();
@@ -36,6 +37,15 @@ const RootNavigator = () => {
           {user ? (
             profileCompleted ? (
               <>
+              {/* CHANGE THIS */}
+                <Stack.Screen
+                  name="Categories"
+                  component={Categories}
+                  options={{
+                    presentation: "fullScreenModal",
+                  }}
+                />
+
                 <Stack.Screen name="HomeTabs" component={HomeTabs} />
 
                 <Stack.Screen
@@ -43,16 +53,11 @@ const RootNavigator = () => {
                   component={AddCategory}
                   options={{
                     presentation: "fullScreenModal",
-                    gestureEnabled: true,
-                    gestureDirection: "vertical",
                   }}
                 />
               </>
             ) : (
-              <Stack.Screen
-                name="CompleteProfile"
-                component={CompleteProfile}
-              />
+              <Stack.Screen name="CompleteProfile" component={CompleteProfile} />
             )
           ) : (
             <>

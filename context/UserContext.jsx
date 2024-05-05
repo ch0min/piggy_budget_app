@@ -134,6 +134,22 @@ export const UserProvider = ({ children }) => {
     }
   };
 
+  const getDefaultCategoryList = async () => {
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.from("categories").select(`*`).eq("is_default", true);
+
+      if (error) throw error;
+
+      setCategoryList(data);
+      // console.log("CategoryList fetched:", data);
+    } catch (error) {
+      console.error("Error fetching CategoryList:", error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const getCategoryList = async () => {
     setLoading(true);
     try {
@@ -217,6 +233,7 @@ export const UserProvider = ({ children }) => {
         signOut,
         getProfile,
         updateProfile,
+        getDefaultCategoryList,
         getCategoryList,
         createCategory,
         getExpenseGroupList,

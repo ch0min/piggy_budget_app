@@ -16,6 +16,7 @@
 - useContext for navigation?
 - Tilføj loading indicator.
 - ADD SHADOW ON ANDROID
+- CHECK ALL RLS in SUPABASE
 
 MINOR BUGS:
 
