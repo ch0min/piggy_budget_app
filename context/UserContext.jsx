@@ -4,244 +4,269 @@ import { supabase } from "../utils/supabase";
 const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
-  const [loading, setLoading] = useState(false);
-  const [session, setSession] = useState(null);
-  const [user, setUser] = useState(null);
-  const [userProfile, setUserProfile] = useState(null);
-  const [profileCompleted, setProfileCompleted] = useState(false);
-  const [categoryList, setCategoryList] = useState([]);
-  const [expenseGroupList, setExpenseGroupList] = useState([]);
+	const [loading, setLoading] = useState(false);
+	const [session, setSession] = useState(null);
+	const [user, setUser] = useState(null);
+	const [userProfile, setUserProfile] = useState(null);
+	const [profileCompleted, setProfileCompleted] = useState(false);
+	const [categoryList, setCategoryList] = useState([]);
+	const [expenseGroupsList, setExpenseGroupsList] = useState([]);
+	const [categoriesByExpenseGroups, setCategoriesByExpenseGroups] = useState({});
+	const [selectedCategory, setSelectedCategory] = useState(null)
 
-  useEffect(() => {
-    if (!user && !session) {
-      fetchInitialSession();
-    }
-  }, []);
 
-  const fetchInitialSession = async () => {
-    setLoading(true);
-    try {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      setSession(session);
-      setUser(session?.user);
-      if (session?.user) {
-        await getProfile(session.user.id);
-      }
-    } catch (error) {
-      console.error("Error initializing session and profile", error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+	useEffect(() => {
+		if (!user && !session) {
+			fetchInitialSession();
+		}
+	}, []);
 
-  const signIn = async (email, password) => {
-    setLoading(true);
-    try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: email,
-        password: password,
-      });
+	const fetchInitialSession = async () => {
+		setLoading(true);
+		try {
+			const {
+				data: { session },
+			} = await supabase.auth.getSession();
+			setSession(session);
+			setUser(session?.user);
+			if (session?.user) {
+				await getProfile(session.user.id);
+			}
+		} catch (error) {
+			console.error("Error initializing session and profile", error.message);
+		} finally {
+			setLoading(false);
+		}
+	};
 
-      if (error) throw error;
+	const signIn = async (email, password) => {
+		setLoading(true);
+		try {
+			const { data, error } = await supabase.auth.signInWithPassword({
+				email: email,
+				password: password,
+			});
 
-      const { session, user } = data;
-      setSession(session);
-      setUser(user);
+			if (error) throw error;
 
-      if (user) {
-        await getProfile(user.id);
-      }
-    } catch (error) {
-      console.error("Exception during login", error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+			const { session, user } = data;
+			setSession(session);
+			setUser(user);
 
-  const signUp = async (email, password) => {
-    setLoading(true);
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-    });
+			if (user) {
+				await getProfile(user.id);
+			}
+		} catch (error) {
+			console.error("Exception during login", error.message);
+		} finally {
+			setLoading(false);
+		}
+	};
 
-    let authError = null;
+	const signUp = async (email, password) => {
+		setLoading(true);
+		const { data, error } = await supabase.auth.signUp({
+			email,
+			password,
+		});
 
-    // User exists, but is fake. See https://supabase.com/docs/reference/javascript/auth-signup
-    if (data.user && data.user.identities && data.user.identities.length === 0) {
-      authError = {
-        name: "AuthApiError",
-        message: "User already exists",
-      };
-    } else if (error) {
-      authError = {
-        name: error.name,
-        message: error.message,
-      };
-    }
-    setLoading(false);
-    return { auth: data, error: authError };
-  };
+		let authError = null;
 
-  const signOut = async () => {
-    try {
-      await supabase.auth.signOut();
-      setSession(null);
-      setUser(null);
-    } catch (error) {
-      console.error("Error signing out", error.message);
-    }
-  };
+		// User exists, but is fake. See https://supabase.com/docs/reference/javascript/auth-signup
+		if (data.user && data.user.identities && data.user.identities.length === 0) {
+			authError = {
+				name: "AuthApiError",
+				message: "User already exists",
+			};
+		} else if (error) {
+			authError = {
+				name: error.name,
+				message: error.message,
+			};
+		}
+		setLoading(false);
+		return { auth: data, error: authError };
+	};
 
-  const getProfile = async (userId) => {
-    try {
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("profile_completed, avatar_url, first_name, last_name")
-        .eq("id", userId)
-        .single();
+	const signOut = async () => {
+		try {
+			await supabase.auth.signOut();
+			setSession(null);
+			setUser(null);
+		} catch (error) {
+			console.error("Error signing out", error.message);
+		}
+	};
 
-      if (error) throw error;
+	const getProfile = async (userId) => {
+		try {
+			const { data, error } = await supabase
+				.from("profiles")
+				.select("profile_completed, avatar_url, first_name, last_name")
+				.eq("id", userId)
+				.single();
 
-      if (data) {
-        setUserProfile(data);
-        setProfileCompleted(data.profile_completed);
-      }
-    } catch (error) {
-      console.error("Error fetching profile", error.message);
-    }
-  };
+			if (error) throw error;
 
-  const updateProfile = async (updates) => {
-    setLoading(true);
-    try {
-      const { data, error } = await supabase.from("profiles").upsert({
-        id: session.user.id,
-        ...updates,
-        updated_at: new Date(),
-      });
+			if (data) {
+				setUserProfile(data);
+				setProfileCompleted(data.profile_completed);
+			}
+		} catch (error) {
+			console.error("Error fetching profile", error.message);
+		}
+	};
 
-      if (error) throw error;
+	const updateProfile = async (updates) => {
+		setLoading(true);
+		try {
+			const { data, error } = await supabase.from("profiles").upsert({
+				id: session.user.id,
+				...updates,
+				updated_at: new Date(),
+			});
 
-      setUserProfile(data);
-      setProfileCompleted(true);
-    } catch (error) {
-      console.error("Error updating profile", error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+			if (error) throw error;
 
-  const getDefaultCategoryList = async () => {
-    setLoading(true);
-    try {
-      const { data, error } = await supabase.from("categories").select(`*`).eq("is_default", true);
+			setUserProfile(data);
+			setProfileCompleted(true);
+		} catch (error) {
+			console.error("Error updating profile", error.message);
+		} finally {
+			setLoading(false);
+		}
+	};
 
-      if (error) throw error;
+	const getCategoryList = async () => {
+		setLoading(true);
+		try {
+			const userEmail = session.user.email;
+			const { data, error } = await supabase.from("categories").select(`*`).eq("created_by", userEmail);
 
-      setCategoryList(data);
-      // console.log("CategoryList fetched:", data);
-    } catch (error) {
-      console.error("Error fetching CategoryList:", error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+			if (error) throw error;
 
-  const getCategoryList = async () => {
-    setLoading(true);
-    try {
-      const userEmail = session.user.email;
-      const { data, error } = await supabase.from("categories").select(`*`).eq("created_by", userEmail);
+			setCategoryList(data);
+			// console.log("CategoryList fetched:", data);
+		} catch (error) {
+			console.error("Error fetching CategoryList:", error.message);
+		} finally {
+			setLoading(false);
+		}
+	};
 
-      if (error) throw error;
+	const getExpenseGroupsList = async () => {
+		setLoading(true);
+		try {
+			const { data, error } = await supabase.from("expense_groups").select("*");
 
-      setCategoryList(data);
-      // console.log("CategoryList fetched:", data);
-    } catch (error) {
-      console.error("Error fetching CategoryList:", error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+			if (error) throw error;
 
-  const createCategory = async (name, icon, color, assigned_budget) => {
-    setLoading(true);
-    const userEmail = session?.user?.email;
+			setExpenseGroupsList(data);
+			// console.log("Main Categories fetched:", data);
+		} catch (error) {
+			console.error("Error fetching Main Categories:", error.message);
+		} finally {
+			setLoading(false);
+		}
+	};
 
-    if (!userEmail) {
-      alert("No user email found");
-      setLoading(false);
-      return;
-    }
+	const getCategoriesByExpenseGroups = async () => {
+		if (expenseGroupsList.length === 0) return;
+		let categoriesObj = {};
+		setLoading(true);
 
-    const { data, error } = await supabase.from("categories").insert([
-      {
-        created_by: userEmail,
-        name: name,
-        icon: icon,
-        color: color,
-        assigned_budget: assigned_budget,
-        // main_category: main_category,
-      },
-    ]);
+		try {
+			for (let group of expenseGroupsList) {
+				const categories = await getCategoriesByExpenseGroupsId(group.id);
+				categoriesObj[group.id] = categories;
+			}
+			setCategoriesByExpenseGroups(categoriesObj);
+		} catch (error) {
+			console.error("Error fetching Categories by Expense Groups:", error.message);
+		} finally {
+			setLoading(false);
+		}
+	};
 
-    if (data) {
-      console.log(data);
-      navigation.navigate("CategoryDetails", { categoryId: data[0].id });
-      setLoading(false);
-      alert("Category Created!");
-    }
-    if (error) {
-      console.error("Error creating category:", error.message);
-      setLoading(false);
-      alert("Failed to create Category");
-    }
-  };
+	const getCategoriesByExpenseGroupsId = async (expenseGroupsId) => {
+		setLoading(true);
+		try {
+			const { data, error } = await supabase.from("categories").select("*").eq("expense_groups_id", expenseGroupsId);
 
-  const getExpenseGroupList = async () => {
-    setLoading(true);
-    try {
-      const { data, error } = await supabase.from("expense_groups").select("*");
+			if (error) throw error;
 
-      if (error) throw error;
+			return data;
+		} catch (error) {
+			console.error("Error fetching Categories by Expense Groups ID:", error.message);
+		} finally {
+			setLoading(false);
+		}
+	};
 
-      setExpenseGroupList(data);
-      // console.log("Main Categories fetched:", data);
-    } catch (error) {
-      console.error("Error fetching Main Categories:", error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+	const createCategory = async (name, icon, color, assigned_budget) => {
+		setLoading(true);
+		const userEmail = session?.user?.email;
 
-  return (
-    <UserContext.Provider
-      value={{
-        loading,
-        user,
-        userProfile,
-        session,
-        profileCompleted,
-        setProfileCompleted,
-        categoryList,
-        expenseGroupList,
-        signIn,
-        signUp,
-        signOut,
-        getProfile,
-        updateProfile,
-        getDefaultCategoryList,
-        getCategoryList,
-        createCategory,
-        getExpenseGroupList,
-      }}
-    >
-      {children}
-    </UserContext.Provider>
-  );
+		if (!userEmail) {
+			alert("No user email found");
+			setLoading(false);
+			return;
+		}
+
+		const { data, error } = await supabase.from("categories").insert([
+			{
+				created_by: userEmail,
+				name: name,
+				icon: icon,
+				color: color,
+				assigned_budget: assigned_budget,
+				// main_category: main_category,
+			},
+		]);
+
+		if (data) {
+			console.log(data);
+			navigation.navigate("CategoryDetails", { categoryId: data[0].id });
+			setLoading(false);
+			alert("Category Created!");
+		}
+		if (error) {
+			console.error("Error creating category:", error.message);
+			setLoading(false);
+			alert("Failed to create Category");
+		}
+	};
+
+	return (
+		<UserContext.Provider
+			value={{
+				loading,
+				user,
+				userProfile,
+				session,
+				profileCompleted,
+				setProfileCompleted,
+				categoryList,
+				categoriesByExpenseGroups,
+				expenseGroupsList,
+				selectedCategory,
+				setSelectedCategory,
+
+				signIn,
+				signUp,
+				signOut,
+				getProfile,
+				updateProfile,
+				getCategoryList,
+				getExpenseGroupsList,
+				getCategoriesByExpenseGroups,
+				getCategoriesByExpenseGroupsId,
+				createCategory,
+			}}
+		>
+			{children}
+		</UserContext.Provider>
+	);
 };
 
 export const useUser = () => useContext(UserContext);

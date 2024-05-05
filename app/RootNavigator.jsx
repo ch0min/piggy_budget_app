@@ -8,75 +8,82 @@ import { NavigationContainer } from "@react-navigation/native";
 
 import Landing from "./landing/Landing";
 import Login from "./auth/login/Login";
-import Signup from "./auth/signup/SignUp";
+import Signup from "./auth/signup/Signup";
 import VerifyEmail from "./auth/signup/VerifyEmail";
 import CompleteProfile from "./auth/login/CompleteProfile";
 import HomeTabs from "./(tabs)/HomeTabs";
+
+import AddExpense from "./(tabs)/expenses/AddExpense";
 import Categories from "./(tabs)/categories/Categories";
 import AddCategory from "./(tabs)/categories/AddCategory";
 
 const Stack = createNativeStackNavigator();
 
 const RootNavigator = () => {
-  const { user, profileCompleted } = useUser();
+	const { user, profileCompleted } = useUser();
 
-  // AsyncStorage.clear().then(() => console.log("Local storage cleared!"));
+	// AsyncStorage.clear().then(() => console.log("Local storage cleared!"));
 
-  return (
-    <View style={styles.container}>
-      <StatusBar barStyle="light-content" />
+	return (
+		<View style={styles.container}>
+			<StatusBar barStyle="light-content" />
 
-      <NavigationContainer>
-        <Stack.Navigator
-          initialRouteName="Landing"
-          screenOptions={{
-            headerShown: false,
-            gestureEnabled: false,
-          }}
-        >
-          {user ? (
-            profileCompleted ? (
-              <>
-              {/* CHANGE THIS */}
-                <Stack.Screen
-                  name="Categories"
-                  component={Categories}
-                  options={{
-                    presentation: "fullScreenModal",
-                  }}
-                />
-
-                <Stack.Screen name="HomeTabs" component={HomeTabs} />
-
-                <Stack.Screen
-                  name="AddCategory"
-                  component={AddCategory}
-                  options={{
-                    presentation: "fullScreenModal",
-                  }}
-                />
-              </>
-            ) : (
-              <Stack.Screen name="CompleteProfile" component={CompleteProfile} />
-            )
-          ) : (
-            <>
-              <Stack.Screen name="Landing" component={Landing} />
-              <Stack.Screen name="Signup" component={Signup} />
-              <Stack.Screen name="Login" component={Login} />
-              <Stack.Screen name="VerifyEmail" component={VerifyEmail} />
-            </>
-          )}
-        </Stack.Navigator>
-      </NavigationContainer>
-    </View>
-  );
+			<NavigationContainer>
+				<Stack.Navigator
+					initialRouteName="Landing"
+					screenOptions={{
+						headerShown: false,
+						gestureEnabled: false,
+					}}
+				>
+					{user ? (
+						profileCompleted ? (
+							<>
+								<Stack.Screen name="HomeTabs" component={HomeTabs} />
+								<Stack.Screen
+									name="AddExpense"
+									component={AddExpense}
+									options={{
+										presentation: "modal",
+										gestureEnabled: true,
+									}}
+								/>
+								<Stack.Screen
+									name="Categories"
+									component={Categories}
+									options={{
+										presentation: "fullScreenModal",
+									}}
+								/>
+								<Stack.Screen
+									name="AddCategory"
+									component={AddCategory}
+									options={{
+										presentation: "fullScreenModal",
+									}}
+								/>
+							</>
+						) : (
+							<Stack.Screen name="CompleteProfile" component={CompleteProfile} />
+						)
+					) : (
+						<>
+							<Stack.Screen name="Landing" component={Landing} />
+							<Stack.Screen name="Signup" component={Signup} />
+							<Stack.Screen name="Login" component={Login} />
+							<Stack.Screen name="VerifyEmail" component={VerifyEmail} />
+						</>
+					)}
+				</Stack.Navigator>
+			</NavigationContainer>
+		</View>
+	);
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
+	container: {
+		flex: 1,
+	},
 });
 
 export default RootNavigator;

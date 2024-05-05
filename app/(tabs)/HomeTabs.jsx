@@ -2,12 +2,12 @@ import React from "react";
 import { StyleSheet, View, Text } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { useUser } from "../../context/UserContext";
+import colors from "../../utils/colors";
 
 import CenterAddBtn from "../../components/buttons/centerAddBtn";
-
 import Overview from "./overview/Overview";
 import Budget from "./budget/Budget";
-import AddCategory from "./categories/AddCategory";
+import AddExpense from "./expenses/AddExpense";
 import Profile from "./profile/Profile";
 import Settings from "./settings/Settings";
 
@@ -22,8 +22,8 @@ const HomeTabs = ({ navigation }) => {
 				initialRouteName="Overview" // Change
 				screenOptions={{
 					headerShown: false,
-					tabBarActiveTintColor: "#e91e63",
-					tabBarInactiveTintColor: "gray",
+					tabBarActiveTintColor: colors.SECONDARY,
+					tabBarInactiveTintColor: colors.DARKGRAY,
 					tabBarStyle: {
 						borderTopWidth: 0,
 					},
@@ -32,10 +32,10 @@ const HomeTabs = ({ navigation }) => {
 				<Tab.Screen name="Overview" children={() => <Overview session={session} />} />
 				<Tab.Screen name="Budget" component={Budget} />
 				<Tab.Screen
-					name="AddCategory"
-					children={() => <AddCategory navigation={navigation} />}
+					name="AddExpense"
+					children={() => <AddExpense navigation={navigation} />}
 					options={{
-						tabBarButton: () => <CenterAddBtn onPress={() => navigation.navigate("AddCategory")} />,
+						tabBarButton: () => <CenterAddBtn onPress={() => navigation.navigate("AddExpense")} />,
 					}}
 				/>
 				<Tab.Screen name="Profile" component={Profile} />
