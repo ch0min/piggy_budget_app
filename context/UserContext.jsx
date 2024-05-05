@@ -235,6 +235,42 @@ export const UserProvider = ({ children }) => {
 		}
 	};
 
+	const createExpense = async ({ amount, details, categoriesId }) => {
+		setLoading(true);
+		const userId = session?.user?.id;
+
+		if (!userId) {
+			alert("No user id found");
+			setLoading(false);
+			return;
+		}
+
+		if (!amount || !details || !categoriesId) {
+			alert("All fields are required.");
+			setLoading(false);
+			return;
+		}
+
+		try {
+			const { data, error } = await supabase.from("expenses").insert([
+				{
+					created_at: new Date(),
+					created_by: userId,
+					amount: amount,
+					details: details,
+					categories_id: categoriesId,
+				},
+			]);
+
+			if (error) throw error;
+		} catch (error) {
+			console.error("Error creating expense:", error.message);
+			alert("Failed to create expense");
+		} finally {
+			setLoading(false);
+		}
+	};
+
 	return (
 		<UserContext.Provider
 			value={{
@@ -262,6 +298,7 @@ export const UserProvider = ({ children }) => {
 				getCategoriesByExpenseGroups,
 				getCategoriesByExpenseGroupsId,
 				createCategory,
+				createExpense,
 			}}
 		>
 			{children}
