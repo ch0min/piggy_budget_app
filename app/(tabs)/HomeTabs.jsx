@@ -8,6 +8,7 @@ import CenterAddBtn from "../../components/buttons/centerAddBtn";
 import Overview from "./overview/Overview";
 import Budget from "./budget/Budget";
 import AddExpense from "./expenses/AddExpense";
+import AddCategory from "./categories/AddCategory";
 import Profile from "./profile/Profile";
 import Settings from "./settings/Settings";
 

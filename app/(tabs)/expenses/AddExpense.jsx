@@ -2,8 +2,9 @@ import React, { useState, useEffect } from "react";
 import { StyleSheet, View, Modal, Text, TextInput, TouchableOpacity } from "react-native";
 import { useUser } from "../../../context/UserContext";
 import colors from "../../../utils/colors";
-
 import NumericKeypad from "../../../utils/modals/NumericKeypad";
+
+import { FontAwesome } from "@expo/vector-icons";
 
 const AddExpense = ({ navigation }) => {
 	const { selectedCategory, setSelectedCategory } = useUser();
@@ -41,12 +42,20 @@ const AddExpense = ({ navigation }) => {
 			/>
 
 			<TouchableOpacity style={styles.selectedCategoryContainer} onPress={openCategories}>
-				<Text style={styles.selectedCategoryIcon}>{selectedCategory ? selectedCategory.icon : ""}</Text>
+				{selectedCategory && (
+					<View style={[styles.iconCircle, { backgroundColor: selectedCategory.color }]}>
+						<FontAwesome name={selectedCategory.icon} size={22} color={colors.WHITE} />
+					</View>
+				)}
 				<Text style={styles.categoryText}>Category: </Text>
 				<Text style={styles.selectedCategoryText}>
 					{selectedCategory ? selectedCategory.name : "Select Category"}
 				</Text>
 			</TouchableOpacity>
+
+			<View style={styles.descriptionContainer}>
+				<TextInput />
+			</View>
 		</View>
 	);
 };
@@ -83,12 +92,21 @@ const styles = StyleSheet.create({
 		borderBottomWidth: 1,
 		borderBottomColor: colors.GRAY,
 	},
-
+	iconCircle: {
+		alignItems: "center",
+		justifyContent: "center",
+		width: 40,
+		height: 40,
+		marginRight: "5%",
+		borderRadius: 35,
+	},
 	categoryText: {
+		marginTop: "3%",
 		fontSize: 18,
 		color: colors.DARKGRAY,
 	},
 	selectedCategoryText: {
+		marginTop: "3%",
 		fontSize: 18,
 		color: colors.BLACK,
 	},

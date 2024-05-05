@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { StyleSheet, View, ScrollView, Text, TouchableOpacity, FlatList } from "react-native";
 import { useUser } from "../../../context/UserContext";
 import colors from "../../../utils/colors";
 
-// import Icon from "react-native-vector-icons/MaterialCommunityIcons"
-import { FontAwesome6, AntDesign, Entypo } from "@expo/vector-icons";
+import Icon from "react-native-vector-icons/FontAwesome";
+import { FontAwesome6, AntDesign } from "@expo/vector-icons";
+
+import { useFocusEffect } from "@react-navigation/native";
 
 const Categories = ({ navigation }) => {
 	const {
@@ -13,6 +15,8 @@ const Categories = ({ navigation }) => {
 		categoriesByExpenseGroups,
 		getCategoriesByExpenseGroups,
 		setSelectedCategory,
+		refreshCategories,
+		setRefreshCategories,
 	} = useUser();
 
 	useEffect(() => {
@@ -23,23 +27,32 @@ const Categories = ({ navigation }) => {
 		getCategoriesByExpenseGroups();
 	}, [expenseGroupsList]);
 
-	const renderItem = ({ item }) => (
-		<View style={styles.iconContainer}>
-			<TouchableOpacity
-				style={[styles.icon, { backgroundColor: item.color }]}
-				onPress={() => handleSelectedCategory(item)}
-			>
-				{/* <Icon name={item.icon} size={24} color={colors.WHITE} /> */}
-				<Entypo name="box" size={24} color={colors.WHITE} />
-			</TouchableOpacity>
-			<Text style={styles.categoryText}>{item.name}</Text>
-		</View>
+	useFocusEffect(
+		useCallback(() => {
+			const fetchCategoriesData = async () => {
+				await getExpenseGroupsList();
+				await getCategoriesByExpenseGroups();
+			};
+			fetchCategoriesData();
+		}, [])
 	);
 
 	const handleSelectedCategory = (category) => {
 		setSelectedCategory(category);
 		navigation.goBack();
 	};
+
+	const renderItem = ({ item }) => (
+		<View style={styles.iconContainer}>
+			<TouchableOpacity
+				style={[styles.icon, { backgroundColor: item.color }]}
+				onPress={() => handleSelectedCategory(item)}
+			>
+				<Icon name={item.icon} size={24} color={colors.WHITE} />
+			</TouchableOpacity>
+			<Text style={styles.categoryText}>{item.name}</Text>
+		</View>
+	);
 
 	return (
 		<View style={styles.container}>
@@ -48,7 +61,9 @@ const Categories = ({ navigation }) => {
 					<AntDesign name="close" size={24} color={colors.WHITE} />
 				</TouchableOpacity>
 				<Text style={styles.heading}>CATEGORIES</Text>
-				<FontAwesome6 name="add" size={24} color={colors.WHITE} />
+				<TouchableOpacity onPress={() => navigation.navigate("AddCategory")}>
+					<FontAwesome6 name="add" size={24} color={colors.WHITE} />
+				</TouchableOpacity>
 			</View>
 			<ScrollView contentContainerStyle={styles.scrollContainer}>
 				{expenseGroupsList.map((group) => (

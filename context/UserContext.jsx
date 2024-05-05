@@ -12,8 +12,8 @@ export const UserProvider = ({ children }) => {
 	const [categoryList, setCategoryList] = useState([]);
 	const [expenseGroupsList, setExpenseGroupsList] = useState([]);
 	const [categoriesByExpenseGroups, setCategoriesByExpenseGroups] = useState({});
-	const [selectedCategory, setSelectedCategory] = useState(null)
-
+	const [selectedCategory, setSelectedCategory] = useState(null);
+	const [refreshCategories, setRefreshCategories] = useState(false);
 
 	useEffect(() => {
 		if (!user && !session) {
@@ -203,7 +203,7 @@ export const UserProvider = ({ children }) => {
 		}
 	};
 
-	const createCategory = async (name, icon, color, assigned_budget) => {
+	const createCategory = async (name, icon, color, expense_groups_id) => {
 		setLoading(true);
 		const userEmail = session?.user?.email;
 
@@ -219,16 +219,14 @@ export const UserProvider = ({ children }) => {
 				name: name,
 				icon: icon,
 				color: color,
-				assigned_budget: assigned_budget,
-				// main_category: main_category,
+				// assigned_budget: assigned_budget,
+				expense_groups_id: expense_groups_id,
 			},
 		]);
 
 		if (data) {
 			console.log(data);
-			navigation.navigate("CategoryDetails", { categoryId: data[0].id });
 			setLoading(false);
-			alert("Category Created!");
 		}
 		if (error) {
 			console.error("Error creating category:", error.message);
@@ -251,6 +249,8 @@ export const UserProvider = ({ children }) => {
 				expenseGroupsList,
 				selectedCategory,
 				setSelectedCategory,
+				refreshCategories,
+				setRefreshCategories,
 
 				signIn,
 				signUp,
