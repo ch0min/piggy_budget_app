@@ -12,8 +12,9 @@ export const UserProvider = ({ children }) => {
 	const [categoryList, setCategoryList] = useState([]);
 	const [expenseGroupsList, setExpenseGroupsList] = useState([]);
 	const [categoriesByExpenseGroups, setCategoriesByExpenseGroups] = useState({});
+	const [categoriesByExpenseGroupsForUser, setCategoriesByExpenseGroupsForUser] = useState({});
+
 	const [selectedCategory, setSelectedCategory] = useState(null);
-	const [refreshCategories, setRefreshCategories] = useState(false);
 
 	useEffect(() => {
 		if (!user && !session) {
@@ -203,19 +204,59 @@ export const UserProvider = ({ children }) => {
 		}
 	};
 
+	const getCategoriesByExpenseGroupsForUser = async () => {
+		if (expenseGroupsList.length === 0) return;
+		let categoriesObj = {};
+		setLoading(true);
+
+		try {
+			for (let group of expenseGroupsList) {
+				const userId = session?.user?.id;
+
+				const categories = await getCategoriesByExpenseGroupsIdForUser(group.id, userId);
+				categoriesObj[group.id] = categories;
+			}
+			setCategoriesByExpenseGroupsForUser(categoriesObj);
+		} catch (error) {
+			console.error("Error fetching Categories by Expense Groups for User:", error.message);
+		} finally {
+			setLoading(false);
+		}
+	};
+
+	const getCategoriesByExpenseGroupsIdForUser = async (expenseGroupsId, createdById) => {
+		setLoading(true);
+
+		try {
+			const { data, error } = await supabase
+				.from("categories")
+				.select("*")
+				.eq("expense_groups_id", expenseGroupsId)
+				.eq("created_by", createdById);
+
+			if (error) throw error;
+
+			return data;
+		} catch (error) {
+			console.error("Error fetching Categories by Expense Groups ID for User:", error.message);
+		} finally {
+			setLoading(false);
+		}
+	};
+
 	const createCategory = async (name, icon, color, expense_groups_id) => {
 		setLoading(true);
-		const userEmail = session?.user?.email;
+		const userId = session?.user?.id;
 
-		if (!userEmail) {
-			alert("No user email found");
+		if (!userId) {
+			alert("No user id found");
 			setLoading(false);
 			return;
 		}
 
 		const { data, error } = await supabase.from("categories").insert([
 			{
-				created_by: userEmail,
+				created_by: userId,
 				name: name,
 				icon: icon,
 				color: color,
@@ -285,8 +326,6 @@ export const UserProvider = ({ children }) => {
 				expenseGroupsList,
 				selectedCategory,
 				setSelectedCategory,
-				refreshCategories,
-				setRefreshCategories,
 
 				signIn,
 				signUp,
@@ -299,6 +338,10 @@ export const UserProvider = ({ children }) => {
 				getCategoriesByExpenseGroupsId,
 				createCategory,
 				createExpense,
+
+				categoriesByExpenseGroupsForUser,
+				getCategoriesByExpenseGroupsForUser,
+				getCategoriesByExpenseGroupsIdForUser,
 			}}
 		>
 			{children}

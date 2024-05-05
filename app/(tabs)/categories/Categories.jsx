@@ -15,8 +15,6 @@ const Categories = ({ navigation }) => {
 		categoriesByExpenseGroups,
 		getCategoriesByExpenseGroups,
 		setSelectedCategory,
-		refreshCategories,
-		setRefreshCategories,
 	} = useUser();
 
 	useEffect(() => {
