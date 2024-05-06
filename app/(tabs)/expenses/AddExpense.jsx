@@ -40,7 +40,7 @@ const AddExpense = ({ navigation }) => {
 
 		const validAmount = parseFloat(amount);
 		if (isNaN(validAmount)) {
-			alert("Please, emter a valid amount.");
+			alert("Please, enter a valid amount.");
 			return;
 		}
 		createExpense({ amount: validAmount, details: details, categoriesId: selectedCategory.id })

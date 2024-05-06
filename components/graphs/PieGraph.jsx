@@ -72,6 +72,12 @@ const styles = StyleSheet.create({
 		padding: 20,
 		borderRadius: 15,
 		elevation: 1,
+
+		shadowColor: "#000",
+		shadowOffset: { width: 0, height: 1 },
+		shadowOpacity: 0.1,
+		shadowRadius: 3,
+		elevation: 1,
 	},
 	heading: {
 		fontSize: 20,

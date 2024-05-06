@@ -1,48 +1,39 @@
-import React, { useState, useEffect } from "react";
-import { StyleSheet, View, ScrollView, Text, TouchableOpacity, FlatList } from "react-native";
+import React, { useState, useEffect, useRef } from "react";
+import { StyleSheet, View, ScrollView, Text, TextInput, TouchableOpacity, FlatList } from "react-native";
 import { useUser } from "../../../context/UserContext";
 import colors from "../../../utils/colors";
 // import { RefreshControl } from "react-native";
 import OverviewHeader from "../../../components/headers/OverviewHeader";
 import PieGraph from "../../../components/graphs/PieGraph";
 
-import { Ionicons } from "@expo/vector-icons";
+import { FontAwesome, MaterialIcons, AntDesign } from "@expo/vector-icons";
 
 const Budget = () => {
-	const {
-		loading,
-		session,
-		categoryList,
-		getCategoryList,
-		expenseGroupsList,
-		getExpenseGroupsList,
-		categoriesByExpenseGroups,
-		getCategoriesByExpenseGroups,
+	const { session, user, expenseAreas, getExpenseAreas, createExpenseArea } = useUser();
+	const [inputActive, setInputActive] = useState(false);
 
-		categoriesByExpenseGroupsForUser,
-		getCategoriesByExpenseGroupsForUser,
-	} = useUser();
+	const [expenseAreaName, setExpenseAreaName] = useState("");
+	const inputRef = useRef(null);
 
 	useEffect(() => {
-		if (session?.user) {
-			getExpenseGroupsList();
+		getExpenseAreas();
+	}, []);
+
+	const handleCreateExpenseArea = async () => {
+		if (!expenseAreaName.trim()) {
+			alert("Area name can't be empty.");
+			return;
 		}
-	}, [session]);
+		await createExpenseArea(expenseAreaName);
+		setExpenseAreaName("");
+		inputRef.current?.blur();
+		getExpenseAreas();
+	};
 
-	// useEffect(() => {
-	// 	getExpenseGroupsList();
-	// }, []);
-
-	useEffect(() => {
-		if (expenseGroupsList.length > 0 && session?.user) getCategoriesByExpenseGroupsForUser();
-	}, [expenseGroupsList, session]);
-
-	const renderItem = ({ item }) => (
-		<View>
-			<TouchableOpacity style={{ backgroundColor: colors.RED }}></TouchableOpacity>
-			<Text style={{ color: "red" }}>
-				{item.name} - {item.amount}
-			</Text>
+	const renderExpenseAreas = ({ item }) => (
+		<View style={styles.expenseAreaItem}>
+			<Text style={styles.expenseAreaText}>{item.name}</Text>
+			<View style={styles.horizontalLine} />
 		</View>
 	);
 
@@ -53,19 +44,32 @@ const Budget = () => {
 				<PieGraph />
 			</View>
 
-			<View>
-				{expenseGroupsList.map((group) => (
-					<View key={group.id}>
-						<Text>{group.name}</Text>
-
-						<FlatList
-							keyExtractor={(item) => item.id.toString()}
-							data={categoriesByExpenseGroupsForUser[group.id]}
-							renderItem={renderItem}
+			<FlatList
+				data={expenseAreas}
+				renderItem={renderExpenseAreas}
+				keyExtractor={(item) => item.id}
+				ListFooterComponent={
+					<View style={styles.createExpenseAreaContainer}>
+						<TextInput
+							ref={inputRef}
+							style={styles.createExpenseAreaInput}
+							placeholder="New expense area"
+							onFocus={() => setInputActive(true)}
+							onBlur={() => setInputActive(expenseAreaName.length > 0)}
+							onChangeText={(text) => {
+								setInputActive(text.length > 0);
+								setExpenseAreaName(text);
+							}}
+							value={expenseAreaName}
 						/>
+						{inputActive && (
+							<TouchableOpacity onPress={handleCreateExpenseArea}>
+								<AntDesign name="check" size={26} color={colors.BLACK} />
+							</TouchableOpacity>
+						)}
 					</View>
-				))}
-			</View>
+				}
+			/>
 		</View>
 	);
 };
@@ -74,12 +78,53 @@ const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 	},
-	// subContainer: {
-	// 	flex: 1,
-	// },
 	graphContainer: {
 		marginTop: -75,
 		padding: 20,
+	},
+	createExpenseAreaContainer: {
+		marginHorizontal: "5%",
+		marginTop: "5%",
+
+		padding: 20,
+		borderRadius: 15,
+		backgroundColor: colors.WHITE,
+
+		shadowColor: "#000",
+		shadowOffset: { width: 0, height: 1 },
+		shadowOpacity: 0.1,
+		shadowRadius: 3,
+		elevation: 1,
+	},
+	createExpenseAreaInput: {
+		fontSize: 22,
+		fontWeight: "bold",
+		color: colors.DARKGRAY,
+	},
+	expenseAreaItem: {
+		justifyContent: "space-between",
+		marginHorizontal: "5%",
+		marginTop: "5%",
+
+		padding: 20,
+		borderRadius: 15,
+		backgroundColor: colors.WHITE,
+
+		shadowColor: "#000",
+		shadowOffset: { width: 0, height: 1 },
+		shadowOpacity: 0.1,
+		shadowRadius: 3,
+		elevation: 1,
+	},
+	expenseAreaText: {
+		marginVertical: "3%",
+		fontSize: 22,
+		fontWeight: "bold",
+	},
+	horizontalLine: {
+		borderBottomWidth: 1,
+		borderBottomColor: colors.DARKGRAY,
+		opacity: 0.5,
 	},
 });
 
