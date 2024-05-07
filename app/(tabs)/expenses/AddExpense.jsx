@@ -52,10 +52,11 @@ const AddExpense = ({ navigation, route }) => {
 		setIconPickerVisible(false);
 	};
 
-	const handleCreateExpense = () => {
+	const handleCreateExpense = async () => {
 		if (selectedExpenseArea && name) {
 			let maxBudgetForDB = prepareMaxBudgetForDB(maxBudget);
-			createExpense(name, maxBudgetForDB, selectedIcon, selectedColor, selectedExpenseArea);
+			await createExpense(name, maxBudgetForDB, selectedIcon, selectedColor, selectedExpenseArea);
+
 			navigation.goBack();
 		}
 	};
@@ -65,6 +66,8 @@ const AddExpense = ({ navigation, route }) => {
 			<View style={styles.headingContainer}>
 				<Text style={styles.heading}>Add Expense</Text>
 			</View>
+
+			{/* MAX BUDGET */}
 			<View style={styles.maxBudgetContainer}>
 				<TouchableOpacity onPress={() => setKeypadVisible(true)}>
 					<Text style={styles.maxBudgetText}>
@@ -78,7 +81,9 @@ const AddExpense = ({ navigation, route }) => {
 					onClose={() => setKeypadVisible(false)}
 				/>
 			</View>
+			{/* END */}
 
+			{/* NAME EXPENSE */}
 			<View style={styles.nameExpenseContainer}>
 				<Text style={styles.nameExpenseHeading}>Name</Text>
 				<View style={styles.nameExpenseInput}>
@@ -97,7 +102,9 @@ const AddExpense = ({ navigation, route }) => {
 					<MaterialIcons name="edit" size={24} color={colors.GRAY} />
 				</View>
 			</View>
+			{/* END */}
 
+			{/* EXPENSE AREA */}
 			<View style={styles.expenseAreaContainer}>
 				<Text style={styles.expenseAreaHeading}>Expense </Text>
 				<TouchableOpacity
@@ -114,7 +121,9 @@ const AddExpense = ({ navigation, route }) => {
 					onClose={() => setExpenseAreaPickerVisible(false)}
 				/>
 			</View>
+			{/* END */}
 
+			{/* APPEARANCE */}
 			<View style={styles.appearanceContainer}>
 				<Text style={styles.appearanceHeading}>Appearence</Text>
 				<View style={styles.appearanceInput}>
@@ -137,6 +146,8 @@ const AddExpense = ({ navigation, route }) => {
 					<ColorPicker selectedColor={selectedColor} setSelectedColor={setSelectedColor} />
 				</View>
 			</View>
+			{/* END */}
+
 			<View style={styles.addExpenseBtn}>
 				{!keypadVisible && <DarkPrimaryExecBtn btnText={"Add"} execFunction={handleCreateExpense} />}
 			</View>

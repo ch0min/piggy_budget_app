@@ -197,7 +197,6 @@ export const UserProvider = ({ children }) => {
 			const { data, error } = await supabase
 				.from("expenses")
 				.select(`*`)
-				.eq("expense_areas_id", expenseAreasId)
 				.eq("user_id", userId);
 
 			if (error) throw error;

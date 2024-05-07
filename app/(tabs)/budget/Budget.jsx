@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import { useFocusEffect } from "@react-navigation/native";
 import { StyleSheet, View, ScrollView, Text, TextInput, TouchableOpacity, FlatList } from "react-native";
 import { useUser } from "../../../context/UserContext";
 import { KeyboardAwareFlatList } from "react-native-keyboard-aware-scroll-view";
@@ -15,11 +16,15 @@ const Budget = ({ navigation }) => {
 
 	const [expenseAreaName, setExpenseAreaName] = useState("");
 
-	useEffect(() => {
-		getExpenseAreas();
-		getExpenses();
-		console.log(expenses);
-	}, [session]);
+	useFocusEffect(
+		useCallback(() => {
+			if (session) {
+				getExpenseAreas();
+				getExpenses();
+				console.log(expenses);
+			}
+		}, [session])
+	);
 
 	const handleCreateExpenseArea = async () => {
 		if (!expenseAreaName.trim()) {
@@ -40,7 +45,12 @@ const Budget = ({ navigation }) => {
 		<View style={styles.expenseAreaItem}>
 			<Text style={styles.expenseAreaText}>{item.name}</Text>
 			<View style={styles.horizontalLine} />
-			<FlatList data={expenses} renderItem={renderExpenses} keyExtractor={(item) => item.id} />
+			<FlatList
+				data={expenses.filter((exp) => exp.expense_areas_id === item.id)}
+				renderItem={renderExpenses}
+				keyExtractor={(exp) => `${exp.id}`}
+				ListEmptyComponent={<Text>No expenses found for this area.</Text>}
+			/>
 			<View style={styles.addExpenseBtnContainer}>
 				<TouchableOpacity style={styles.addExpenseBtn} onPress={() => handleAddExpense(item)}>
 					<View style={styles.addBtn}>
@@ -53,11 +63,17 @@ const Budget = ({ navigation }) => {
 	);
 
 	const renderExpenses = ({ item }) => (
-		<View style={styles.expenseItem}>
-			<Text style={styles.expenseText}>
-				{item.name} - {item.max_budget}
-			</Text>
-		</View>
+		<TouchableOpacity style={styles.expensesContainer}>
+			<View style={[styles.expensesIcon, { backgroundColor: item.color }]}>
+				<FontAwesome name={item.icon} size={14} color={colors.WHITE} />
+			</View>
+			<View style={styles.expensesTextContainer}>
+				<Text style={styles.expensesName}>{item.name}</Text>
+				<View style={styles.expensesBudgetNameBox}>
+					<Text style={styles.expensesBudgetName}>{item.max_budget}</Text>
+				</View>
+			</View>
+		</TouchableOpacity>
 	);
 
 	return (
@@ -150,29 +166,48 @@ const styles = StyleSheet.create({
 		elevation: 1,
 	},
 	expenseAreaText: {
+		marginLeft: "3%",
 		marginVertical: "3%",
 		fontSize: 22,
 		fontWeight: "bold",
 	},
-	expenseItem: {
+	expensesContainer: {
+		flex: 1,
+		flexDirection: "row",
+		alignItems: "center",
+		justifyContent: "flex-start",
+		padding: "3%",
+
+		borderBottomWidth: 0.5,
+		borderBottomColor: colors.DARKGRAY,
+	},
+	expensesTextContainer: {
+		flex: 1,
+		flexDirection: "row",
+		alignItems: "center",
 		justifyContent: "space-between",
-		marginHorizontal: "5%",
-		marginTop: "5%",
-
-		padding: 20,
-		borderRadius: 15,
-		backgroundColor: colors.WHITE,
-
-		shadowColor: "#000",
-		shadowOffset: { width: 0, height: 1 },
-		shadowOpacity: 0.1,
-		shadowRadius: 3,
-		elevation: 1,
 	},
-	expenseText: {
-		marginVertical: "3%",
-		fontSize: 22,
-		fontWeight: "bold",
+	expensesName: {
+		flexShrink: 1,
+		fontSize: 16,
+	},
+	expensesBudgetNameBox: {
+		marginTop: "2%",
+		padding: "5%",
+		borderRadius: 5,
+		backgroundColor: "#F4F4F4",
+	},
+	expensesBudgetName: {
+		flexShrink: 1,
+		fontSize: 16,
+	},
+	expensesIcon: {
+		alignItems: "center",
+		justifyContent: "center",
+		marginRight: "3%",
+		width: 30,
+		height: 30,
+		borderRadius: 37.5,
 	},
 	addExpenseBtnContainer: {
 		marginTop: "5%",
