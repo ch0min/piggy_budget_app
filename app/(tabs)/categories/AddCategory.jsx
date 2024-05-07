@@ -44,10 +44,12 @@ const AddCategory = ({ navigation }) => {
 	const handleIconSelect = (icon) => {
 		setSelectedIcon(icon);
 		setIconPickerVisible(false);
-		
+
 		createCategory(categoryName, selectedIcon, selectedColor, selectedExpenseGroup);
 		navigation.goBack();
 	};
+
+	handleCreationCategory = () => {};
 
 	return (
 		<View style={styles.container}>
@@ -181,7 +183,7 @@ const styles = StyleSheet.create({
 		shadowOffset: { width: 0, height: 1 },
 		shadowOpacity: 0.1,
 		shadowRadius: 3,
-		elevation: 1
+		elevation: 1,
 	},
 	cardAppearanceInput: {
 		alignItems: "center",
