@@ -141,7 +141,8 @@ const styles = StyleSheet.create({
 		opacity: 0.5,
 	},
 	addExpenseBtnContainer: {
-		
+		marginTop: "5%",
+		marginLeft: "2%",
 	},
 	addExpenseBtn: {
 		flexDirection: "row",
@@ -151,7 +152,6 @@ const styles = StyleSheet.create({
 	addExpenseText: {
 		marginRight: "55%",
 		fontSize: 18,
-		fontWeight: "bold",
 		color: colors.BLACK,
 	},
 });
