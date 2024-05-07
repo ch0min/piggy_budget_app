@@ -1,54 +1,63 @@
 import React, { useState, useEffect } from "react";
 import { StyleSheet, View, Modal, Text, TextInput, TouchableOpacity } from "react-native";
 import { useUser } from "../../../context/UserContext";
+import { useRoute } from "@react-navigation/native";
 import colors from "../../../utils/colors";
 import NumericKeypad from "../../../utils/modals/NumericKeypad";
-import { FontAwesome } from "@expo/vector-icons";
-import PrimaryExecBtn from "../../../components/buttons/primaryExecBtn";
+import PickerWheel from "../../../utils/modals/PickerWheel";
+import IconPicker from "../../../utils/modals/IconPicker";
+import ColorPicker from "../../../utils/colorPicker";
+import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
+import icons from "../../../utils/icons";
+import DarkPrimaryExecBtn from "../../../components/buttons/darkPrimaryExecBtn";
 
-const AddExpense = ({ navigation }) => {
-	const { loading, selectedCategory, createExpense } = useUser();
+const AddExpense = ({ navigation, route }) => {
+	const { loading, expenseAreas, getExpenseAreas, createExpense } = useUser();
+
 	const [keypadVisible, setKeypadVisible] = useState(false);
+	const [maxBudget, setMaxBudget] = useState("");
+	const [name, setName] = useState("");
+	const [expenseAreaPickerVisible, setExpenseAreaPickerVisible] = useState(false);
 
-	const [amount, setAmount] = useState("");
-	const [details, setDetails] = useState("");
+	const { selectedExpenseArea: initialExpenseArea } = route.params;
+	const [selectedExpenseArea, setSelectedExpenseArea] = useState(initialExpenseArea.id);
+	const [selectedExpenseAreaName, setSelectedExpenseAreaName] = useState(initialExpenseArea.name);
+	const [iconPickerVisible, setIconPickerVisible] = useState(false);
+	const [selectedIcon, setSelectedIcon] = useState("archive");
+	const [selectedColor, setSelectedColor] = useState(colors.CATEGORY_COLOR_LIST[0]);
 
-	const handleKeyPress = (key) => {
-		if (key === "C") {
-			setAmount("");
-		} else if (key === "⌫") {
-			setAmount((prev) => prev.slice(0, -1));
-		} else {
-			setAmount((prev) => prev + key);
+	useEffect(() => {
+		if (selectedExpenseArea) {
+			const area = expenseAreas.find((area) => area.id === selectedExpenseArea);
+			setSelectedExpenseAreaName(area ? area.name : "Select an area");
+		}
+	}, [expenseAreas, selectedExpenseArea]);
+
+	const prepareMaxBudgetForDB = (displayValue) => {
+		let normalized = displayValue.replace(/\./g, "").replace(/,/g, ".");
+		return parseFloat(normalized);
+	};
+
+	const handleExpenseArea = (areaValue) => {
+		const expenseArea = expenseAreas.find((area) => area.id === Number(areaValue));
+
+		if (expenseArea) {
+			setSelectedExpenseArea(expenseArea.id);
+			setSelectedExpenseAreaName(expenseArea.name);
 		}
 	};
 
-	const openCategories = () => {
-		navigation.navigate("Categories");
+	const handleIconSelect = (icon) => {
+		setSelectedIcon(icon);
+		setIconPickerVisible(false);
 	};
 
-	const handleCreationExpense = () => {
-		if (!selectedCategory) {
-			alert("Please, select a Category.");
-			return;
+	const handleCreateExpense = () => {
+		if (selectedExpenseArea && name) {
+			let maxBudgetForDB = prepareMaxBudgetForDB(maxBudget);
+			createExpense(name, maxBudgetForDB, selectedIcon, selectedColor, selectedExpenseArea);
+			navigation.goBack();
 		}
-
-		if (!amount.trim() || !details.trim()) {
-			alert("Amount and Details are required.");
-			return;
-		}
-
-		const validAmount = parseFloat(amount);
-		if (isNaN(validAmount)) {
-			alert("Please, enter a valid amount.");
-			return;
-		}
-		createExpense({ amount: validAmount, details: details, categoriesId: selectedCategory.id })
-			.then(() => navigation.goBack())
-			.catch((error) => {
-				console.error("Error adding expense:", error);
-				alert("Failed to add expense due to an error.");
-			});
 	};
 
 	return (
@@ -56,44 +65,80 @@ const AddExpense = ({ navigation }) => {
 			<View style={styles.headingContainer}>
 				<Text style={styles.heading}>Add Expense</Text>
 			</View>
-			<TouchableOpacity style={styles.inputContainer} onPress={() => setKeypadVisible(true)}>
-				<Text style={styles.input}>{amount || 0}</Text>
-			</TouchableOpacity>
-			<NumericKeypad
-				keypadVisible={keypadVisible}
-				handleKeyPress={handleKeyPress}
-				onClose={() => setKeypadVisible(false)}
-			/>
-
-			<TouchableOpacity style={styles.selectedCategoryContainer} onPress={openCategories}>
-				{selectedCategory && (
-					<View style={[styles.iconCircle, { backgroundColor: selectedCategory.color }]}>
-						<FontAwesome name={selectedCategory.icon} size={22} color={colors.WHITE} />
-					</View>
-				)}
-				<Text style={styles.categoryText}>Category: </Text>
-				<Text style={styles.selectedCategoryText}>
-					{selectedCategory ? selectedCategory.name : "Select Category"}
-				</Text>
-			</TouchableOpacity>
-
-			<View style={styles.detailsContainer}>
-				<Text style={styles.headingInput}>Details:</Text>
-				<TextInput
-					style={styles.detailsInput}
-					placeholder={"Enter details..."}
-					value={details}
-					onChangeText={setDetails}
-					multiline={true}
+			<View style={styles.maxBudgetContainer}>
+				<TouchableOpacity onPress={() => setKeypadVisible(true)}>
+					<Text style={styles.maxBudgetText}>
+						{maxBudget || <Text style={styles.maxBudgetTextPlaceholder}>Enter a budget limit..</Text>}
+					</Text>
+				</TouchableOpacity>
+				<NumericKeypad
+					keypadVisible={keypadVisible}
+					amount={maxBudget}
+					setAmount={setMaxBudget}
+					onClose={() => setKeypadVisible(false)}
 				/>
+			</View>
 
-				<View style={styles.btn}>
-					<PrimaryExecBtn
-						loading={loading}
-						execFunction={handleCreationExpense}
-						btnText={loading ? "Loading.." : "Update"}
+			<View style={styles.nameExpenseContainer}>
+				<Text style={styles.nameExpenseHeading}>Name</Text>
+				<View style={styles.nameExpenseInput}>
+					<TextInput
+						style={styles.nameExpenseInputText}
+						placeholder="Required"
+						onChangeText={(text) => {
+							if (text.length <= 35) {
+								setName(text);
+							} else {
+								alert("Name cannot be longer than 35 characters.");
+							}
+						}}
+						value={name}
+					/>
+					<MaterialIcons name="edit" size={24} color={colors.GRAY} />
+				</View>
+			</View>
+
+			<View style={styles.expenseAreaContainer}>
+				<Text style={styles.expenseAreaHeading}>Expense </Text>
+				<TouchableOpacity
+					style={styles.expenseAreaInput}
+					onPress={() => setExpenseAreaPickerVisible(!expenseAreaPickerVisible)}
+				>
+					<Text style={styles.expenseAreaInputText}>{selectedExpenseAreaName || "Select an area"}</Text>
+				</TouchableOpacity>
+				<PickerWheel
+					pickerVisible={expenseAreaPickerVisible}
+					items={expenseAreas}
+					selectedValue={selectedExpenseArea}
+					onValueChange={handleExpenseArea}
+					onClose={() => setExpenseAreaPickerVisible(false)}
+				/>
+			</View>
+
+			<View style={styles.appearanceContainer}>
+				<Text style={styles.appearanceHeading}>Appearence</Text>
+				<View style={styles.appearanceInput}>
+					<TouchableOpacity
+						style={[styles.iconPickerPreview, { backgroundColor: selectedColor }]}
+						onPress={() => setIconPickerVisible(true)}
+					>
+						<FontAwesome name={selectedIcon} size={22} color={colors.WHITE} />
+					</TouchableOpacity>
+					<Text style={styles.appearanceText}>{name}</Text>
+
+					<IconPicker
+						iconPickerVisible={iconPickerVisible}
+						icons={icons}
+						handleIconSelect={handleIconSelect}
+						onClose={() => setIconPickerVisible(false)}
 					/>
 				</View>
+				<View style={styles.colorPickerContainer}>
+					<ColorPicker selectedColor={selectedColor} setSelectedColor={setSelectedColor} />
+				</View>
+			</View>
+			<View style={styles.addExpenseBtn}>
+				{!keypadVisible && <DarkPrimaryExecBtn btnText={"Add"} execFunction={handleCreateExpense} />}
 			</View>
 		</View>
 	);
@@ -102,6 +147,7 @@ const AddExpense = ({ navigation }) => {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
+		backgroundColor: colors.WHITE,
 	},
 	headingContainer: {
 		marginTop: "5%",
@@ -111,67 +157,121 @@ const styles = StyleSheet.create({
 		fontSize: 18,
 		color: colors.DARKGRAY,
 	},
-	inputContainer: {
+	maxBudgetContainer: {
 		alignItems: "center",
 		justifyContent: "center",
+		height: "15%",
 
 		borderBottomWidth: 1,
 		borderBottomColor: colors.GRAY,
 	},
-	input: {
-		margin: "10%",
-		fontSize: 58,
-		fontWeight: "bold",
+	maxBudgetText: {
+		fontSize: 52,
 		color: colors.BLACK,
 	},
-	selectedCategoryContainer: {
-		flexDirection: "row",
-		padding: "10%",
-
-		borderBottomWidth: 1,
-		borderBottomColor: colors.GRAY,
-	},
-	iconCircle: {
-		alignItems: "center",
-		justifyContent: "center",
-		width: 40,
-		height: 40,
-		marginRight: "5%",
-		borderRadius: 35,
-	},
-	categoryText: {
-		marginTop: "3%",
-		fontSize: 18,
+	maxBudgetTextPlaceholder: {
+		fontSize: 26,
 		color: colors.DARKGRAY,
 	},
-	selectedCategoryText: {
-		marginTop: "3%",
-		fontSize: 18,
-		color: colors.BLACK,
-	},
-	detailsContainer: {
-		flex: 1,
-	},
-	headingInput: {
-		marginTop: "5%",
-		marginBottom: "2%",
-
-		marginLeft: "10%",
-		fontSize: 18,
-		color: colors.DARKGRAY,
-	},
-	detailsInput: {
-		minHeight: "5%",
-		padding: "5%",
-		marginHorizontal: "5%",
-		borderWidth: 1,
-		borderRadius: 10,
-		borderColor: colors.GRAY,
-		fontSize: 16,
+	nameExpenseContainer: {
+		height: "12%",
 		backgroundColor: colors.WHITE,
+		borderBottomWidth: 1,
+		borderBottomColor: colors.GRAY,
 	},
-	btn: {
-		marginHorizontal: "10%",
+	nameExpenseHeading: {
+		marginTop: "7%",
+		marginLeft: "7%",
+		fontSize: 12,
+		color: colors.DARKGRAY,
+		textTransform: "uppercase",
+	},
+	nameExpenseInput: {
+		flexDirection: "row",
+		justifyContent: "space-between",
+		alignItems: "center",
+		marginTop: "1%",
+		marginHorizontal: "7%",
+	},
+	nameExpenseInputText: {
+		flex: 1,
+		fontSize: 22,
+		color: colors.BLACK,
+	},
+
+	expenseAreaContainer: {
+		height: "12%",
+		backgroundColor: colors.WHITE,
+		borderBottomWidth: 1,
+		borderBottomColor: colors.GRAY,
+	},
+	expenseAreaHeading: {
+		marginTop: "7%",
+		marginLeft: "7%",
+		fontSize: 12,
+		color: colors.DARKGRAY,
+		textTransform: "uppercase",
+	},
+	expenseAreaInput: {
+		flexDirection: "row",
+		justifyContent: "space-between",
+		alignItems: "center",
+		marginTop: "1%",
+		marginHorizontal: "7%",
+	},
+	expenseAreaInputText: {
+		flex: 1,
+		fontSize: 22,
+		color: colors.BLACK,
+	},
+
+	appearanceContainer: {
+		height: "20%",
+		backgroundColor: colors.WHITE,
+		borderBottomWidth: 1,
+		borderBottomColor: colors.GRAY,
+	},
+	appearanceHeading: {
+		marginTop: "7%",
+		marginLeft: "7%",
+		fontSize: 12,
+		color: colors.DARKGRAY,
+		textTransform: "uppercase",
+	},
+	appearanceInput: {
+		flexDirection: "row",
+		alignItems: "center",
+		marginTop: "1%",
+		marginHorizontal: "7%",
+	},
+	appearanceText: {
+		flex: 1,
+		fontSize: 16,
+		color: colors.BLACK,
+		textDecorationLine: "underline",
+	},
+	iconPickerPreview: {
+		alignItems: "center",
+		justifyContent: "center",
+		marginTop: "3%",
+		marginRight: "3%",
+		width: 50,
+		height: 50,
+		borderRadius: 37.5,
+	},
+	colorPickerContainer: {
+		alignItems: "center",
+		justifyContent: "center",
+	},
+	addExpenseBtn: {
+		marginTop: "25%",
+		marginHorizontal: "5%",
+
+		shadowColor: "#000",
+		shadowOffset: { width: 0, height: 1 },
+		shadowOpacity: 0.3,
+		shadowRadius: 3,
+		elevation: 1,
 	},
 });
 

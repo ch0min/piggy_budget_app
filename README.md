@@ -17,6 +17,7 @@
 -  ADD SHADOW ON ANDROID
 -  CHECK ALL RLS in SUPABASE
 -  Fix information for expenses til max antal characters.
+-  CHANGE DATES ON CREATED_ATS WHEN WE ADD MONTHS
 
 MINOR BUGS:
 

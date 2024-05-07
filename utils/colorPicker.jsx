@@ -9,7 +9,7 @@ const ColorPicker = ({ selectedColor, setSelectedColor }) => {
 				<TouchableOpacity
 					key={index}
 					style={[
-						{ height: 30, width: 30, backgroundColor: color, borderRadius: 99 },
+						{ height: 35, width: 35, backgroundColor: color, borderRadius: 99 },
 						selectedColor === color && { borderWidth: 2 },
 					]}
 					onPress={() => setSelectedColor(color)}

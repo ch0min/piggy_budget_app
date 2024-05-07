@@ -49,8 +49,6 @@ const AddCategory = ({ navigation }) => {
 		navigation.goBack();
 	};
 
-	handleCreationCategory = () => {};
-
 	return (
 		<View style={styles.container}>
 			<StatusBar hidden={true} />

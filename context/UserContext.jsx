@@ -11,8 +11,6 @@ export const UserProvider = ({ children }) => {
 	// const [categoriesByExpenseGroups, setCategoriesByExpenseGroups] = useState({});
 	// const [categoriesByExpenseGroupsForUser, setCategoriesByExpenseGroupsForUser] = useState({});
 
-	// const [selectedCategory, setSelectedCategory] = useState(null);
-
 	useEffect(() => {
 		if (!user && !session) {
 			fetchInitialSession();
@@ -145,6 +143,7 @@ export const UserProvider = ({ children }) => {
 
 	/*** EXPENSE_AREAS FUNCTIONS ***/
 	const [expenseAreas, setExpenseAreas] = useState([]);
+	const [expenses, setExpenses] = useState([]);
 
 	const getExpenseAreas = async () => {
 		setLoading(true);
@@ -191,6 +190,59 @@ export const UserProvider = ({ children }) => {
 		}
 	};
 
+	const getExpenses = async () => {
+		setLoading(true);
+		try {
+			const userId = user?.id;
+			const { data, error } = await supabase
+				.from("expenses")
+				.select(`*`)
+				.eq("expense_areas_id", expenseAreasId)
+				.eq("user_id", userId);
+
+			if (error) throw error;
+
+			setExpenses(data);
+			console.log("Expense fetched:", data);
+		} catch (error) {
+			console.error("Error fetching expenses for user:", error.message);
+		} finally {
+			setLoading(false);
+		}
+	};
+
+	const createExpense = async (name, maxBudget, icon, color, expenseAreasId) => {
+		setLoading(true);
+		const userId = session?.user?.id;
+
+		if (!userId) {
+			alert("No user id found");
+			setLoading(false);
+			return;
+		}
+
+		const { data, error } = await supabase.from("expenses").insert([
+			{
+				created_at: new Date(),
+				name: name,
+				max_budget: maxBudget,
+				icon: icon,
+				color: color,
+				expense_areas_id: expenseAreasId,
+				user_id: userId,
+			},
+		]);
+
+		if (data) {
+			console.log(data);
+			setLoading(false);
+		}
+		if (error) {
+			console.error("Error creating expense:", error.message);
+			setLoading(false);
+			alert("Failed to create expense");
+		}
+	};
 	/*** END ***/
 
 	// const getExpenseAreas = async () => {
@@ -369,9 +421,12 @@ export const UserProvider = ({ children }) => {
 
 				// Expense Areas States
 				expenseAreas,
+				expenses,
 				// Expense Areas Functions
 				getExpenseAreas,
 				createExpenseArea,
+				getExpenses,
+				createExpense,
 
 				// categoryList,
 				// categoriesByExpenseGroups,

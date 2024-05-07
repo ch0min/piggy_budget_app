@@ -32,13 +32,13 @@ const HomeTabs = ({ navigation }) => {
 			>
 				<Tab.Screen name="Overview" children={() => <Overview session={session} />} />
 				<Tab.Screen name="Budget" component={Budget} />
-				<Tab.Screen
+				{/* <Tab.Screen
 					name="AddExpense"
 					children={() => <AddExpense navigation={navigation} />}
 					options={{
 						tabBarButton: () => <CenterAddBtn onPress={() => navigation.navigate("AddExpense")} />,
 					}}
-				/>
+				/> */}
 				<Tab.Screen name="Profile" component={Profile} />
 				<Tab.Screen name="Settings" component={Settings} />
 			</Tab.Navigator>
