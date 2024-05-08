@@ -1,5 +1,5 @@
 import "react-native-url-polyfill/auto";
-import { StyleSheet, View, StatusBar, ActivityIndicator } from "react-native";
+import { StatusBar, StyleSheet, View, ActivityIndicator } from "react-native";
 import { useUser } from "../context/UserContext";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -14,8 +14,7 @@ import CompleteProfile from "./auth/login/CompleteProfile";
 import HomeTabs from "./(tabs)/HomeTabs";
 
 import AddExpense from "./(tabs)/expenses/AddExpense";
-import Categories from "./(tabs)/categories/Categories";
-import AddCategory from "./(tabs)/categories/AddCategory";
+import Expenses from "./(tabs)/expenses/Expenses";
 
 const Stack = createNativeStackNavigator();
 
@@ -41,25 +40,18 @@ const RootNavigator = () => {
 							<>
 								<Stack.Screen name="HomeTabs" component={HomeTabs} />
 								<Stack.Screen
+									name="Expenses"
+									component={Expenses}
+									options={{
+										gestureEnabled: true,
+									}}
+								/>
+								<Stack.Screen
 									name="AddExpense"
 									component={AddExpense}
 									options={{
 										presentation: "modal",
 										gestureEnabled: true,
-									}}
-								/>
-								<Stack.Screen
-									name="Categories"
-									component={Categories}
-									options={{
-										presentation: "fullScreenModal",
-									}}
-								/>
-								<Stack.Screen
-									name="AddCategory"
-									component={AddCategory}
-									options={{
-										presentation: "fullScreenModal",
 									}}
 								/>
 							</>

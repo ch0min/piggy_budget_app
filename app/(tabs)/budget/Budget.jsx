@@ -1,19 +1,18 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useFocusEffect } from "@react-navigation/native";
-import { StyleSheet, View, ScrollView, Text, TextInput, TouchableOpacity, FlatList } from "react-native";
+import { StyleSheet, View, Text, TextInput, TouchableOpacity, FlatList } from "react-native";
 import { useUser } from "../../../context/UserContext";
 import { KeyboardAwareFlatList } from "react-native-keyboard-aware-scroll-view";
 import colors from "../../../utils/colors";
 // import { RefreshControl } from "react-native";
-import OverviewHeader from "../../../components/headers/OverviewHeader";
+import Header from "../../../components/headers/Header";
 import PieGraph from "../../../components/graphs/PieGraph";
-import { FontAwesome, MaterialIcons, AntDesign, Entypo } from "@expo/vector-icons";
+import { FontAwesome, AntDesign, Entypo } from "@expo/vector-icons";
 
 const Budget = ({ navigation }) => {
 	const { session, expenseAreas, getExpenseAreas, createExpenseArea, expenses, getExpenses } = useUser();
 	const inputRef = useRef(null);
 	const [showCheckmark, setShowCheckmark] = useState(false);
-
 	const [expenseAreaName, setExpenseAreaName] = useState("");
 
 	useFocusEffect(
@@ -21,7 +20,6 @@ const Budget = ({ navigation }) => {
 			if (session) {
 				getExpenseAreas();
 				getExpenses();
-				console.log(expenses);
 			}
 		}, [session])
 	);
@@ -39,6 +37,10 @@ const Budget = ({ navigation }) => {
 
 	const handleAddExpense = (area) => {
 		navigation.navigate("AddExpense", { selectedExpenseArea: area });
+	};
+
+	const handleExpense = (exp) => {
+		navigation.navigate("Expenses", { selectedExpense: exp });
 	};
 
 	const renderExpenseAreas = ({ item }) => (
@@ -63,7 +65,7 @@ const Budget = ({ navigation }) => {
 	);
 
 	const renderExpenses = ({ item }) => (
-		<TouchableOpacity style={styles.expensesContainer}>
+		<TouchableOpacity style={styles.expensesContainer} onPress={() => handleExpense(item)}>
 			<View style={[styles.expensesIcon, { backgroundColor: item.color }]}>
 				<FontAwesome name={item.icon} size={14} color={colors.WHITE} />
 			</View>
@@ -78,11 +80,11 @@ const Budget = ({ navigation }) => {
 
 	return (
 		<View style={styles.container}>
-			<OverviewHeader session={session} />
+			<Header session={session} />
+
 			<View style={styles.graphContainer}>
 				<PieGraph />
 			</View>
-
 			<KeyboardAwareFlatList
 				data={expenseAreas}
 				renderItem={renderExpenseAreas}
@@ -120,11 +122,13 @@ const styles = StyleSheet.create({
 	},
 	graphContainer: {
 		marginTop: -75,
-		padding: 20,
+		paddingHorizontal: "3%",
+		zIndex: 1,
 	},
+
 	horizontalLine: {
 		borderBottomWidth: 1,
-		borderBottomColor: colors.DARKGRAY,
+		borderBottomColor: colors.LIGHT,
 		opacity: 0.5,
 	},
 	createExpenseAreaContainer: {
@@ -176,10 +180,11 @@ const styles = StyleSheet.create({
 		flexDirection: "row",
 		alignItems: "center",
 		justifyContent: "flex-start",
-		padding: "3%",
+		marginHorizontal: "1.5%",
+		padding: "1%",
 
 		borderBottomWidth: 0.5,
-		borderBottomColor: colors.DARKGRAY,
+		borderBottomColor: colors.LIGHT,
 	},
 	expensesTextContainer: {
 		flex: 1,
@@ -192,7 +197,7 @@ const styles = StyleSheet.create({
 		fontSize: 16,
 	},
 	expensesBudgetNameBox: {
-		marginTop: "2%",
+		marginVertical: "2%",
 		padding: "5%",
 		borderRadius: 5,
 		backgroundColor: "#F4F4F4",

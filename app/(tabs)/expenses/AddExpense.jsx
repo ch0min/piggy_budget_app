@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { StyleSheet, View, Modal, Text, TextInput, TouchableOpacity } from "react-native";
 import { useUser } from "../../../context/UserContext";
-import { useRoute } from "@react-navigation/native";
 import colors from "../../../utils/colors";
 import NumericKeypad from "../../../utils/modals/NumericKeypad";
 import PickerWheel from "../../../utils/modals/PickerWheel";
@@ -12,26 +11,26 @@ import icons from "../../../utils/icons";
 import DarkPrimaryExecBtn from "../../../components/buttons/darkPrimaryExecBtn";
 
 const AddExpense = ({ navigation, route }) => {
-	const { loading, expenseAreas, getExpenseAreas, createExpense } = useUser();
+	const { loading, expenseAreas, createExpense } = useUser();
 
 	const [keypadVisible, setKeypadVisible] = useState(false);
 	const [maxBudget, setMaxBudget] = useState("");
 	const [name, setName] = useState("");
 	const [expenseAreaPickerVisible, setExpenseAreaPickerVisible] = useState(false);
 
-	const { selectedExpenseArea: initialExpenseArea } = route.params;
-	const [selectedExpenseArea, setSelectedExpenseArea] = useState(initialExpenseArea.id);
-	const [selectedExpenseAreaName, setSelectedExpenseAreaName] = useState(initialExpenseArea.name);
+	const { selectedExpenseArea: selectedExpenseArea } = route.params;
+	const [selectedExpenseAreaId, setSelectedExpenseAreaId] = useState(selectedExpenseArea.id);
+	const [selectedExpenseAreaName, setSelectedExpenseAreaName] = useState(selectedExpenseArea.name);
 	const [iconPickerVisible, setIconPickerVisible] = useState(false);
 	const [selectedIcon, setSelectedIcon] = useState("archive");
 	const [selectedColor, setSelectedColor] = useState(colors.CATEGORY_COLOR_LIST[0]);
 
 	useEffect(() => {
-		if (selectedExpenseArea) {
-			const area = expenseAreas.find((area) => area.id === selectedExpenseArea);
+		if (selectedExpenseAreaId) {
+			const area = expenseAreas.find((area) => area.id === selectedExpenseAreaId);
 			setSelectedExpenseAreaName(area ? area.name : "Select an area");
 		}
-	}, [expenseAreas, selectedExpenseArea]);
+	}, [expenseAreas, selectedExpenseAreaId]);
 
 	const prepareMaxBudgetForDB = (displayValue) => {
 		let normalized = displayValue.replace(/\./g, "").replace(/,/g, ".");
@@ -42,7 +41,7 @@ const AddExpense = ({ navigation, route }) => {
 		const expenseArea = expenseAreas.find((area) => area.id === Number(areaValue));
 
 		if (expenseArea) {
-			setSelectedExpenseArea(expenseArea.id);
+			setSelectedExpenseAreaId(expenseArea.id);
 			setSelectedExpenseAreaName(expenseArea.name);
 		}
 	};
@@ -53,9 +52,9 @@ const AddExpense = ({ navigation, route }) => {
 	};
 
 	const handleCreateExpense = async () => {
-		if (selectedExpenseArea && name) {
+		if (selectedExpenseAreaId && name) {
 			let maxBudgetForDB = prepareMaxBudgetForDB(maxBudget);
-			await createExpense(name, maxBudgetForDB, selectedIcon, selectedColor, selectedExpenseArea);
+			await createExpense(name, maxBudgetForDB, selectedIcon, selectedColor, selectedExpenseAreaId);
 
 			navigation.goBack();
 		}
@@ -116,7 +115,7 @@ const AddExpense = ({ navigation, route }) => {
 				<PickerWheel
 					pickerVisible={expenseAreaPickerVisible}
 					items={expenseAreas}
-					selectedValue={selectedExpenseArea}
+					selectedValue={selectedExpenseAreaId}
 					onValueChange={handleExpenseArea}
 					onClose={() => setExpenseAreaPickerVisible(false)}
 				/>
@@ -165,7 +164,8 @@ const styles = StyleSheet.create({
 	},
 	heading: {
 		textAlign: "center",
-		fontSize: 18,
+		fontSize: 16,
+		textTransform: "uppercase",
 		color: colors.DARKGRAY,
 	},
 	maxBudgetContainer: {

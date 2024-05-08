@@ -4,7 +4,7 @@ import { useUser } from "../../context/UserContext";
 import colors from "../../utils/colors";
 import { LinearGradient } from "expo-linear-gradient";
 
-const OverviewHeader = () => {
+const Header = () => {
 	const { user, userProfile, getProfile } = useUser();
 
 	useEffect(() => {
@@ -12,8 +12,6 @@ const OverviewHeader = () => {
 			getProfile(user?.id);
 		}
 	}, []);
-
-	console.log("Profile Details: ", userProfile);
 
 	return (
 		<LinearGradient
@@ -62,4 +60,4 @@ const styles = StyleSheet.create({
 	},
 });
 
-export default OverviewHeader;
+export default Header;

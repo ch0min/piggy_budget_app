@@ -141,7 +141,7 @@ export const UserProvider = ({ children }) => {
 
 	/*** END ***/
 
-	/*** EXPENSE_AREAS FUNCTIONS ***/
+	/*** EXPENSES FUNCTIONS ***/
 	const [expenseAreas, setExpenseAreas] = useState([]);
 	const [expenses, setExpenses] = useState([]);
 
@@ -154,7 +154,7 @@ export const UserProvider = ({ children }) => {
 			if (error) throw error;
 
 			setExpenseAreas(data);
-			console.log("Expense Areas fetched:", data);
+			// console.log("Expense Areas fetched:", data);
 		} catch (error) {
 			console.error("Error fetching expense_areas:", error.message);
 		} finally {
@@ -180,7 +180,6 @@ export const UserProvider = ({ children }) => {
 		]);
 
 		if (data) {
-			console.log(data);
 			setLoading(false);
 		}
 		if (error) {
@@ -194,15 +193,12 @@ export const UserProvider = ({ children }) => {
 		setLoading(true);
 		try {
 			const userId = user?.id;
-			const { data, error } = await supabase
-				.from("expenses")
-				.select(`*`)
-				.eq("user_id", userId);
+			const { data, error } = await supabase.from("expenses").select(`*`).eq("user_id", userId);
 
 			if (error) throw error;
 
 			setExpenses(data);
-			console.log("Expense fetched:", data);
+			// console.log("Expense fetched:", data);
 		} catch (error) {
 			console.error("Error fetching expenses for user:", error.message);
 		} finally {
@@ -233,7 +229,7 @@ export const UserProvider = ({ children }) => {
 		]);
 
 		if (data) {
-			console.log(data);
+			// console.log(data);
 			setLoading(false);
 		}
 		if (error) {
@@ -243,6 +239,57 @@ export const UserProvider = ({ children }) => {
 		}
 	};
 	/*** END ***/
+
+	/*** TRANSACTIONS FUNCTIONS ***/
+	const [transactions, setTransactions] = useState([]);
+
+	const getTransactions = async () => {
+		setLoading(true);
+		try {
+			const userId = user?.id;
+			const { data, error } = await supabase.from("transactions").select(`*`).eq("user_id", userId);
+
+			if (error) throw error;
+
+			setTransactions(data);
+			// console.log("Expense Areas fetched:", data);
+		} catch (error) {
+			console.error("Error fetching expense_areas:", error.message);
+		} finally {
+			setLoading(false);
+		}
+	};
+
+	const createTransaction = async (name, amount, note, expensesId) => {
+		setLoading(true);
+		const userId = session?.user?.id;
+
+		if (!userId) {
+			console.error("No user id found");
+			setLoading(false);
+			return;
+		}
+
+		const { data, error } = await supabase.from("transactions").insert([
+			{
+				created_at: new Date(),
+				name: name,
+				amount: amount,
+				note: note,
+				expenses_id: expensesId,
+				user_id: userId,
+			},
+		]);
+
+		if (data) {
+			setLoading(false);
+		}
+		if (error) {
+			console.error("Error creating transaction:", error.message);
+			setLoading(false);
+			alert("Failed to create transaction");
+		}
+	};
 
 	// const getExpenseAreas = async () => {
 	// 	setLoading(true);
@@ -426,6 +473,12 @@ export const UserProvider = ({ children }) => {
 				createExpenseArea,
 				getExpenses,
 				createExpense,
+
+				// Transactions States
+				transactions,
+				// Transactions Functions
+				getTransactions,
+				createTransaction,
 
 				// categoryList,
 				// categoriesByExpenseGroups,

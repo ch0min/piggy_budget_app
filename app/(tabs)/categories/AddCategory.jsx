@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, View, StatusBar, Modal, Text, TextInput, TouchableOpacity, ActivityIndicator } from "react-native";
+import {StatusBar, StyleSheet, View, Modal, Text, TextInput, TouchableOpacity, ActivityIndicator } from "react-native";
 import { useUser } from "../../../context/UserContext";
 import colors from "../../../utils/colors";
 import ColorPicker from "../../../utils/colorPicker";

@@ -7,10 +7,9 @@ import colors from "../../utils/colors";
 import CenterAddBtn from "../../components/buttons/centerAddBtn";
 import Overview from "./overview/Overview";
 import Budget from "./budget/Budget";
-import AddExpense from "./expenses/AddExpense";
-import AddCategory from "./categories/AddCategory";
 import Profile from "./profile/Profile";
 import Settings from "./settings/Settings";
+import Expenses from "./expenses/Expenses";
 
 const Tab = createBottomTabNavigator();
 
@@ -30,6 +29,14 @@ const HomeTabs = ({ navigation }) => {
 					},
 				}}
 			>
+				{/* <Tab.Screen
+					name="Expenses"
+					component={Expenses}
+					options={{
+						presentation: "modal",
+						gestureEnabled: true,
+					}}
+				/> */}
 				<Tab.Screen name="Overview" children={() => <Overview session={session} />} />
 				<Tab.Screen name="Budget" component={Budget} />
 				{/* <Tab.Screen
