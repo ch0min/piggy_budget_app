@@ -1,15 +1,14 @@
 import React from "react";
-import { StyleSheet, View, Text } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { useUser } from "../../context/UserContext";
 import colors from "../../utils/colors";
+import { FontAwesome, MaterialCommunityIcons, Entypo } from "@expo/vector-icons";
 
-import CenterAddBtn from "../../components/buttons/centerAddBtn";
 import Overview from "./overview/Overview";
 import Budget from "./budget/Budget";
 import Profile from "./profile/Profile";
 import Settings from "./settings/Settings";
-import Expenses from "./expenses/Expenses";
 
 const Tab = createBottomTabNavigator();
 
@@ -29,25 +28,36 @@ const HomeTabs = ({ navigation }) => {
 					},
 				}}
 			>
-				{/* <Tab.Screen
-					name="Expenses"
-					component={Expenses}
+				<Tab.Screen
+					name="Overview"
+					children={() => <Overview session={session} />}
 					options={{
-						presentation: "modal",
-						gestureEnabled: true,
+						tabBarIcon: ({ size, color }) => <Entypo name="eye" size={size} color={color} />,
 					}}
-				/> */}
-				<Tab.Screen name="Overview" children={() => <Overview session={session} />} />
-				<Tab.Screen name="Budget" component={Budget} />
-				{/* <Tab.Screen
-					name="AddExpense"
-					children={() => <AddExpense navigation={navigation} />}
+				/>
+				<Tab.Screen
+					name="Budget"
+					component={Budget}
 					options={{
-						tabBarButton: () => <CenterAddBtn onPress={() => navigation.navigate("AddExpense")} />,
+						tabBarIcon: ({ size, color }) => (
+							<MaterialCommunityIcons name="chart-arc" size={size} color={color} />
+						),
 					}}
-				/> */}
-				<Tab.Screen name="Profile" component={Profile} />
-				<Tab.Screen name="Settings" component={Settings} />
+				/>
+				<Tab.Screen
+					name="Profile"
+					component={Profile}
+					options={{
+						tabBarIcon: ({ size, color }) => <FontAwesome name="user" size={size} color={color} />,
+					}}
+				/>
+				<Tab.Screen
+					name="Settings"
+					component={Settings}
+					options={{
+						tabBarIcon: ({ size, color }) => <MaterialCommunityIcons name="tools" size={size} color={color} />,
+					}}
+				/>
 			</Tab.Navigator>
 		</View>
 	);

@@ -51,7 +51,9 @@ const Budget = ({ navigation }) => {
 				data={expenses.filter((exp) => exp.expense_areas_id === item.id)}
 				renderItem={renderExpenses}
 				keyExtractor={(exp) => `${exp.id}`}
-				ListEmptyComponent={<Text>No expenses found for this area.</Text>}
+				ListEmptyComponent={
+					<Text style={{ marginTop: "5%", marginLeft: "4%" }}>No expenses found for this area.</Text>
+				}
 			/>
 			<View style={styles.addExpenseBtnContainer}>
 				<TouchableOpacity style={styles.addExpenseBtn} onPress={() => handleAddExpense(item)}>

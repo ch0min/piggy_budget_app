@@ -1,12 +1,12 @@
 import React, { useState, useCallback } from "react";
+import { StatusBar, StyleSheet, View, Modal, Text, TextInput, TouchableOpacity } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
-import { StatusBar, StyleSheet, View, ScrollView, Text, TextInput, TouchableOpacity, FlatList } from "react-native";
 import { useUser } from "../../../context/UserContext";
 import { KeyboardAwareFlatList, KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import colors from "../../../utils/colors";
-import NumericKeypad from "../../../utils/modals/NumericKeypad";
 // import { RefreshControl } from "react-native";
 import { FontAwesome, MaterialIcons, AntDesign, Entypo } from "@expo/vector-icons";
+import AddTransaction from "../budget/components/addTransaction";
 
 const Expenses = ({ navigation, route }) => {
 	const { loading, session, transactions, getTransactions, createTransaction } = useUser();
@@ -14,51 +14,54 @@ const Expenses = ({ navigation, route }) => {
 	const { selectedExpense: selectedExpense } = route.params;
 	const [selectedExpenseId, setSelectedExpenseId] = useState(selectedExpense.id);
 
-	const [keypadVisible, setKeypadVisible] = useState(false);
 	const [transactionName, setTransactionName] = useState("");
 	const [transactionAmount, setTransactionAmount] = useState("");
 	const [transactionNote, setTransactionNote] = useState("");
+	const [addTransactionVisible, setAddTransactionVisible] = useState(false);
 
 	useFocusEffect(
 		useCallback(() => {
 			if (session) {
 				getTransactions();
-				console.log(selectedExpenseId);
 			}
 		}, [session])
 	);
 
-	const prepareMaxBudgetForDB = (displayValue) => {
+	const prepareAmountForDB = (displayValue) => {
 		let normalized = displayValue.replace(/\./g, "").replace(/,/g, ".");
 		return parseFloat(normalized);
 	};
 
 	const handleCreateTransaction = async () => {
-		if (!transactionName.trim()) {
+		if (transactionName && !transactionName.trim()) {
 			alert("Transaction can't be empty.");
 			return;
 		}
+
 		await createTransaction(
 			transactionName,
-			prepareMaxBudgetForDB(transactionAmount),
+			prepareAmountForDB(transactionAmount),
 			transactionNote,
 			selectedExpenseId
 		);
 		setTransactionName("");
 		setTransactionAmount("");
 		setTransactionNote("");
+		setAddTransactionVisible(false);
 		getTransactions();
-
-		console.log(transactionName);
+		alert("Transaction created");
 	};
 
 	const renderTransactions = ({ item }) => (
 		<TouchableOpacity style={styles.transactionItemsContainer}>
-			<View style={styles.transactionItems}>
+			<View style={styles.transactionItemsLeft}>
 				<Text style={styles.transactionItemsName}>{item.name}</Text>
-				<Text style={styles.transactionItemsDate}>{item.created_at}</Text>
+				<Text style={styles.transactionItemsNote}>{item.note}</Text>
 			</View>
-			<Text style={styles.transactionItemsAmount}>{item.amount}</Text>
+			<View style={styles.transactionItemsRight}>
+				<Text style={styles.transactionItemsDate}>{item.created_at}</Text>
+				<Text style={styles.transactionItemsAmount}>{item.amount}</Text>
+			</View>
 		</TouchableOpacity>
 	);
 
@@ -94,6 +97,7 @@ const Expenses = ({ navigation, route }) => {
 			<View style={styles.transactionsContainer}>
 				<Text style={styles.transactionHeading}>Your transactions</Text>
 				<KeyboardAwareFlatList
+					extraScrollHeight={150}
 					data={transactions.filter((tr) => tr.expenses_id === selectedExpenseId)}
 					renderItem={renderTransactions}
 					keyExtractor={(tr) => `${tr.id}`}
@@ -102,53 +106,37 @@ const Expenses = ({ navigation, route }) => {
 					}
 					ListFooterComponent={
 						<View style={styles.createTransactionContainer}>
-							<View style={styles.createTransactionBtnContainer}>
-								<TextInput
-									style={styles.createTransactionNameInput}
-									placeholder={transactionName.trim().length > 0 ? "Name" : "New transaction"}
-									onChangeText={(text) => {
-										setTransactionName(text);
-									}}
-									value={transactionName}
-									autoFocus={true}
-								/>
+							<TouchableOpacity
+								style={styles.createTransactionBtnContainer}
+								onPress={() => setAddTransactionVisible(true)}
+							>
+								<Text style={styles.createTransactionNameInput}>New transaction</Text>
 								<MaterialIcons name="edit" size={24} color={colors.GRAY} />
-							</View>
-							{transactionName.trim().length > 0 && (
-								<>
-									<View style={styles.createTransactionAmountInput}>
-										<TouchableOpacity onPress={() => setKeypadVisible(true)}>
-											<Text>
-												{transactionAmount || <Text style={{ color: colors.SILVER }}>Insert amount</Text>}
-											</Text>
-										</TouchableOpacity>
-									</View>
-									<TextInput
-										style={styles.createTransactionNoteInput}
-										placeholder="Note (optional)"
-										onChangeText={(text) => {
-											setTransactionNote(text);
-										}}
-										value={transactionNote}
-									/>
-								</>
-							)}
-							{transactionName.trim().length > 0 && transactionAmount.trim().length > 0 && (
-								<TouchableOpacity style={styles.addBtn} onPress={handleCreateTransaction}>
-									<AntDesign name="check" size={34} color={colors.BLACK} />
-								</TouchableOpacity>
-							)}
+							</TouchableOpacity>
 						</View>
 					}
 				/>
-
-				<NumericKeypad
-					keypadVisible={keypadVisible}
-					amount={transactionAmount}
-					setAmount={setTransactionAmount}
-					onClose={() => setKeypadVisible(false)}
-				/>
 			</View>
+			{/* END */}
+
+			{/* Add Transaction Modal */}
+			{addTransactionVisible && (
+				<>
+					<AddTransaction
+						addTransactionVisible={addTransactionVisible}
+						setAddTransactionVisible={setAddTransactionVisible}
+						transactionName={transactionName}
+						setTransactionName={setTransactionName}
+						transactionAmount={transactionAmount}
+						setTransactionAmount={setTransactionAmount}
+						transactionNote={transactionNote}
+						setTransactionNote={setTransactionNote}
+						handleCreateTransaction={handleCreateTransaction}
+						onClose={() => setAddTransactionVisible(false)}
+					/>
+					<AddTransaction />
+				</>
+			)}
 			{/* END */}
 		</View>
 	);
@@ -243,7 +231,10 @@ const styles = StyleSheet.create({
 		shadowRadius: 3,
 		elevation: 1,
 	},
-	transactionItems: {
+	transactionItemsLeft: {
+		gap: "5%",
+	},
+	transactionItemsRight: {
 		gap: "5%",
 	},
 	transactionItemsName: {
@@ -251,13 +242,19 @@ const styles = StyleSheet.create({
 		fontWeight: "bold",
 		color: colors.BLACK,
 	},
-	transactionItemsAmount: {
+	transactionItemsNote: {
 		fontSize: 16,
-		fontWeight: "bold",
 		color: colors.DARKGRAY,
 	},
 	transactionItemsDate: {
+		marginTop: "5%",
+
 		fontSize: 14,
+		color: colors.DARKGRAY,
+	},
+	transactionItemsAmount: {
+		fontSize: 16,
+		fontWeight: "bold",
 		color: colors.DARKGRAY,
 	},
 
@@ -330,6 +327,10 @@ const styles = StyleSheet.create({
 		fontSize: 22,
 		fontWeight: "bold",
 	},
+	// addTransactionContainer: {
+	// 	alignItems: "center",
+	// 	justifyContent: "center",
+	// },
 });
 
 export default Expenses;
