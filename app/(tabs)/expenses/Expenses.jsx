@@ -2,21 +2,19 @@ import React, { useState, useCallback } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 import { StatusBar, StyleSheet, View, ScrollView, Text, TextInput, TouchableOpacity, FlatList } from "react-native";
 import { useUser } from "../../../context/UserContext";
-import { KeyboardAwareFlatList } from "react-native-keyboard-aware-scroll-view";
+import { KeyboardAwareFlatList, KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import colors from "../../../utils/colors";
 import NumericKeypad from "../../../utils/modals/NumericKeypad";
 // import { RefreshControl } from "react-native";
 import { FontAwesome, MaterialIcons, AntDesign, Entypo } from "@expo/vector-icons";
 
 const Expenses = ({ navigation, route }) => {
-	const { loading, session, getTransactions, createTransaction } = useUser();
+	const { loading, session, transactions, getTransactions, createTransaction } = useUser();
 
 	const { selectedExpense: selectedExpense } = route.params;
 	const [selectedExpenseId, setSelectedExpenseId] = useState(selectedExpense.id);
 
 	const [keypadVisible, setKeypadVisible] = useState(false);
-	const [showFullCreateTransaction, setShowFullCreateTransaction] = useState(false);
-	const [showCheckmark, setShowCheckmark] = useState(false);
 	const [transactionName, setTransactionName] = useState("");
 	const [transactionAmount, setTransactionAmount] = useState("");
 	const [transactionNote, setTransactionNote] = useState("");
@@ -25,7 +23,7 @@ const Expenses = ({ navigation, route }) => {
 		useCallback(() => {
 			if (session) {
 				getTransactions();
-				console.log("test");
+				console.log(selectedExpenseId);
 			}
 		}, [session])
 	);
@@ -49,11 +47,21 @@ const Expenses = ({ navigation, route }) => {
 		setTransactionName("");
 		setTransactionAmount("");
 		setTransactionNote("");
-		setShowCheckmark(false);
-		// getExpenseAreas();
+		getTransactions();
 
 		console.log(transactionName);
 	};
+
+	const renderTransactions = ({ item }) => (
+		<TouchableOpacity style={styles.transactionItemsContainer}>
+			<View style={styles.transactionItems}>
+				<Text style={styles.transactionItemsName}>{item.name}</Text>
+				<Text style={styles.transactionItemsDate}>{item.created_at}</Text>
+			</View>
+			<Text style={styles.transactionItemsAmount}>{item.amount}</Text>
+		</TouchableOpacity>
+	);
+
 	return (
 		<View style={styles.container}>
 			<StatusBar barStyle="dark-content" />
@@ -85,43 +93,55 @@ const Expenses = ({ navigation, route }) => {
 			{/* Transactions */}
 			<View style={styles.transactionsContainer}>
 				<Text style={styles.transactionHeading}>Your transactions</Text>
-				<View style={styles.createTransactionContainer}>
-					<View style={styles.createTransactionBtnContainer}>
-						<TextInput
-							style={styles.createTransactionNameInput}
-							placeholder={showFullCreateTransaction ? "Name" : "New transaction"}
-							onChangeText={(text) => {
-								setTransactionName(text);
-							}}
-							value={transactionName}
-						/>
-						<MaterialIcons name="edit" size={24} color={colors.GRAY} />
-					</View>
-					{transactionName.trim().length > 0 && (
-						<>
-							<View style={styles.createTransactionAmountInput}>
-								<TouchableOpacity onPress={() => setKeypadVisible(true)}>
-									<Text>
-										{transactionAmount || <Text style={{ color: colors.SILVER }}>Insert amount</Text>}
-									</Text>
-								</TouchableOpacity>
+				<KeyboardAwareFlatList
+					data={transactions.filter((tr) => tr.expenses_id === selectedExpenseId)}
+					renderItem={renderTransactions}
+					keyExtractor={(tr) => `${tr.id}`}
+					ListEmptyComponent={
+						<Text style={{ marginVertical: "2%", marginLeft: "6%" }}>No transactions found.</Text>
+					}
+					ListFooterComponent={
+						<View style={styles.createTransactionContainer}>
+							<View style={styles.createTransactionBtnContainer}>
+								<TextInput
+									style={styles.createTransactionNameInput}
+									placeholder={transactionName.trim().length > 0 ? "Name" : "New transaction"}
+									onChangeText={(text) => {
+										setTransactionName(text);
+									}}
+									value={transactionName}
+									autoFocus={true}
+								/>
+								<MaterialIcons name="edit" size={24} color={colors.GRAY} />
 							</View>
-							<TextInput
-								style={styles.createTransactionNoteInput}
-								placeholder="Note (optional)"
-								onChangeText={(text) => {
-									setTransactionNote(text);
-								}}
-								value={transactionNote}
-							/>
-						</>
-					)}
-					{transactionName.trim().length > 0 && transactionAmount.trim().length > 0 && (
-						<TouchableOpacity onPress={handleCreateTransaction}>
-							<AntDesign name="check" size={26} color={colors.BLACK} />
-						</TouchableOpacity>
-					)}
-				</View>
+							{transactionName.trim().length > 0 && (
+								<>
+									<View style={styles.createTransactionAmountInput}>
+										<TouchableOpacity onPress={() => setKeypadVisible(true)}>
+											<Text>
+												{transactionAmount || <Text style={{ color: colors.SILVER }}>Insert amount</Text>}
+											</Text>
+										</TouchableOpacity>
+									</View>
+									<TextInput
+										style={styles.createTransactionNoteInput}
+										placeholder="Note (optional)"
+										onChangeText={(text) => {
+											setTransactionNote(text);
+										}}
+										value={transactionNote}
+									/>
+								</>
+							)}
+							{transactionName.trim().length > 0 && transactionAmount.trim().length > 0 && (
+								<TouchableOpacity style={styles.addBtn} onPress={handleCreateTransaction}>
+									<AntDesign name="check" size={34} color={colors.BLACK} />
+								</TouchableOpacity>
+							)}
+						</View>
+					}
+				/>
+
 				<NumericKeypad
 					keypadVisible={keypadVisible}
 					amount={transactionAmount}
@@ -160,7 +180,7 @@ const styles = StyleSheet.create({
 	},
 	heading: {
 		textAlign: "center",
-		fontSize: 16,
+		fontSize: 14,
 		textTransform: "uppercase",
 		color: colors.DARKGRAY,
 	},
@@ -197,18 +217,52 @@ const styles = StyleSheet.create({
 		fontSize: 16,
 		color: colors.DARKGRAY,
 	},
-
 	transactionsContainer: {
 		flex: 1,
-		margin: "5%",
+		marginTop: "7%",
 	},
 	transactionHeading: {
+		marginBottom: "3%",
+		marginLeft: "5%",
 		fontSize: 20,
 		fontWeight: "bold",
 		color: colors.BLACK,
 	},
+	transactionItemsContainer: {
+		flexDirection: "row",
+		justifyContent: "space-between",
+		marginHorizontal: "5%",
+		marginVertical: "1%",
+		padding: "5%",
+		borderRadius: 15,
+		backgroundColor: colors.WHITE,
+
+		shadowColor: "#000",
+		shadowOffset: { width: 0, height: 1 },
+		shadowOpacity: 0.1,
+		shadowRadius: 3,
+		elevation: 1,
+	},
+	transactionItems: {
+		gap: "5%",
+	},
+	transactionItemsName: {
+		fontSize: 24,
+		fontWeight: "bold",
+		color: colors.BLACK,
+	},
+	transactionItemsAmount: {
+		fontSize: 16,
+		fontWeight: "bold",
+		color: colors.DARKGRAY,
+	},
+	transactionItemsDate: {
+		fontSize: 14,
+		color: colors.DARKGRAY,
+	},
 
 	createTransactionContainer: {
+		marginHorizontal: "8%",
 		marginVertical: "5%",
 		padding: "5%",
 		borderRadius: 15,
@@ -224,25 +278,15 @@ const styles = StyleSheet.create({
 		flexDirection: "row",
 		justifyContent: "space-between",
 	},
-	addBtn: {
-		alignItems: "center",
-		justifyContent: "center",
-		width: 30,
-		height: 30,
-		marginRight: "3%",
-		borderRadius: 37.5,
-		backgroundColor: colors.LIGHT,
-	},
 	createTransactionNameInput: {
+		width: "90%",
 		fontSize: 18,
-		// fontWeight: "bold",
 		color: colors.BLACK,
 	},
 	createTransactionAmountInput: {
 		marginTop: "5%",
 		paddingVertical: "5%",
 		fontSize: 14,
-		// fontWeight: "bold",
 		color: colors.BLACK,
 		borderTopWidth: 1,
 		borderTopColor: colors.GRAY,
@@ -252,11 +296,20 @@ const styles = StyleSheet.create({
 	createTransactionNoteInput: {
 		paddingVertical: "5%",
 		fontSize: 14,
-		// fontWeight: "bold",
 		color: colors.BLACK,
 		borderBottomWidth: 1,
 		borderBottomColor: colors.GRAY,
 	},
+	addBtn: {
+		alignItems: "center",
+		justifyContent: "center",
+		marginTop: "5%",
+	},
+	addBtnText: {
+		fontSize: 20,
+		color: colors.BLACK,
+	},
+
 	transactionItem: {
 		justifyContent: "space-between",
 		marginHorizontal: "5%",

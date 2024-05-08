@@ -69,6 +69,9 @@ const styles = StyleSheet.create({
 		flexWrap: "wrap",
 		justifyContent: "center",
 		padding: "5%",
+		borderTopLeftRadius: 20,
+		borderTopRightRadius: 20,
+		backgroundColor: colors.WHITE,
 	},
 	key: {
 		alignItems: "center",
