@@ -1,6 +1,6 @@
 import React from "react";
 import { StyleSheet, View, Modal, Text, TouchableOpacity } from "react-native";
-import colors from "../colors";
+import colors from "../../utils/colors";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 const NumericKeypad = ({ keypadVisible, amount, setAmount, onClose }) => {

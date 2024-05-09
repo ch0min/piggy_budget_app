@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from "react";
-import {StatusBar, StyleSheet, View, Modal, Text, TextInput, TouchableOpacity, ActivityIndicator } from "react-native";
+import { StatusBar, StyleSheet, View, Modal, Text, TextInput, TouchableOpacity, ActivityIndicator } from "react-native";
 import { useUser } from "../../../context/UserContext";
 import colors from "../../../utils/colors";
 import ColorPicker from "../../../utils/colorPicker";
-import PickerWheel from "../../../utils/modals/PickerWheel";
 import { FontAwesome, MaterialIcons, AntDesign } from "@expo/vector-icons";
 import icons from "../../../utils/icons";
-
-import IconPicker from "../../../utils/modals/IconPicker";
+import PickerWheel from "../../../components/modals/PickerWheel";
+import IconPicker from "../../../components/modals/IconPicker";
 
 const AddCategory = ({ navigation }) => {
 	const { loading, expenseGroupsList, getExpenseGroupsList, createCategory } = useUser();

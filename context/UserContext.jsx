@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { Alert } from "react-native";
 import { supabase } from "../utils/supabase";
 
 const UserContext = createContext();
@@ -238,6 +239,21 @@ export const UserProvider = ({ children }) => {
 			alert("Failed to create expense");
 		}
 	};
+
+	const deleteExpense = async (expenseId) => {
+		Alert.alert("Are you sure?", "Do you really want to delete this expense?", [
+			{ text: "Cancel", style: "cancel" },
+			{
+				text: "Yes",
+				style: "destructive",
+				onPress: async () => {
+					const { error } = await supabase.from("expenses").delete().eq("id", expenseId);
+
+					alert("Expense deleted");
+				},
+			},
+		]);
+	};
 	/*** END ***/
 
 	/*** TRANSACTIONS FUNCTIONS ***/
@@ -290,6 +306,41 @@ export const UserProvider = ({ children }) => {
 			alert("Failed to create transaction");
 		}
 	};
+
+	const deleteTransaction = async (transactionId) => {
+		Alert.alert("Are you sure?", "Do you really want to delete this transaction?", [
+			{ text: "Cancel", style: "cancel" },
+			{
+				text: "Yes",
+				style: "destructive",
+				onPress: async () => {
+					const { error } = await supabase.from("transactions").delete().eq("id", transactionId);
+
+					alert("Transaction deleted");
+				},
+			},
+		]);
+	};
+
+	// const updateProfile = async (updates) => {
+	// 	setLoading(true);
+	// 	try {
+	// 		const { data, error } = await supabase.from("profiles").upsert({
+	// 			id: session.user.id,
+	// 			...updates,
+	// 			updated_at: new Date(),
+	// 		});
+
+	// 		if (error) throw error;
+
+	// 		setUserProfile(data);
+	// 		setProfileCompleted(true);
+	// 	} catch (error) {
+	// 		console.error("Error updating profile", error.message);
+	// 	} finally {
+	// 		setLoading(false);
+	// 	}
+	// };
 
 	// const getExpenseAreas = async () => {
 	// 	setLoading(true);
@@ -473,12 +524,14 @@ export const UserProvider = ({ children }) => {
 				createExpenseArea,
 				getExpenses,
 				createExpense,
+				deleteExpense,
 
 				// Transactions States
 				transactions,
 				// Transactions Functions
 				getTransactions,
 				createTransaction,
+				deleteTransaction,
 
 				// categoryList,
 				// categoriesByExpenseGroups,

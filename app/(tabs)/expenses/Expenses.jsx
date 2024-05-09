@@ -5,11 +5,14 @@ import { useUser } from "../../../context/UserContext";
 import { KeyboardAwareFlatList, KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import colors from "../../../utils/colors";
 // import { RefreshControl } from "react-native";
-import { FontAwesome, MaterialIcons, AntDesign, Entypo } from "@expo/vector-icons";
+import { FontAwesome, MaterialIcons, Feather, Entypo } from "@expo/vector-icons";
+import ProgressBar from "../../../components/graphs/ProgressBar";
+
 import AddTransaction from "../budget/components/addTransaction";
 
 const Expenses = ({ navigation, route }) => {
-	const { loading, session, transactions, getTransactions, createTransaction } = useUser();
+	const { loading, session, deleteExpense, transactions, getTransactions, createTransaction, deleteTransaction } =
+		useUser();
 
 	const { selectedExpense: selectedExpense } = route.params;
 	const [selectedExpenseId, setSelectedExpenseId] = useState(selectedExpense.id);
@@ -33,8 +36,17 @@ const Expenses = ({ navigation, route }) => {
 	};
 
 	const handleCreateTransaction = async () => {
-		if (transactionName && !transactionName.trim()) {
-			alert("Transaction can't be empty.");
+		if (!transactionName.trim()) {
+			alert("Transaction name can't be empty.");
+			return;
+		}
+		const normalizedAmount = prepareAmountForDB(transactionAmount);
+		if (!normalizedAmount || isNaN(normalizedAmount) || normalizedAmount <= 0) {
+			alert("Please, enter a valid transaction amount.");
+			return;
+		}
+		if (transactionNote.trim().length > 20) {
+			alert("Transaction note can't be more than 20 characters.");
 			return;
 		}
 
@@ -77,7 +89,7 @@ const Expenses = ({ navigation, route }) => {
 					</TouchableOpacity>
 					<Text style={styles.heading}>Expense Transactions</Text>
 					<TouchableOpacity>
-						<Entypo name="chevron-thin-left" size={24} color={colors.BLACK} />
+						<Feather name="edit" size={24} color={colors.BLACK} />
 					</TouchableOpacity>
 				</View>
 
@@ -89,7 +101,12 @@ const Expenses = ({ navigation, route }) => {
 						<Text style={styles.expenseName}>{selectedExpense.name}</Text>
 						<Text style={styles.expenseItemText}>1 Transaction</Text>
 					</View>
+					<TouchableOpacity style={styles.deleteExpenseBtn} onPress={() => deleteExpense(selectedExpenseId)}>
+						<MaterialIcons name="remove-circle" size={28} color={colors.RED} />
+					</TouchableOpacity>
 				</View>
+
+				<ProgressBar transactions={transactions} maxBudget={selectedExpense.max_budget} />
 			</View>
 			{/* END */}
 
@@ -205,6 +222,10 @@ const styles = StyleSheet.create({
 		fontSize: 16,
 		color: colors.DARKGRAY,
 	},
+	deleteExpenseBtn: {
+		marginBottom: "5%",
+		marginLeft: "35%",
+	},
 	transactionsContainer: {
 		flex: 1,
 		marginTop: "7%",
@@ -238,7 +259,7 @@ const styles = StyleSheet.create({
 		gap: "5%",
 	},
 	transactionItemsName: {
-		fontSize: 24,
+		fontSize: 22,
 		fontWeight: "bold",
 		color: colors.BLACK,
 	},
@@ -247,19 +268,18 @@ const styles = StyleSheet.create({
 		color: colors.DARKGRAY,
 	},
 	transactionItemsDate: {
-		marginTop: "5%",
-
+		marginVertical: "4%",
 		fontSize: 14,
 		color: colors.DARKGRAY,
 	},
 	transactionItemsAmount: {
 		fontSize: 16,
 		fontWeight: "bold",
-		color: colors.DARKGRAY,
+		color: colors.BLACK,
 	},
 
 	createTransactionContainer: {
-		marginHorizontal: "8%",
+		marginHorizontal: "20%",
 		marginVertical: "5%",
 		padding: "5%",
 		borderRadius: 15,

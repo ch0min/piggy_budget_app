@@ -105,7 +105,7 @@ const AddExpense = ({ navigation, route }) => {
 
 			{/* EXPENSE AREA */}
 			<View style={styles.expenseAreaContainer}>
-				<Text style={styles.expenseAreaHeading}>Expense </Text>
+				<Text style={styles.expenseAreaHeading}>Expense area</Text>
 				<TouchableOpacity
 					style={styles.expenseAreaInput}
 					onPress={() => setExpenseAreaPickerVisible(!expenseAreaPickerVisible)}

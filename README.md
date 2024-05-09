@@ -1,5 +1,8 @@
 **_ TODO _**
 
+-  Fix delete expense.
+-  Fix Total amount in expenses and transactions.
+
 -  Categories Screen AddCategory Screen skal moduleres.
 -  ÆNDRE ALT MARGIN OSV TIL PERCENTAGE
 -  Change colors
