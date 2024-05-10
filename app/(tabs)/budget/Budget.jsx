@@ -258,7 +258,7 @@ const styles = StyleSheet.create({
 	},
 	expenseAreaText: {
 		marginLeft: "3%",
-		marginVertical: "3%",
+		marginBottom: "4%",
 		fontSize: 22,
 		fontWeight: "bold",
 	},

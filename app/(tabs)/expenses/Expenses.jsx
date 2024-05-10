@@ -1,18 +1,27 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Alert, StatusBar, StyleSheet, View, Modal, Text, TextInput, TouchableOpacity } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import { useUser } from "../../../context/UserContext";
 import { KeyboardAwareFlatList, KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import colors from "../../../utils/colors";
 // import { RefreshControl } from "react-native";
-import { FontAwesome, MaterialIcons, Feather, Entypo } from "@expo/vector-icons";
+import { FontAwesome, MaterialIcons, Feather, AntDesign, Entypo } from "@expo/vector-icons";
 import ProgressBar from "../../../components/graphs/ProgressBar";
 
 import AddTransaction from "../budget/components/addTransaction";
 
 const Expenses = ({ navigation, route }) => {
-	const { loading, session, deleteExpense, transactions, getTransactions, createTransaction, deleteTransaction } =
-		useUser();
+	const {
+		loading,
+		session,
+		expenses,
+		updateExpense,
+		deleteExpense,
+		transactions,
+		getTransactions,
+		createTransaction,
+		deleteTransaction,
+	} = useUser();
 
 	const { selectedExpense: selectedExpense } = route.params;
 	const [selectedExpenseId, setSelectedExpenseId] = useState(selectedExpense.id);
@@ -22,6 +31,8 @@ const Expenses = ({ navigation, route }) => {
 	const [transactionNote, setTransactionNote] = useState("");
 	const [addTransactionVisible, setAddTransactionVisible] = useState(false);
 
+	
+
 	useFocusEffect(
 		useCallback(() => {
 			if (session) {
@@ -30,9 +41,20 @@ const Expenses = ({ navigation, route }) => {
 		}, [session])
 	);
 
+	useEffect(() => {
+		setEditableExpense(expenses);
+	}, [selectedExpense]);
+
 	const prepareAmountForDB = (displayValue) => {
 		let normalized = displayValue.replace(/\./g, "").replace(/,/g, ".");
 		return parseFloat(normalized);
+	};
+
+	const handleUpdateExpense = (field, value) => {
+	};
+
+	const saveUpdatedExpense = async (id) => {
+	
 	};
 
 	const handleDeleteExpense = async (id) => {
@@ -110,8 +132,9 @@ const Expenses = ({ navigation, route }) => {
 						<Entypo name="chevron-thin-left" size={24} color={colors.BLACK} />
 					</TouchableOpacity>
 					<Text style={styles.heading}>Expense Transactions</Text>
-					<TouchableOpacity>
-						<Feather name="edit" size={24} color={colors.BLACK} />
+
+					<TouchableOpacity onPress={() => setIsEditing(true)}>
+						<MaterialIcons name={"edit"} size={24} color={colors.DARKGRAY} />
 					</TouchableOpacity>
 				</View>
 
@@ -220,6 +243,13 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 		justifyContent: "flex-start",
 		margin: "5%",
+	},
+	expenseInput: {
+		width: "80%",
+		marginLeft: "3%",
+		marginVertical: "3%",
+		fontSize: 22,
+		fontWeight: "bold",
 	},
 	expensesIcon: {
 		alignItems: "center",

@@ -291,14 +291,12 @@ export const UserProvider = ({ children }) => {
 		}
 	};
 
-	const updateExpense = async (name, maxBudget, icon, color, expenseAreasId) => {
+	const updateExpense = async (id, updates) => {
 		setLoading(true);
 		// const userId = session?.user?.id;
 		try {
-			const { data, error } = await supabase
-				.from("expense_areas")
-				.update({ name, maxBudget, icon, color, expenseAreasId })
-				.match({ id });
+			const { data, error } = await supabase.from("expense_areas").update(updates).match({ id });
+
 			if (error) throw error;
 
 			getExpenses();
@@ -608,6 +606,7 @@ export const UserProvider = ({ children }) => {
 				// Expenses Functions
 				getExpenses,
 				createExpense,
+				updateExpense,
 				deleteExpense,
 
 				// Transactions States
