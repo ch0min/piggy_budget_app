@@ -7,11 +7,11 @@ const PickerWheel = ({ pickerVisible, items, selectedValue, onValueChange, onClo
 	return (
 		<Modal
 			visible={pickerVisible}
-			animationType="slide"
+			animationType="fade"
 			transparent={true}
 			onRequestClose={onClose} // Android
 		>
-			<TouchableOpacity style={styles.modalContainer} activeOpacity={1} onPressOut={onClose}>
+			<TouchableOpacity style={styles.modalOverlay} activeOpacity={1} onPressOut={onClose}>
 				<View style={styles.pickerModal} onStartShouldSetResponder={() => true}>
 					<Picker style={styles.picker} selectedValue={selectedValue} onValueChange={onValueChange}>
 						{items.map((item) => (
@@ -25,10 +25,16 @@ const PickerWheel = ({ pickerVisible, items, selectedValue, onValueChange, onClo
 };
 
 const styles = StyleSheet.create({
-	modalContainer: {
+	// modalContainer: {
+	// 	flex: 1,
+	// 	justifyContent: "flex-end",
+	// 	backgroundColor: "rgba(0, 0, 0, 0.5",
+	// },
+	modalOverlay: {
 		flex: 1,
+		alignItems: "center",
 		justifyContent: "flex-end",
-		backgroundColor: "rgba(0, 0, 0, 0.5",
+		backgroundColor: "rgba(0, 0, 0, 0.5)",
 	},
 	pickerModal: {
 		position: "absolute",

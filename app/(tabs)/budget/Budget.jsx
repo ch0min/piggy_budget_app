@@ -1,19 +1,31 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useFocusEffect } from "@react-navigation/native";
-import { StyleSheet, View, Text, TextInput, TouchableOpacity, FlatList } from "react-native";
+import { Alert, StyleSheet, View, Text, TextInput, TouchableOpacity, FlatList } from "react-native";
 import { useUser } from "../../../context/UserContext";
 import { KeyboardAwareFlatList } from "react-native-keyboard-aware-scroll-view";
 import colors from "../../../utils/colors";
 // import { RefreshControl } from "react-native";
 import Header from "../../../components/headers/Header";
 import PieGraph from "../../../components/graphs/PieGraph";
-import { FontAwesome, AntDesign, Entypo } from "@expo/vector-icons";
+import { FontAwesome, MaterialIcons, Feather, AntDesign, Entypo } from "@expo/vector-icons";
 
 const Budget = ({ navigation }) => {
-	const { session, expenseAreas, getExpenseAreas, createExpenseArea, expenses, getExpenses } = useUser();
+	const {
+		session,
+		expenseAreas,
+		getExpenseAreas,
+		createExpenseArea,
+		updateExpenseArea,
+		deleteExpenseArea,
+		expenses,
+		getExpenses,
+	} = useUser();
 	const inputRef = useRef(null);
 	const [showCheckmark, setShowCheckmark] = useState(false);
 	const [expenseAreaName, setExpenseAreaName] = useState("");
+
+	const [editableExpenseAreas, setEditableExpenseAreas] = useState([]);
+	const [editableId, setEditableId] = useState(null);
 
 	useFocusEffect(
 		useCallback(() => {
@@ -23,6 +35,10 @@ const Budget = ({ navigation }) => {
 			}
 		}, [session])
 	);
+
+	useEffect(() => {
+		setEditableExpenseAreas(expenseAreas);
+	}, [expenseAreas]);
 
 	const handleCreateExpenseArea = async () => {
 		if (!expenseAreaName.trim()) {
@@ -35,17 +51,78 @@ const Budget = ({ navigation }) => {
 		getExpenseAreas();
 	};
 
-	const handleAddExpense = (area) => {
-		navigation.navigate("AddExpense", { selectedExpenseArea: area });
+	const handleUpdateExpenseAreaName = (id, newName) => {
+		const updatedAreas = editableExpenseAreas.map((area) => {
+			if (area.id === id) {
+				return { ...area, name: newName };
+			}
+			return area;
+		});
+		setEditableExpenseAreas(updatedAreas);
+	};
+
+	const saveUpdatedExpenseArea = async (id) => {
+		const area = editableExpenseAreas.find((area) => area.id === id);
+		if (area) {
+			await updateExpenseArea(id, area.name);
+			setEditableId(null);
+			getExpenseAreas();
+		}
+	};
+
+	const handleDeleteExpenseArea = async (id) => {
+		try {
+			const message = await deleteExpenseArea(id);
+			Alert.alert("Area removed", message, [{ text: "OK" }]);
+			getExpenseAreas();
+		} catch (error) {
+			Alert.alert("Error", error);
+		}
 	};
 
 	const handleExpense = (exp) => {
 		navigation.navigate("Expenses", { selectedExpense: exp });
 	};
 
+	const handleAddExpense = (area) => {
+		navigation.navigate("AddExpense", { selectedExpenseArea: area });
+	};
+
 	const renderExpenseAreas = ({ item }) => (
 		<View style={styles.expenseAreaItem}>
-			<Text style={styles.expenseAreaText}>{item.name}</Text>
+			<View style={styles.expenseAreaHeader}>
+				{editableId === item.id ? (
+					<View style={styles.expenseAreaHeaderEdit}>
+						<TouchableOpacity onPress={() => handleDeleteExpenseArea(item.id)}>
+							<MaterialIcons name="remove-circle" size={26} color={colors.RED} />
+						</TouchableOpacity>
+						<TextInput
+							style={styles.expenseAreaInput}
+							onChangeText={(newName) => handleUpdateExpenseAreaName(item.id, newName)}
+							value={editableExpenseAreas.find((area) => area.id === item.id)?.name || ""}
+							autoFocus={true}
+						/>
+					</View>
+				) : (
+					<Text style={styles.expenseAreaText}>{item.name}</Text>
+				)}
+				<TouchableOpacity
+					onPress={() => {
+						if (editableId === item.id) {
+							saveUpdatedExpenseArea(item.id);
+							setEditableId(null);
+						} else {
+							setEditableId(item.id);
+						}
+					}}
+				>
+					{editableId === item.id ? (
+						<AntDesign name={"check"} size={28} color={colors.DARKGRAY} />
+					) : (
+						<MaterialIcons name={"edit"} size={24} color={colors.DARKGRAY} />
+					)}
+				</TouchableOpacity>
+			</View>
 			<View style={styles.horizontalLine} />
 			<FlatList
 				data={expenses.filter((exp) => exp.expense_areas_id === item.id)}
@@ -149,6 +226,14 @@ const styles = StyleSheet.create({
 		shadowRadius: 3,
 		elevation: 1,
 	},
+	expenseAreaHeader: {
+		flexDirection: "row",
+		justifyContent: "space-between",
+	},
+	expenseAreaHeaderEdit: {
+		flexDirection: "row",
+		alignItems: "center",
+	},
 	createExpenseAreaInput: {
 		width: "90%",
 		fontSize: 22,
@@ -177,6 +262,20 @@ const styles = StyleSheet.create({
 		fontSize: 22,
 		fontWeight: "bold",
 	},
+	expenseAreaInput: {
+		width: "80%",
+		marginLeft: "3%",
+		marginVertical: "3%",
+		fontSize: 22,
+		fontWeight: "bold",
+	},
+	expenseAreaActions: {
+		flexDirection: "row",
+		alignItems: "center",
+		justifyContent: "space-between",
+	},
+
+	// Expenses
 	expensesContainer: {
 		flex: 1,
 		flexDirection: "row",

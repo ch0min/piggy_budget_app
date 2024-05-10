@@ -1,7 +1,6 @@
 import React from "react";
-import { StyleSheet, View, Modal, Text, TouchableOpacity } from "react-native";
+import { StyleSheet, View, Modal, Text, TouchableOpacity, Dimensions } from "react-native";
 import colors from "../../utils/colors";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 const NumericKeypad = ({ keypadVisible, amount, setAmount, onClose }) => {
 	const keys = ["1", "2", "3", "4", "5", "6", "7", "8", "9", ",", "0", "⌫"];
@@ -43,11 +42,11 @@ const NumericKeypad = ({ keypadVisible, amount, setAmount, onClose }) => {
 	return (
 		<Modal
 			visible={keypadVisible}
-			animationType="slide"
+			animationType="fade"
 			transparent={true}
 			onRequestClose={onClose} // Android
 		>
-			<TouchableOpacity style={styles.modalContainer} onPressOut={onClose}>
+			<TouchableOpacity style={styles.modalContainer} activeOpacity={1} onPress={onClose}>
 				<View style={styles.keypadModal} onStartShouldSetResponder={() => true}>
 					{keys.map((key, index) => (
 						<TouchableOpacity key={index} style={styles.key} onPress={() => handleKeyPress(key)}>
@@ -65,6 +64,12 @@ const styles = StyleSheet.create({
 		flex: 1,
 		justifyContent: "flex-end",
 	},
+	// modalOverlay: {
+	// 	flex: 1,
+	// 	alignItems: "center",
+	// 	justifyContent: "flex-end",
+	// 	backgroundColor: "rgba(0, 0, 0, 0.5)",
+	// },
 	keypadModal: {
 		flexDirection: "row",
 		flexWrap: "wrap",

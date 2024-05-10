@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from "react";
-import { StatusBar, StyleSheet, View, Modal, Text, TextInput, TouchableOpacity } from "react-native";
+import { Alert, StatusBar, StyleSheet, View, Modal, Text, TextInput, TouchableOpacity } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import { useUser } from "../../../context/UserContext";
 import { KeyboardAwareFlatList, KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
@@ -36,8 +36,12 @@ const Expenses = ({ navigation, route }) => {
 	};
 
 	const handleDeleteExpense = async (id) => {
-		deleteExpense(id);
-		navigation.goBack();
+		try {
+			const message = await deleteExpense(id);
+			Alert.alert("Expense removed", message, [{ text: "OK", onPress: () => navigation.goBack() }]);
+		} catch (error) {
+			Alert.alert("Error", error);
+		}
 	};
 
 	const handleCreateTransaction = async () => {
@@ -54,7 +58,6 @@ const Expenses = ({ navigation, route }) => {
 			alert("Transaction note can't be more than 20 characters.");
 			return;
 		}
-
 		await createTransaction(
 			transactionName,
 			prepareAmountForDB(transactionAmount),
@@ -69,16 +72,30 @@ const Expenses = ({ navigation, route }) => {
 		alert("Transaction created");
 	};
 
+	const handleDeleteTransaction = async (id) => {
+		try {
+			const message = await deleteTransaction(id);
+			Alert.alert("Expense removed", message, [{ text: "OK" }]);
+			getTransactions();
+		} catch (error) {
+			Alert.alert("Error", error);
+		}
+	};
+
 	const renderTransactions = ({ item }) => (
 		<TouchableOpacity style={styles.transactionItemsContainer}>
 			<View style={styles.transactionItemsLeft}>
 				<Text style={styles.transactionItemsName}>{item.name}</Text>
-				<Text style={styles.transactionItemsNote}>{item.note}</Text>
-			</View>
-			<View style={styles.transactionItemsRight}>
-				<Text style={styles.transactionItemsDate}>{item.created_at}</Text>
 				<Text style={styles.transactionItemsAmount}>{item.amount}</Text>
 			</View>
+
+			<View style={styles.transactionItemsRight}>
+				<Text style={styles.transactionItemsDate}>{item.created_at}</Text>
+				<Text style={styles.transactionItemsNote}>{item.note}</Text>
+			</View>
+			<TouchableOpacity style={styles.deleteExpenseBtn} onPress={() => handleDeleteTransaction(item.id)}>
+				<Entypo name="cross" size={24} color={colors.BLACK} />
+			</TouchableOpacity>
 		</TouchableOpacity>
 	);
 
@@ -111,7 +128,11 @@ const Expenses = ({ navigation, route }) => {
 					</TouchableOpacity>
 				</View>
 
-				<ProgressBar transactions={transactions} maxBudget={selectedExpense.max_budget} />
+				<ProgressBar
+					transactions={transactions}
+					selectedExpense={selectedExpense}
+					maxBudget={selectedExpense.max_budget}
+				/>
 			</View>
 			{/* END */}
 
@@ -264,9 +285,9 @@ const styles = StyleSheet.create({
 		gap: "5%",
 	},
 	transactionItemsName: {
-		fontSize: 22,
+		fontSize: 16,
 		fontWeight: "bold",
-		color: colors.BLACK,
+		color: colors.DARKGRAY,
 	},
 	transactionItemsNote: {
 		fontSize: 16,
@@ -278,7 +299,7 @@ const styles = StyleSheet.create({
 		color: colors.DARKGRAY,
 	},
 	transactionItemsAmount: {
-		fontSize: 16,
+		fontSize: 22,
 		fontWeight: "bold",
 		color: colors.BLACK,
 	},

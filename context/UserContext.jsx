@@ -142,16 +142,18 @@ export const UserProvider = ({ children }) => {
 
 	/*** END ***/
 
-	/*** EXPENSES FUNCTIONS ***/
+	/*** EXPENSE AREAS FUNCTIONS ***/
 	const [expenseAreas, setExpenseAreas] = useState([]);
-	const [expenses, setExpenses] = useState([]);
 
 	const getExpenseAreas = async () => {
 		setLoading(true);
 		try {
 			const userId = user?.id;
-			const { data, error } = await supabase.from("expense_areas").select(`*`).eq("user_id", userId);
-
+			const { data, error } = await supabase
+				.from("expense_areas")
+				.select(`*`)
+				.eq("user_id", userId)
+				.order("id", { ascending: true });
 			if (error) throw error;
 
 			setExpenseAreas(data);
@@ -189,6 +191,55 @@ export const UserProvider = ({ children }) => {
 			alert("Failed to create expense area");
 		}
 	};
+
+	const updateExpenseArea = async (id, name) => {
+		setLoading(true);
+		// const userId = session?.user?.id;
+		try {
+			const { data, error } = await supabase.from("expense_areas").update({ name }).match({ id });
+			if (error) throw error;
+
+			getExpenseAreas();
+			setLoading(false);
+			return data;
+		} catch (error) {
+			console.error("Error updating expense area", error.message);
+			setLoading(false);
+			throw error;
+		}
+	};
+
+	const deleteExpenseArea = (id) => {
+		return new Promise((resolve, reject) => {
+			Alert.alert(
+				"Confirm removal",
+				"Do you really want to remove this area?",
+				[
+					{
+						text: "Cancel",
+						style: "cancel",
+					},
+					{
+						text: "Delete",
+						onPress: async () => {
+							try {
+								await supabase.from("expense_areas").delete().match({ id: id });
+								resolve("Removal of the area was successful.");
+							} catch (error) {
+								reject("Removal of area failed.");
+							}
+						},
+						style: "destructive",
+					},
+				],
+				{ cancelable: false }
+			);
+		});
+	};
+	/*** END ***/
+
+	/*** EXPENSES FUNCTIONS ***/
+	const [expenses, setExpenses] = useState([]);
 
 	const getExpenses = async () => {
 		setLoading(true);
@@ -240,36 +291,53 @@ export const UserProvider = ({ children }) => {
 		}
 	};
 
-	const deleteExpense = async (expenseId) => {
+	const updateExpense = async (name, maxBudget, icon, color, expenseAreasId) => {
 		setLoading(true);
-		const userId = session?.user?.id;
+		// const userId = session?.user?.id;
+		try {
+			const { data, error } = await supabase
+				.from("expense_areas")
+				.update({ name, maxBudget, icon, color, expenseAreasId })
+				.match({ id });
+			if (error) throw error;
 
-		if (!userId) {
-			alert("No user id found");
+			getExpenses();
 			setLoading(false);
-			return;
+			return data;
+		} catch (error) {
+			console.error("Error updating expense", error.message);
+			setLoading(false);
+			throw error;
 		}
+	};
 
-		Alert.alert("Are you sure?", "Do you really want to delete this expense?", [
-			{ text: "Cancel", style: "cancel" },
-			{
-				text: "Yes",
-				style: "destructive",
-				onPress: async () => {
-					const { data, error } = await supabase
-						.from("expenses")
-						.delete()
-						.match({ id: expenseId })
-						.eq("user_id", userId);
-
-					if (error) {
-						console.error("Error deleting expense:", error);
-					} else {
-						alert("Expense deleted successfully.");
-					}
-				},
-			},
-		]);
+	const deleteExpense = (id) => {
+		return new Promise((resolve, reject) => {
+			Alert.alert(
+				"Confirm removal",
+				"Do you really want to remove this expense?",
+				[
+					{
+						text: "Cancel",
+						onPress: () => reject("Removal cancelled"),
+						style: "cancel",
+					},
+					{
+						text: "Delete",
+						onPress: async () => {
+							try {
+								await supabase.from("expenses").delete().match({ id: id });
+								resolve("Removal of the expense was successful.");
+							} catch (error) {
+								reject("Removal of expense failed.");
+							}
+						},
+						style: "destructive",
+					},
+				],
+				{ cancelable: false }
+			);
+		});
 	};
 	/*** END ***/
 
@@ -324,40 +392,34 @@ export const UserProvider = ({ children }) => {
 		}
 	};
 
-	const deleteTransaction = async (transactionId) => {
-		Alert.alert("Are you sure?", "Do you really want to delete this transaction?", [
-			{ text: "Cancel", style: "cancel" },
-			{
-				text: "Yes",
-				style: "destructive",
-				onPress: async () => {
-					const { error } = await supabase.from("transactions").delete().eq("id", transactionId);
-
-					alert("Transaction deleted");
-				},
-			},
-		]);
+	const deleteTransaction = (id) => {
+		return new Promise((resolve, reject) => {
+			Alert.alert(
+				"Confirm removal",
+				"Do you really want to remove this transaction?",
+				[
+					{
+						text: "Cancel",
+						onPress: () => reject("Removal cancelled"),
+						style: "cancel",
+					},
+					{
+						text: "Delete",
+						onPress: async () => {
+							try {
+								await supabase.from("transactions").delete().match({ id: id });
+								resolve("Removal of the transaction was successful.");
+							} catch (error) {
+								reject("Removal of transaction failed.");
+							}
+						},
+						style: "destructive",
+					},
+				],
+				{ cancelable: false }
+			);
+		});
 	};
-
-	// const updateProfile = async (updates) => {
-	// 	setLoading(true);
-	// 	try {
-	// 		const { data, error } = await supabase.from("profiles").upsert({
-	// 			id: session.user.id,
-	// 			...updates,
-	// 			updated_at: new Date(),
-	// 		});
-
-	// 		if (error) throw error;
-
-	// 		setUserProfile(data);
-	// 		setProfileCompleted(true);
-	// 	} catch (error) {
-	// 		console.error("Error updating profile", error.message);
-	// 	} finally {
-	// 		setLoading(false);
-	// 	}
-	// };
 
 	// const getExpenseAreas = async () => {
 	// 	setLoading(true);
@@ -535,10 +597,15 @@ export const UserProvider = ({ children }) => {
 
 				// Expense Areas States
 				expenseAreas,
-				expenses,
 				// Expense Areas Functions
 				getExpenseAreas,
 				createExpenseArea,
+				updateExpenseArea,
+				deleteExpenseArea,
+
+				// Expenses States
+				expenses,
+				// Expenses Functions
 				getExpenses,
 				createExpense,
 				deleteExpense,

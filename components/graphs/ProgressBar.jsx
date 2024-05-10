@@ -4,19 +4,23 @@ import { useUser } from "../../context/UserContext";
 import colors from "../../utils/colors";
 import { LinearGradient } from "expo-linear-gradient";
 
-const ProgressBar = ({ transactions, maxBudget }) => {
+const ProgressBar = ({ transactions, selectedExpense, maxBudget }) => {
 	// const { session, getTransactions } = useUser();
 
 	const [totalAmount, setTotalAmount] = useState();
 	const [totalPercentage, setTotalPercentage] = useState(0);
 
 	useEffect(() => {
-		const total = transactions.reduce((acc, transaction) => acc + parseFloat(transaction.amount), 0);
+		if (!selectedExpense) return;
+
+		const filteredTransactions = transactions.filter((tr) => tr.expenses_id === selectedExpense.id);
+
+		const total = filteredTransactions.reduce((acc, transaction) => acc + parseFloat(transaction.amount), 0);
 		setTotalAmount(total);
 
 		const percentage = (total / maxBudget) * 100;
 		setTotalPercentage(percentage);
-	}, [transactions, maxBudget]);
+	}, [transactions, selectedExpense, maxBudget]);
 
 	return (
 		<View style={styles.container}>
