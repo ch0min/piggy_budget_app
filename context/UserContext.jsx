@@ -241,15 +241,32 @@ export const UserProvider = ({ children }) => {
 	};
 
 	const deleteExpense = async (expenseId) => {
+		setLoading(true);
+		const userId = session?.user?.id;
+
+		if (!userId) {
+			alert("No user id found");
+			setLoading(false);
+			return;
+		}
+
 		Alert.alert("Are you sure?", "Do you really want to delete this expense?", [
 			{ text: "Cancel", style: "cancel" },
 			{
 				text: "Yes",
 				style: "destructive",
 				onPress: async () => {
-					const { error } = await supabase.from("expenses").delete().eq("id", expenseId);
+					const { data, error } = await supabase
+						.from("expenses")
+						.delete()
+						.match({ id: expenseId })
+						.eq("user_id", userId);
 
-					alert("Expense deleted");
+					if (error) {
+						console.error("Error deleting expense:", error);
+					} else {
+						alert("Expense deleted successfully.");
+					}
 				},
 			},
 		]);

@@ -35,6 +35,11 @@ const Expenses = ({ navigation, route }) => {
 		return parseFloat(normalized);
 	};
 
+	const handleDeleteExpense = async (id) => {
+		deleteExpense(id);
+		navigation.goBack();
+	};
+
 	const handleCreateTransaction = async () => {
 		if (!transactionName.trim()) {
 			alert("Transaction name can't be empty.");
@@ -101,7 +106,7 @@ const Expenses = ({ navigation, route }) => {
 						<Text style={styles.expenseName}>{selectedExpense.name}</Text>
 						<Text style={styles.expenseItemText}>1 Transaction</Text>
 					</View>
-					<TouchableOpacity style={styles.deleteExpenseBtn} onPress={() => deleteExpense(selectedExpenseId)}>
+					<TouchableOpacity style={styles.deleteExpenseBtn} onPress={() => handleDeleteExpense(selectedExpenseId)}>
 						<MaterialIcons name="remove-circle" size={28} color={colors.RED} />
 					</TouchableOpacity>
 				</View>

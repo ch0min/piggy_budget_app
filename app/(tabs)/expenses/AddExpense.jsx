@@ -2,10 +2,11 @@ import React, { useState, useEffect } from "react";
 import { StyleSheet, View, Modal, Text, TextInput, TouchableOpacity } from "react-native";
 import { useUser } from "../../../context/UserContext";
 import colors from "../../../utils/colors";
-import NumericKeypad from "../../../utils/modals/NumericKeypad";
-import PickerWheel from "../../../utils/modals/PickerWheel";
-import IconPicker from "../../../utils/modals/IconPicker";
-import ColorPicker from "../../../utils/colorPicker";
+import NumericKeypad from "../../../components/modals/NumericKeypad";
+import PickerWheel from "../../../components/modals/PickerWheel";
+import IconPicker from "../../../components/modals/IconPicker";
+import ColorPicker from "../../../components/colorPicker";
+
 import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
 import icons from "../../../utils/icons";
 import DarkPrimaryExecBtn from "../../../components/buttons/darkPrimaryExecBtn";

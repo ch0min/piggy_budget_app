@@ -1,6 +1,6 @@
 import React from "react";
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
-import colors from "./colors";
+import colors from "../utils/colors";
 
 const ColorPicker = ({ selectedColor, setSelectedColor }) => {
 	return (

@@ -1,7 +1,7 @@
 import React from "react";
 import { StyleSheet, View, ScrollView, Modal, TouchableOpacity } from "react-native";
 import { Picker } from "@react-native-picker/picker";
-import colors from "../colors";
+import colors from "../../utils/colors";
 import { FontAwesome } from "@expo/vector-icons";
 
 const IconPicker = ({ iconPickerVisible, icons, handleIconSelect, onClose }) => {
