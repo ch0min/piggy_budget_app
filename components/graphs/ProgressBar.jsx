@@ -1,12 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { StyleSheet, View, Text } from "react-native";
-import { useUser } from "../../context/UserContext";
 import colors from "../../utils/colors";
 import { LinearGradient } from "expo-linear-gradient";
 
 const ProgressBar = ({ transactions, selectedExpense, maxBudget }) => {
-	// const { session, getTransactions } = useUser();
-
 	const [totalAmount, setTotalAmount] = useState();
 	const [totalPercentage, setTotalPercentage] = useState(0);
 
@@ -25,7 +22,6 @@ const ProgressBar = ({ transactions, selectedExpense, maxBudget }) => {
 	return (
 		<View style={styles.container}>
 			<View style={styles.textContainer}>
-				{/* <Text style={styles.progressText}>{`${totalAmount} of ${maxBudget} (${totalPercentage.toFixed(2)}%)`}</Text> */}
 				<Text style={styles.progressTextAmount}>{totalAmount}</Text>
 				<Text style={styles.progressTextPct}>{totalPercentage.toFixed(2)}%</Text>
 				<Text style={styles.progressTextMax}>{maxBudget}</Text>

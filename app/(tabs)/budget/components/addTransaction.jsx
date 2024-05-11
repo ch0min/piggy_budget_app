@@ -6,7 +6,6 @@ import { MaterialIcons, AntDesign } from "@expo/vector-icons";
 
 const AddTransaction = ({
 	addTransactionVisible,
-	setAddTransactionVisible,
 	transactionName,
 	setTransactionName,
 	transactionAmount,

@@ -245,8 +245,11 @@ export const UserProvider = ({ children }) => {
 		setLoading(true);
 		try {
 			const userId = user?.id;
-			const { data, error } = await supabase.from("expenses").select(`*`).eq("user_id", userId);
-
+			const { data, error } = await supabase
+				.from("expenses")
+				.select(`*`)
+				.eq("user_id", userId)
+				.order("id", { ascending: true });
 			if (error) throw error;
 
 			setExpenses(data);
@@ -291,23 +294,42 @@ export const UserProvider = ({ children }) => {
 		}
 	};
 
-	const updateExpense = async (id, updates) => {
+	const updateExpense = async (id, name, maxBudget) => {
 		setLoading(true);
 		// const userId = session?.user?.id;
 		try {
-			const { data, error } = await supabase.from("expense_areas").update(updates).match({ id });
-
+			const { data, error } = await supabase.from("expenses").update({ name, max_budget: maxBudget }).match({ id });
 			if (error) throw error;
 
-			getExpenses();
 			setLoading(false);
 			return data;
 		} catch (error) {
-			console.error("Error updating expense", error.message);
+			console.error("Error updating expense.", error.message);
 			setLoading(false);
 			throw error;
 		}
 	};
+
+	// const updateExpense = async (expenseId, areaId, updates) => {
+	// 	setLoading(true);
+	// 	// const userId = session?.user?.id;
+	// 	try {
+	// 		const { data, error } = await supabase
+	// 			.from("expenses")
+	// 			.update({ ...updates, expense_areas_id: areaId })
+	// 			.match({ id: expenseId });
+
+	// 		if (error) throw error;
+
+	// 		getExpenses();
+	// 		setLoading(false);
+	// 		return data;
+	// 	} catch (error) {
+	// 		console.error("Error updating expense", error.message);
+	// 		setLoading(false);
+	// 		throw error;
+	// 	}
+	// };
 
 	const deleteExpense = (id) => {
 		return new Promise((resolve, reject) => {
@@ -346,7 +368,11 @@ export const UserProvider = ({ children }) => {
 		setLoading(true);
 		try {
 			const userId = user?.id;
-			const { data, error } = await supabase.from("transactions").select(`*`).eq("user_id", userId);
+			const { data, error } = await supabase
+				.from("transactions")
+				.select(`*`)
+				.eq("user_id", userId)
+				.order("id", { ascending: true });
 
 			if (error) throw error;
 

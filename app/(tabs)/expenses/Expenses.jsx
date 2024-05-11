@@ -7,7 +7,7 @@ import colors from "../../../utils/colors";
 // import { RefreshControl } from "react-native";
 import { FontAwesome, MaterialIcons, Feather, AntDesign, Entypo } from "@expo/vector-icons";
 import ProgressBar from "../../../components/graphs/ProgressBar";
-
+import UpdateExpense from "./components/updateExpense";
 import AddTransaction from "../budget/components/addTransaction";
 
 const Expenses = ({ navigation, route }) => {
@@ -15,6 +15,7 @@ const Expenses = ({ navigation, route }) => {
 		loading,
 		session,
 		expenses,
+		getExpenses,
 		updateExpense,
 		deleteExpense,
 		transactions,
@@ -23,15 +24,17 @@ const Expenses = ({ navigation, route }) => {
 		deleteTransaction,
 	} = useUser();
 
+	// const { selectedExpenseArea: selectedExpenseArea } = route.params;
+
 	const { selectedExpense: selectedExpense } = route.params;
 	const [selectedExpenseId, setSelectedExpenseId] = useState(selectedExpense.id);
+	const [editableExpense, setEditableExpense] = useState(selectedExpense);
+	const [updateExpenseVisible, setUpdateExpenseVisible] = useState(false);
 
 	const [transactionName, setTransactionName] = useState("");
 	const [transactionAmount, setTransactionAmount] = useState("");
 	const [transactionNote, setTransactionNote] = useState("");
 	const [addTransactionVisible, setAddTransactionVisible] = useState(false);
-
-	
 
 	useFocusEffect(
 		useCallback(() => {
@@ -42,19 +45,32 @@ const Expenses = ({ navigation, route }) => {
 	);
 
 	useEffect(() => {
-		setEditableExpense(expenses);
-	}, [selectedExpense]);
+		getExpenses();
+	});
+
+	useEffect(() => {
+		setEditableExpense(selectedExpenseId);
+	}, [selectedExpenseId]);
 
 	const prepareAmountForDB = (displayValue) => {
 		let normalized = displayValue.replace(/\./g, "").replace(/,/g, ".");
 		return parseFloat(normalized);
 	};
 
-	const handleUpdateExpense = (field, value) => {
-	};
+	const handleUpdateExpense = async (expenseName, maxBudget) => {
+		if (!expenseName.trim() || !maxBudget.trim() || isNaN(prepareAmountForDB(maxBudget))) {
+			alert("Please, check your inputs.");
+			return;
+		}
 
-	const saveUpdatedExpense = async (id) => {
-	
+		try {
+			await updateExpense(selectedExpenseId, expenseName, prepareAmountForDB(maxBudget));
+			getExpenses();
+
+			setUpdateExpenseVisible(false);
+		} catch {
+			Alert.alert("Failed to update expense: ", error.message);
+		}
 	};
 
 	const handleDeleteExpense = async (id) => {
@@ -133,7 +149,7 @@ const Expenses = ({ navigation, route }) => {
 					</TouchableOpacity>
 					<Text style={styles.heading}>Expense Transactions</Text>
 
-					<TouchableOpacity onPress={() => setIsEditing(true)}>
+					<TouchableOpacity onPress={() => setUpdateExpenseVisible(true)}>
 						<MaterialIcons name={"edit"} size={24} color={colors.DARKGRAY} />
 					</TouchableOpacity>
 				</View>
@@ -185,12 +201,22 @@ const Expenses = ({ navigation, route }) => {
 			</View>
 			{/* END */}
 
+			{/* Update Expense Modal */}
+			{updateExpenseVisible && (
+				<UpdateExpense
+					editableExpense={editableExpense}
+					updateExpenseVisible={updateExpenseVisible}
+					handleUpdateExpense={handleUpdateExpense}
+					onClose={() => setUpdateExpenseVisible(false)}
+				/>
+			)}
+			{/* END */}
+
 			{/* Add Transaction Modal */}
 			{addTransactionVisible && (
 				<>
 					<AddTransaction
 						addTransactionVisible={addTransactionVisible}
-						setAddTransactionVisible={setAddTransactionVisible}
 						transactionName={transactionName}
 						setTransactionName={setTransactionName}
 						transactionAmount={transactionAmount}
@@ -200,7 +226,6 @@ const Expenses = ({ navigation, route }) => {
 						handleCreateTransaction={handleCreateTransaction}
 						onClose={() => setAddTransactionVisible(false)}
 					/>
-					<AddTransaction />
 				</>
 			)}
 			{/* END */}

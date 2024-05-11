@@ -1,54 +1,53 @@
-import React, { useState, useCallback } from "react";
-import { StyleSheet, View, Modal, Text, TextInput, TouchableOpacity } from "react-native";
+import React, { useState, useEffect } from "react";
+import { Alert, StyleSheet, View, Modal, Text, TextInput, TouchableOpacity } from "react-native";
 import colors from "../../../../utils/colors";
 // import { RefreshControl } from "react-native";
-import { MaterialIcons, AntDesign } from "@expo/vector-icons";
+import { AntDesign } from "@expo/vector-icons";
 
-const updateExpense = ({
-	updateExpenseVisible,
-	setUpdateExpenseVisible,
-	editableExpense,
-	setEditableExpense,
-	handleUpdateExpense,
-	onClose,
-}) => {
+const UpdateExpense = ({ editableExpense, handleUpdateExpense, updateExpenseVisible, onClose }) => {
+	const [expenseName, setExpenseName] = useState(editableExpense.name || "");
+	const [maxBudget, setMaxBudget] = useState((editableExpense.maxBudget || 0).toString());
+
+	useEffect(() => {
+		setExpenseName(editableExpense.name || "");
+		setMaxBudget(editableExpense.maxBudget);
+	}, [editableExpense]);
+
 	return (
-		<Modal visible={addTransactionVisible} animationType="fade" transparent={true} onRequestClose={onClose}>
+		<Modal visible={updateExpenseVisible} animationType="fade" transparent={true} onRequestClose={onClose}>
 			<TouchableOpacity style={styles.modalOverlay} activeOpacity={1} onPress={onClose}>
 				<View style={styles.modalContent}>
-					<View style={styles.createTransactionContainer}>
-						<View style={styles.createTransactionBtnContainer}>
+					<View style={styles.updateExpenseContainer}>
+						<View style={styles.addExpenseBtnContainer}>
 							<TextInput
-								style={styles.createTransactionNameInput}
-								placeholder="Transaction name"
+								style={styles.addExpenseNameInput}
+								placeholder="Expense Name"
 								placeholderTextColor={colors.DARKGRAY}
-								onChangeText={setTransactionName}
-								value={transactionName}
-								autoFocus={true}
+								onChangeText={setExpenseName}
+								value={expenseName}
 							/>
-							<MaterialIcons name="edit" size={24} color={colors.GRAY} />
 						</View>
-
 						<TextInput
-							style={styles.createTransactionAmountInput}
-							placeholder="Insert amount"
+							style={styles.addExpenseMaxBudgetInput}
+							placeholder="Max Budget"
 							placeholderTextColor={colors.DARKGRAY}
-							onChangeText={setTransactionAmount}
-							value={transactionAmount}
+							onChangeText={setMaxBudget}
+							value={maxBudget}
 							inputMode="decimal"
 							maxLength={9}
 						/>
-						<TextInput
-							style={styles.createTransactionNoteInput}
-							placeholder="Note (optional)"
-							placeholderTextColor={colors.DARKGRAY}
-							onChangeText={setTransactionNote}
-							value={transactionNote}
-						/>
 
-						<TouchableOpacity style={styles.addBtn} onPress={handleCreateTransaction}>
-							<AntDesign name="check" size={34} color={colors.BLACK} />
-						</TouchableOpacity>
+						{updateExpenseVisible && (
+							<TouchableOpacity
+								style={styles.addBtn}
+								onPress={() => {
+									handleUpdateExpense(expenseName, maxBudget);
+									onClose();
+								}}
+							>
+								<AntDesign name="check" size={34} color={colors.BLACK} />
+							</TouchableOpacity>
+						)}
 					</View>
 				</View>
 			</TouchableOpacity>
@@ -79,23 +78,44 @@ const styles = StyleSheet.create({
 		shadowRadius: 3,
 		elevation: 1,
 	},
-	input: {
+	updateExpenseContainer: {
 		width: "100%",
-		marginBottom: 10,
-		padding: 10,
-		borderWidth: 1,
-		bordercolor: colors.GRAY,
-		borderRadius: 5,
 	},
-	button: {
+	addExpenseBtnContainer: {
 		flexDirection: "row",
+		justifyContent: "space-between",
+	},
+	addExpenseNameInput: {
+		width: "90%",
+		fontSize: 18,
+		color: colors.BLACK,
+	},
+	addExpenseMaxBudgetInput: {
+		marginTop: "5%",
+		paddingVertical: "5%",
+		fontSize: 14,
+		color: colors.BLACK,
+		borderTopWidth: 1,
+		borderTopColor: colors.GRAY,
+		borderBottomWidth: 1,
+		borderBottomColor: colors.GRAY,
+	},
+	createTransactionNoteInput: {
+		paddingVertical: "5%",
+		fontSize: 14,
+		color: colors.BLACK,
+		borderBottomWidth: 1,
+		borderBottomColor: colors.GRAY,
+	},
+	addBtn: {
 		alignItems: "center",
 		justifyContent: "center",
-		paddingHorizontal: 20,
-		paddingVertical: 20,
-		borderRadius: 5,
-		backgroundColor: colors.DARKGRAY,
+		marginTop: "5%",
+	},
+	addBtnText: {
+		fontSize: 20,
+		color: colors.BLACK,
 	},
 });
 
-export default AddTransaction;
+export default UpdateExpense;

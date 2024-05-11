@@ -36,10 +36,6 @@ const Budget = ({ navigation }) => {
 		}, [session])
 	);
 
-	useEffect(() => {
-		setEditableExpenseAreas(expenseAreas);
-	}, [expenseAreas]);
-
 	const handleCreateExpenseArea = async () => {
 		if (!expenseAreaName.trim()) {
 			alert("Area name can't be empty.");
