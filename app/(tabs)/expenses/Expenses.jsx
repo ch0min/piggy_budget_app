@@ -23,6 +23,9 @@ const Expenses = ({ navigation, route }) => {
 		createTransaction,
 		updateTransaction,
 		deleteTransaction,
+
+		updateTotalSpentForExpenseArea
+
 	} = useUser();
 
 	const { selectedExpense: selectedExpense } = route.params;
@@ -118,9 +121,8 @@ const Expenses = ({ navigation, route }) => {
 			return;
 		}
 		await createTransaction(
-			currentTransaction.id,
 			transactionName,
-			prepareAmountForDB(transactionAmount),
+			normalizedAmount,
 			transactionNote,
 			selectedExpenseId
 		);
@@ -137,7 +139,7 @@ const Expenses = ({ navigation, route }) => {
 			alert("Transaction name can't be empty.");
 			return;
 		}
-		const normalizedAmount = prepareAmountForDB(transactionAmount);
+		const normalizedAmount = prepareNumericForDB(transactionAmount);
 		if (!normalizedAmount || isNaN(normalizedAmount) || normalizedAmount <= 0) {
 			alert("Please, enter a valid transaction amount.");
 			return;
@@ -148,12 +150,7 @@ const Expenses = ({ navigation, route }) => {
 		}
 
 		try {
-			await updateTransaction(
-				currentTransaction.id,
-				transactionName,
-				prepareAmountForDB(transactionAmount),
-				transactionNote
-			);
+			await updateTransaction(currentTransaction.id, transactionName, normalizedAmount, transactionNote);
 			setUpdateTransactionVisible(false);
 			getTransactions();
 		} catch (error) {

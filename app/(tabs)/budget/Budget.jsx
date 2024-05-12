@@ -13,6 +13,8 @@ const Budget = ({ navigation }) => {
 	const {
 		session,
 		expenseAreas,
+		totalEABudget,
+		setTotalEABudget,
 		getExpenseAreas,
 		createExpenseArea,
 		updateExpenseArea,
@@ -36,6 +38,11 @@ const Budget = ({ navigation }) => {
 		}, [session])
 	);
 
+	useEffect(() => {
+		setEditableExpenseAreas(expenseAreas.map((area) => ({ ...area, editableName: area.name })));
+	}, [expenseAreas]);
+
+
 	const handleCreateExpenseArea = async () => {
 		if (!expenseAreaName.trim()) {
 			alert("Area name can't be empty.");
@@ -50,7 +57,7 @@ const Budget = ({ navigation }) => {
 	const handleUpdateExpenseAreaName = (id, newName) => {
 		const updatedAreas = editableExpenseAreas.map((area) => {
 			if (area.id === id) {
-				return { ...area, name: newName };
+				return { ...area, editableName: newName };
 			}
 			return area;
 		});
@@ -60,7 +67,7 @@ const Budget = ({ navigation }) => {
 	const saveUpdatedExpenseArea = async (id) => {
 		const area = editableExpenseAreas.find((area) => area.id === id);
 		if (area) {
-			await updateExpenseArea(id, area.name);
+			await updateExpenseArea(id, area.editableName);
 			setEditableId(null);
 			getExpenseAreas();
 		}
@@ -95,14 +102,18 @@ const Budget = ({ navigation }) => {
 						<TextInput
 							style={styles.expenseAreaInput}
 							onChangeText={(newName) => handleUpdateExpenseAreaName(item.id, newName)}
-							value={editableExpenseAreas.find((area) => area.id === item.id)?.name || ""}
+							value={editableExpenseAreas.find((area) => area.id === item.id)?.editableName || ""}
 							autoFocus={true}
 						/>
 					</View>
 				) : (
-					<Text style={styles.expenseAreaText}>{item.name}</Text>
+					<>
+						<Text style={styles.expenseAreaText}>{item.name}</Text>
+						<Text style={styles.expenseAreaText}>{item.total_budget}</Text>
+					</>
 				)}
 				<TouchableOpacity
+					style={styles.expenseAreaUpdateIcons}
 					onPress={() => {
 						if (editableId === item.id) {
 							saveUpdatedExpenseArea(item.id);
@@ -160,6 +171,7 @@ const Budget = ({ navigation }) => {
 			<View style={styles.graphContainer}>
 				<PieGraph />
 			</View>
+
 			<KeyboardAwareFlatList
 				data={expenseAreas}
 				renderItem={renderExpenseAreas}
@@ -228,7 +240,6 @@ const styles = StyleSheet.create({
 	},
 	expenseAreaHeaderEdit: {
 		flexDirection: "row",
-		alignItems: "center",
 	},
 	createExpenseAreaInput: {
 		width: "90%",
@@ -258,10 +269,11 @@ const styles = StyleSheet.create({
 		fontSize: 22,
 		fontWeight: "bold",
 	},
+
 	expenseAreaInput: {
 		width: "80%",
 		marginLeft: "3%",
-		marginVertical: "3%",
+		marginBottom: "4%",
 		fontSize: 22,
 		fontWeight: "bold",
 	},

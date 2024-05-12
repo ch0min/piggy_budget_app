@@ -7,18 +7,13 @@ const UserContext = createContext();
 export const UserProvider = ({ children }) => {
 	const [loading, setLoading] = useState(false);
 
-	// const [categoryList, setCategoryList] = useState([]);
-	// const [expenseGroupsList, setExpenseGroupsList] = useState([]);
-	// const [categoriesByExpenseGroups, setCategoriesByExpenseGroups] = useState({});
-	// const [categoriesByExpenseGroupsForUser, setCategoriesByExpenseGroupsForUser] = useState({});
-
+	/*** AUTH FUNCTIONALITY ***/
 	useEffect(() => {
 		if (!user && !session) {
 			fetchInitialSession();
 		}
 	}, []);
 
-	/*** AUTH FUNCTIONS ***/
 	const [session, setSession] = useState(null);
 	const [user, setUser] = useState(null);
 	const [userProfile, setUserProfile] = useState(null);
@@ -144,6 +139,7 @@ export const UserProvider = ({ children }) => {
 
 	/*** EXPENSE AREAS FUNCTIONS ***/
 	const [expenseAreas, setExpenseAreas] = useState([]);
+	const [totalEABudget, setTotalEABudget] = useState({});
 
 	const getExpenseAreas = async () => {
 		setLoading(true);
@@ -286,6 +282,8 @@ export const UserProvider = ({ children }) => {
 		if (data) {
 			// console.log(data);
 			setLoading(false);
+
+			updateTotalBudgetForArea(expenseAreasId);
 		}
 		if (error) {
 			console.error("Error creating expense:", error.message);
@@ -444,163 +442,6 @@ export const UserProvider = ({ children }) => {
 		});
 	};
 
-	// const getExpenseAreas = async () => {
-	// 	setLoading(true);
-	// 	try {
-	// 		const { data, error } = await supabase.from("expense_areas").select("*");
-
-	// 		if (error) throw error;
-
-	// 		setExpenseGroupsList(data);
-	// 		// console.log("Main Categories fetched:", data);
-	// 	} catch (error) {
-	// 		console.error("Error fetching Main Categories:", error.message);
-	// 	} finally {
-	// 		setLoading(false);
-	// 	}
-	// };
-
-	// const getCategoriesByExpenseGroups = async () => {
-	// 	if (expenseGroupsList.length === 0) return;
-	// 	let categoriesObj = {};
-	// 	setLoading(true);
-
-	// 	try {
-	// 		for (let group of expenseGroupsList) {
-	// 			const categories = await getCategoriesByExpenseGroupsId(group.id);
-	// 			categoriesObj[group.id] = categories;
-	// 		}
-	// 		setCategoriesByExpenseGroups(categoriesObj);
-	// 	} catch (error) {
-	// 		console.error("Error fetching Categories by Expense Groups:", error.message);
-	// 	} finally {
-	// 		setLoading(false);
-	// 	}
-	// };
-
-	// const getCategoriesByExpenseGroupsId = async (expenseGroupsId) => {
-	// 	setLoading(true);
-	// 	try {
-	// 		const { data, error } = await supabase.from("categories").select("*").eq("expense_groups_id", expenseGroupsId);
-
-	// 		if (error) throw error;
-
-	// 		return data;
-	// 	} catch (error) {
-	// 		console.error("Error fetching Categories by Expense Groups ID:", error.message);
-	// 	} finally {
-	// 		setLoading(false);
-	// 	}
-	// };
-
-	// const getCategoriesByExpenseGroupsForUser = async () => {
-	// 	if (expenseGroupsList.length === 0) return;
-	// 	let categoriesObj = {};
-	// 	setLoading(true);
-
-	// 	try {
-	// 		for (let group of expenseGroupsList) {
-	// 			const userId = session?.user?.id;
-
-	// 			const categories = await getCategoriesByExpenseGroupsIdForUser(group.id, userId);
-	// 			categoriesObj[group.id] = categories;
-	// 		}
-	// 		setCategoriesByExpenseGroupsForUser(categoriesObj);
-	// 	} catch (error) {
-	// 		console.error("Error fetching Categories by Expense Groups for User:", error.message);
-	// 	} finally {
-	// 		setLoading(false);
-	// 	}
-	// };
-
-	// const getCategoriesByExpenseGroupsIdForUser = async (expenseGroupsId, createdById) => {
-	// 	setLoading(true);
-
-	// 	try {
-	// 		const { data, error } = await supabase
-	// 			.from("categories")
-	// 			.select("*")
-	// 			.eq("expense_groups_id", expenseGroupsId)
-	// 			.eq("created_by", createdById);
-
-	// 		if (error) throw error;
-
-	// 		return data;
-	// 	} catch (error) {
-	// 		console.error("Error fetching Categories by Expense Groups ID for User:", error.message);
-	// 	} finally {
-	// 		setLoading(false);
-	// 	}
-	// };
-
-	// const createCategory = async (name, icon, color, expense_groups_id) => {
-	// 	setLoading(true);
-	// 	const userId = session?.user?.id;
-
-	// 	if (!userId) {
-	// 		alert("No user id found");
-	// 		setLoading(false);
-	// 		return;
-	// 	}
-
-	// 	const { data, error } = await supabase.from("categories").insert([
-	// 		{
-	// 			created_by: userId,
-	// 			name: name,
-	// 			icon: icon,
-	// 			color: color,
-	// 			// assigned_budget: assigned_budget,
-	// 			expense_groups_id: expense_groups_id,
-	// 		},
-	// 	]);
-
-	// 	if (data) {
-	// 		console.log(data);
-	// 		setLoading(false);
-	// 	}
-	// 	if (error) {
-	// 		console.error("Error creating category:", error.message);
-	// 		setLoading(false);
-	// 		alert("Failed to create Category");
-	// 	}
-	// };
-
-	// const createExpense = async ({ amount, details, categoriesId }) => {
-	// 	setLoading(true);
-	// 	const userId = session?.user?.id;
-
-	// 	if (!userId) {
-	// 		alert("No user id found");
-	// 		setLoading(false);
-	// 		return;
-	// 	}
-
-	// 	if (!amount || !details || !categoriesId) {
-	// 		alert("All fields are required.");
-	// 		setLoading(false);
-	// 		return;
-	// 	}
-
-	// 	try {
-	// 		const { data, error } = await supabase.from("expenses").insert([
-	// 			{
-	// 				created_at: new Date(),
-	// 				created_by: userId,
-	// 				amount: amount,
-	// 				details: details,
-	// 				categories_id: categoriesId,
-	// 			},
-	// 		]);
-
-	// 		if (error) throw error;
-	// 	} catch (error) {
-	// 		console.error("Error creating expense:", error.message);
-	// 		alert("Failed to create expense");
-	// 	} finally {
-	// 		setLoading(false);
-	// 	}
-	// };
-
 	return (
 		<UserContext.Provider
 			value={{
@@ -620,6 +461,8 @@ export const UserProvider = ({ children }) => {
 
 				// Expense Areas States
 				expenseAreas,
+				totalEABudget,
+				setTotalEABudget,
 				// Expense Areas Functions
 				getExpenseAreas,
 				createExpenseArea,

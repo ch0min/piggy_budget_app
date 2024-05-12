@@ -2,7 +2,6 @@
 
 NEXT: Rækkefølge
 
--  Update Transactions
 -  Lav Piechart færdig
 -  Lav Profil billede færdig
 -  Lav Overview Screen
@@ -12,7 +11,6 @@ NEXT: Rækkefølge
 -  Lav splash screen.
 -  Email redirection
 -  CAPTCHA
--  Wait with fixing update expenses to rerender the screen
 
 -  Categories Screen AddCategory Screen skal moduleres.
 -  ÆNDRE ALT MARGIN OSV TIL PERCENTAGE
@@ -24,6 +22,8 @@ NEXT: Rækkefølge
 -  Skift alt til dansk?
 -  Brugt CAPTCHA til BRUTEFORCE!!!!!
 -  SPLASH SCREEN
+
+Exam:
 
 -  Hvorfor bruge expo router vs react native navigation?
 -  useContext for navigation?
@@ -52,13 +52,6 @@ MINOR BUGS:
 
 **_ DONE _**
 
--  Landing Screen
--  Signup Screen
--  Login Screen
--  VerifyEmail Screen
--  Implementer UseContext for User
--  AddCategory Screen
-
 **_ EXTRA DEPENDENCIES _**
 
 -  react-navigation: used for navigation.
@@ -74,3 +67,42 @@ npm install react-native-keyboard-aware-scroll-view --save
 **_ BUG HELPER _**
 
 -  AsyncStorage.clear().then(() => console.log('Local storage cleared!'));
+
+
+
+DB: 
+PUBLIC TABLES:
+expense_areas: 
+id, uuid
+user_id (foreign key->profiles), uuid
+name, text
+total_budget, numeric
+
+expenses: 
+id, uuid
+created_at, date
+user_id (foreign key->profiles), uuid
+name, text
+icon, text
+color, text
+max_budget, numeric
+expense_areas_id (foreign key->expense_areas), uuid
+
+transactions:
+id, uuid
+created_at, date
+user_id (foreign key->profiles), uuid
+amount, numeric
+note, text
+expenses_id (foreign key->expenses), uuid
+
+profiles:
+id, uuid
+updated_at, date
+avatar, text
+first_name, text
+last_name, text
+profile_completed, bool
+
+AUTH TABLE:
+users
