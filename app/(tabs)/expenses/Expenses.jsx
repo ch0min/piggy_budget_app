@@ -30,6 +30,8 @@ const Expenses = ({ navigation, route }) => {
 	const [currentExpense, setCurrentExpense] = useState(selectedExpense);
 	const [editableExpenseName, setEditableExpenseName] = useState(selectedExpense.name);
 	const [editableExpenseMaxBudget, setEditableExpenseMaxBudget] = useState(String(selectedExpense.max_budget));
+	const [editableExpenseIcon, setEditableExpenseIcon] = useState(selectedExpense.icon);
+	const [editableExpenseColor, setEditableExpenseColor] = useState(selectedExpense.color);
 	const [updateExpenseVisible, setUpdateExpenseVisible] = useState(false);
 
 	const [transactionName, setTransactionName] = useState("");
@@ -64,11 +66,19 @@ const Expenses = ({ navigation, route }) => {
 		}
 
 		try {
-			await updateExpense(selectedExpense.id, editableExpenseName, normalizedMaxBudget, transactionNote);
+			await updateExpense(
+				selectedExpense.id,
+				editableExpenseName,
+				normalizedMaxBudget,
+				editableExpenseIcon,
+				editableExpenseColor
+			);
 			const updatedExpense = {
 				...currentExpense,
 				name: editableExpenseName,
 				max_budget: normalizedMaxBudget,
+				icon: editableExpenseIcon,
+				color: editableExpenseColor,
 			};
 			setCurrentExpense(updatedExpense);
 			setUpdateExpenseVisible(false);
@@ -204,10 +214,12 @@ const Expenses = ({ navigation, route }) => {
 				</View>
 
 				<View style={styles.headingSubContainer}>
-					<View style={[styles.expensesIcon, { backgroundColor: currentExpense.color }]}>
-						<FontAwesome name={currentExpense.icon} size={44} color={colors.WHITE} />
+					<View style={styles.expenseIconContainer}>
+						<View style={[styles.expensesIcon, { backgroundColor: currentExpense.color }]}>
+							<FontAwesome name={currentExpense.icon} size={44} color={colors.WHITE} />
+						</View>
 					</View>
-					<View>
+					<View style={styles.expenseDetails}>
 						<Text style={styles.expenseName}>{currentExpense.name}</Text>
 						<Text style={styles.expenseItemText}>1 Transaction</Text>
 					</View>
@@ -254,10 +266,15 @@ const Expenses = ({ navigation, route }) => {
 			{updateExpenseVisible && (
 				<UpdateExpense
 					updateExpenseVisible={updateExpenseVisible}
+					currentExpense={currentExpense}
 					editableExpenseName={editableExpenseName}
 					setEditableExpenseName={setEditableExpenseName}
 					editableExpenseMaxBudget={editableExpenseMaxBudget}
 					setEditableExpenseMaxBudget={setEditableExpenseMaxBudget}
+					editableExpenseIcon={editableExpenseIcon}
+					setEditableExpenseIcon={setEditableExpenseIcon}
+					editableExpenseColor={editableExpenseColor}
+					setEditableExpenseColor={setEditableExpenseColor}
 					handleUpdateExpense={handleUpdateExpense}
 					onClose={() => setUpdateExpenseVisible(false)}
 				/>
@@ -344,6 +361,11 @@ const styles = StyleSheet.create({
 		fontSize: 22,
 		fontWeight: "bold",
 	},
+	expenseIconContainer: {
+		flexDirection: "row",
+		alignItems: "center",
+	},
+	expenseDetails: {},
 	expensesIcon: {
 		alignItems: "center",
 		justifyContent: "center",
@@ -372,8 +394,7 @@ const styles = StyleSheet.create({
 		color: colors.DARKGRAY,
 	},
 	deleteExpenseBtn: {
-		marginBottom: "5%",
-		marginLeft: "35%",
+		marginLeft: "auto",
 	},
 	transactionsContainer: {
 		flex: 1,
@@ -496,10 +517,6 @@ const styles = StyleSheet.create({
 		fontSize: 22,
 		fontWeight: "bold",
 	},
-	// addTransactionContainer: {
-	// 	alignItems: "center",
-	// 	justifyContent: "center",
-	// },
 });
 
 export default Expenses;

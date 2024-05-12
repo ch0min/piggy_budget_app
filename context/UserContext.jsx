@@ -294,11 +294,14 @@ export const UserProvider = ({ children }) => {
 		}
 	};
 
-	const updateExpense = async (id, name, maxBudget) => {
+	const updateExpense = async (id, name, maxBudget, icon, color) => {
 		setLoading(true);
 		// const userId = session?.user?.id;
 		try {
-			const { data, error } = await supabase.from("expenses").update({ name, max_budget: maxBudget }).match({ id });
+			const { data, error } = await supabase
+				.from("expenses")
+				.update({ name, max_budget: maxBudget, icon, color })
+				.match({ id });
 			if (error) throw error;
 
 			getExpenses();

@@ -8,7 +8,7 @@ import IconPicker from "../../../components/modals/IconPicker";
 import ColorPicker from "../../../components/colorPicker";
 
 import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
-import icons from "../../../utils/icons";
+import ICONS from "../../../utils/icons";
 import DarkPrimaryExecBtn from "../../../components/buttons/darkPrimaryExecBtn";
 
 const AddExpense = ({ navigation, route }) => {
@@ -137,13 +137,13 @@ const AddExpense = ({ navigation, route }) => {
 
 					<IconPicker
 						iconPickerVisible={iconPickerVisible}
-						icons={icons}
+						icons={ICONS}
 						handleIconSelect={handleIconSelect}
 						onClose={() => setIconPickerVisible(false)}
 					/>
 				</View>
 				<View style={styles.colorPickerContainer}>
-					<ColorPicker selectedColor={selectedColor} setSelectedColor={setSelectedColor} />
+					<ColorPicker selectedColor={selectedColor} setSelectedColor={setSelectedColor} height={35} width={35} />
 				</View>
 			</View>
 			{/* END */}
