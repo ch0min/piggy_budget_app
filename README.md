@@ -1,11 +1,13 @@
 **_ TODO _**
 
 NEXT: Rækkefølge
-
+Mandag: 
 -  Lav Piechart færdig
 -  Lav Profil billede færdig
--  Lav Overview Screen
+Tirsdag:
 -  Lav valuta
+-  Lav Overview Screen
+Resten af ugen:
 -  Lav Loading indicator for alle buttons.
 -  Fix bug med CompleteProfile screen hurtig vises.
 -  Lav splash screen.
@@ -20,7 +22,6 @@ NEXT: Rækkefølge
 -  Login with google or facebook?
 -  SVG
 -  Skift alt til dansk?
--  Brugt CAPTCHA til BRUTEFORCE!!!!!
 -  SPLASH SCREEN
 
 Exam:
@@ -34,7 +35,7 @@ Exam:
 -  CHANGE DATES ON CREATED_ATS WHEN WE ADD MONTHS
 
 MINOR BUGS:
-
+-  If you edit an existing transaction and tap out, and then click New transaction, then it will placehold the existing one.
 -  Sometimes when you login you will quickly see the CompleteProfile Screen.
 
 **_ SECURITY TEST _**

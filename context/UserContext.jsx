@@ -139,7 +139,6 @@ export const UserProvider = ({ children }) => {
 
 	/*** EXPENSE AREAS FUNCTIONS ***/
 	const [expenseAreas, setExpenseAreas] = useState([]);
-	const [totalEABudget, setTotalEABudget] = useState({});
 
 	const getExpenseAreas = async () => {
 		setLoading(true);
@@ -232,6 +231,42 @@ export const UserProvider = ({ children }) => {
 			);
 		});
 	};
+
+	const updateTotalBudgetForArea = async (expenseAreasId) => {
+		setLoading(true);
+		try {
+			const { data: expenses, error: expensesError } = await supabase
+				.from("expenses")
+				.select("id")
+				.eq("expense_areas_id", expenseAreasId);
+
+			if (expensesError) throw expensesError;
+
+			let totalBudget = 0;
+			for (let expense of expenses) {
+				const { data: transactions, error: transactionsError } = await supabase
+					.from("transactions")
+					.select("amount")
+					.eq("expenses_id", expense.id);
+
+				if (transactionsError) throw transactionsError;
+
+				const expenseTotal = transactions.reduce((acc, curr) => acc + parseFloat(curr.amount), 0);
+				totalBudget += expenseTotal;
+			}
+
+			const { error } = await supabase
+				.from("expense_areas")
+				.update({ total_budget: totalBudget })
+				.eq("id", expenseAreasId);
+
+			if (error) throw error;
+		} catch (error) {
+			console.error("Failed to update total budget for expense area:", error.message);
+		} finally {
+			setLoading(false);
+		}
+	};
 	/*** END ***/
 
 	/*** EXPENSES FUNCTIONS ***/
@@ -260,86 +295,110 @@ export const UserProvider = ({ children }) => {
 	const createExpense = async (name, maxBudget, icon, color, expenseAreasId) => {
 		setLoading(true);
 		const userId = session?.user?.id;
+		try {
+			const { data, error } = await supabase.from("expenses").insert([
+				{
+					created_at: new Date(),
+					name: name,
+					max_budget: maxBudget,
+					icon: icon,
+					color: color,
+					expense_areas_id: expenseAreasId,
+					user_id: userId,
+				},
+			]);
 
-		if (!userId) {
-			alert("No user id found");
+			if (error) throw error;
+
+			await updateTotalBudgetForArea(expenseAreasId);
+		} catch (error) {
+			console.error("Error creating expense", error.message);
+		} finally {
 			setLoading(false);
-			return;
 		}
+		// if (data) {
+		// 	// console.log(data);
+		// 	setLoading(false);
 
-		const { data, error } = await supabase.from("expenses").insert([
-			{
-				created_at: new Date(),
-				name: name,
-				max_budget: maxBudget,
-				icon: icon,
-				color: color,
-				expense_areas_id: expenseAreasId,
-				user_id: userId,
-			},
-		]);
-
-		if (data) {
-			// console.log(data);
-			setLoading(false);
-
-			updateTotalBudgetForArea(expenseAreasId);
-		}
-		if (error) {
-			console.error("Error creating expense:", error.message);
-			setLoading(false);
-			alert("Failed to create expense");
-		}
+		// 	await updateTotalBudgetForArea(expenseAreasId);
+		// }
+		// if (error) {
+		// 	console.error("Error creating expense:", error.message);
+		// 	setLoading(false);
+		// 	alert("Failed to create expense");
+		// }
 	};
 
 	const updateExpense = async (id, name, maxBudget, icon, color) => {
 		setLoading(true);
-		// const userId = session?.user?.id;
 		try {
 			const { data, error } = await supabase
 				.from("expenses")
 				.update({ name, max_budget: maxBudget, icon, color })
 				.match({ id });
+
 			if (error) throw error;
 
 			getExpenses();
 			setLoading(false);
 			return data;
 		} catch (error) {
-			console.error("Error updating expense.", error.message);
+			console.error("Error updating expense:", error.message);
 			setLoading(false);
 			throw error;
 		}
 	};
 
-	const deleteExpense = (id) => {
-		return new Promise((resolve, reject) => {
-			Alert.alert(
-				"Confirm removal",
-				"Do you really want to remove this expense?",
-				[
-					{
-						text: "Cancel",
-						onPress: () => reject("Removal cancelled"),
-						style: "cancel",
-					},
-					{
-						text: "Delete",
-						onPress: async () => {
-							try {
-								await supabase.from("expenses").delete().match({ id: id });
-								resolve("Removal of the expense was successful.");
-							} catch (error) {
-								reject("Removal of expense failed.");
-							}
-						},
-						style: "destructive",
-					},
-				],
-				{ cancelable: false }
-			);
-		});
+	const deleteExpense = async (id) => {
+		setLoading(true);
+		try {
+			const { data: expenseData, error: expenseError } = await supabase
+				.from("expenses")
+				.select("expense_areas_id")
+				.eq("id", id)
+				.single();
+
+			if (expenseError) throw expenseError;
+
+			const { error } = await supabase.from("expenses").delete().match({ id });
+			if (error) throw error;
+
+			await updateTotalBudgetForArea(expenseData.expense_areas_id);
+		} catch (error) {
+			console.error("Error deleting expense:", error.message);
+		} finally {
+			setLoading(false);
+		}
 	};
+
+	// const deleteExpense = (id) => {
+	// 	return new Promise((resolve, reject) => {
+	// 		Alert.alert(
+	// 			"Confirm removal",
+	// 			"Do you really want to remove this expense?",
+	// 			[
+	// 				{
+	// 					text: "Cancel",
+	// 					onPress: () => reject("Removal cancelled"),
+	// 					style: "cancel",
+	// 				},
+	// 				{
+	// 					text: "Delete",
+	// 					onPress: async () => {
+	// 						try {
+	// 							await supabase.from("expenses").delete().match({ id: id });
+	// 							resolve("Removal of the expense was successful.");
+	// 						} catch (error) {
+	// 							reject("Removal of expense failed.");
+	// 						}
+	// 					},
+	// 					style: "destructive",
+	// 				},
+	// 			],
+	// 			{ cancelable: false }
+	// 		);
+	// 	});
+	// };
 	/*** END ***/
 
 	/*** TRANSACTIONS FUNCTIONS ***/
@@ -368,79 +427,137 @@ export const UserProvider = ({ children }) => {
 
 	const createTransaction = async (name, amount, note, expensesId) => {
 		setLoading(true);
-		const userId = session?.user?.id;
+		try {
+			const userId = session?.user?.id;
 
-		if (!userId) {
-			console.error("No user id found");
-			setLoading(false);
-			return;
-		}
+			const { data, error } = await supabase.from("transactions").insert([
+				{
+					created_at: new Date(),
+					name: name,
+					amount: amount,
+					note: note,
+					expenses_id: expensesId,
+					user_id: userId,
+				},
+			]);
 
-		const { data, error } = await supabase.from("transactions").insert([
-			{
-				created_at: new Date(),
-				name: name,
-				amount: amount,
-				note: note,
-				expenses_id: expensesId,
-				user_id: userId,
-			},
-		]);
+			if (error) throw error;
 
-		if (data) {
-			setLoading(false);
-		}
-		if (error) {
+			const { data: expenseData, error: expenseError } = await supabase
+				.from("expenses")
+				.select("expense_areas_id")
+				.eq("id", expensesId)
+				.single();
+
+			if (expenseError) throw expenseError;
+
+			await updateTotalBudgetForArea(expenseData.expense_areas_id);
+		} catch (error) {
 			console.error("Error creating transaction:", error.message);
+		} finally {
 			setLoading(false);
-			alert("Failed to create transaction");
 		}
+		// if (data) {
+		// 	setLoading(false);
+		// }
+		// if (error) {
+		// 	console.error("Error creating transaction:", error.message);
+		// 	setLoading(false);
+		// 	alert("Failed to create transaction");
+		// }
 	};
 
 	const updateTransaction = async (id, name, amount, note) => {
 		setLoading(true);
-		// const userId = session?.user?.id;
 		try {
 			const { data, error } = await supabase.from("transactions").update({ name, amount, note }).match({ id });
 			if (error) throw error;
 
-			getTransactions();
-			setLoading(false);
-			return data;
+			const { data: transactionData, error: transactionError } = await supabase
+				.from("transactions")
+				.select("expenses_id")
+				.eq("id", id)
+				.single();
+
+			if (transactionError) throw transactionError;
+
+			const { data: expenseData, error: expenseError } = await supabase
+				.from("expenses")
+				.select("expense_areas_id")
+				.eq("id", transactionData.expenses_id)
+				.single();
+
+			if (expenseError) throw expenseError;
+
+			await updateTotalBudgetForArea(expenseData.expense_areas_id);
+
+			// getTransactions();
+			// setLoading(false);
+			// return data;
 		} catch (error) {
 			console.error("Error updating transaction", error.message);
+		} finally {
 			setLoading(false);
-			throw error;
 		}
 	};
 
-	const deleteTransaction = (id) => {
-		return new Promise((resolve, reject) => {
-			Alert.alert(
-				"Confirm removal",
-				"Do you really want to remove this transaction?",
-				[
-					{
-						text: "Cancel",
-						style: "cancel",
-					},
-					{
-						text: "Delete",
-						onPress: async () => {
-							try {
-								await supabase.from("transactions").delete().match({ id: id });
-								resolve("Removal of the transaction was successful.");
-							} catch (error) {
-								reject("Removal of transaction failed.");
-							}
-						},
-						style: "destructive",
-					},
-				],
-				{ cancelable: false }
-			);
-		});
+	const deleteTransaction = async (id) => {
+		setLoading(true);
+		try {
+			const { data: transactionData, error: transactionError } = await supabase
+				.from("transactions")
+				.select("expenses_id")
+				.eq("id", id)
+				.single();
+
+			if (transactionError) throw transactionError;
+
+			const { data: expenseData, error: expenseError } = await supabase
+				.from("expenses")
+				.select("expense_areas_id")
+				.eq("id", transactionData.expenses_id)
+				.single();
+
+			if (expenseError) throw expenseError;
+
+			const { error } = await supabase.from("transactions").delete().match({ id });
+			if (error) throw error;
+
+			await updateTotalBudgetForArea(expenseData.expense_areas_id);
+		} catch (error) {
+			console.error("Error deleting transaction", error.message);
+		} finally {
+			setLoading(false);
+		}
 	};
+
+	// const deleteTransaction = (id) => {
+	// 	return new Promise((resolve, reject) => {
+	// 		Alert.alert(
+	// 			"Confirm removal",
+	// 			"Do you really want to remove this transaction?",
+	// 			[
+	// 				{
+	// 					text: "Cancel",
+	// 					style: "cancel",
+	// 				},
+	// 				{
+	// 					text: "Delete",
+	// 					onPress: async () => {
+	// 						try {
+	// 							await supabase.from("transactions").delete().match({ id: id });
+	// 							resolve("Removal of the transaction was successful.");
+	// 						} catch (error) {
+	// 							reject("Removal of transaction failed.");
+	// 						}
+	// 					},
+	// 					style: "destructive",
+	// 				},
+	// 			],
+	// 			{ cancelable: false }
+	// 		);
+	// 	});
+	// };
 
 	return (
 		<UserContext.Provider
@@ -461,13 +578,12 @@ export const UserProvider = ({ children }) => {
 
 				// Expense Areas States
 				expenseAreas,
-				totalEABudget,
-				setTotalEABudget,
 				// Expense Areas Functions
 				getExpenseAreas,
 				createExpenseArea,
 				updateExpenseArea,
 				deleteExpenseArea,
+				updateTotalBudgetForArea,
 
 				// Expenses States
 				expenses,

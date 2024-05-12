@@ -23,9 +23,6 @@ const Expenses = ({ navigation, route }) => {
 		createTransaction,
 		updateTransaction,
 		deleteTransaction,
-
-		updateTotalSpentForExpenseArea
-
 	} = useUser();
 
 	const { selectedExpense: selectedExpense } = route.params;
@@ -120,12 +117,7 @@ const Expenses = ({ navigation, route }) => {
 			alert("Transaction note can't be more than 20 characters.");
 			return;
 		}
-		await createTransaction(
-			transactionName,
-			normalizedAmount,
-			transactionNote,
-			selectedExpenseId
-		);
+		await createTransaction(transactionName, normalizedAmount, transactionNote, selectedExpenseId);
 		setTransactionName("");
 		setTransactionAmount("");
 		setTransactionNote("");
@@ -226,7 +218,7 @@ const Expenses = ({ navigation, route }) => {
 				</View>
 
 				<ProgressBar
-					transactions={transactions}
+					transactions={transactions.filter((tr) => tr.expenses_id === selectedExpense.id)}
 					selectedExpense={currentExpense}
 					maxBudget={currentExpense.max_budget}
 				/>
@@ -406,6 +398,7 @@ const styles = StyleSheet.create({
 	},
 	transactionItemsContainer: {
 		flexDirection: "row",
+		alignItems: "center",
 		justifyContent: "space-between",
 		marginHorizontal: "5%",
 		marginVertical: "1%",
@@ -423,6 +416,7 @@ const styles = StyleSheet.create({
 		gap: "5%",
 	},
 	transactionItemsRight: {
+		marginLeft: "5%",
 		gap: "5%",
 	},
 	transactionItemsName: {
@@ -435,7 +429,6 @@ const styles = StyleSheet.create({
 		color: colors.DARKGRAY,
 	},
 	transactionItemsDate: {
-		marginVertical: "4%",
 		fontSize: 14,
 		color: colors.DARKGRAY,
 	},

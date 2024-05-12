@@ -13,14 +13,13 @@ const Budget = ({ navigation }) => {
 	const {
 		session,
 		expenseAreas,
-		totalEABudget,
-		setTotalEABudget,
 		getExpenseAreas,
 		createExpenseArea,
 		updateExpenseArea,
 		deleteExpenseArea,
 		expenses,
 		getExpenses,
+		transactions,
 	} = useUser();
 	const inputRef = useRef(null);
 	const [showCheckmark, setShowCheckmark] = useState(false);
@@ -41,7 +40,6 @@ const Budget = ({ navigation }) => {
 	useEffect(() => {
 		setEditableExpenseAreas(expenseAreas.map((area) => ({ ...area, editableName: area.name })));
 	}, [expenseAreas]);
-
 
 	const handleCreateExpenseArea = async () => {
 		if (!expenseAreaName.trim()) {
@@ -108,8 +106,8 @@ const Budget = ({ navigation }) => {
 					</View>
 				) : (
 					<>
-						<Text style={styles.expenseAreaText}>{item.name}</Text>
-						<Text style={styles.expenseAreaText}>{item.total_budget}</Text>
+						<Text style={styles.expenseAreaName}>{item.name}</Text>
+						<Text style={styles.expenseAreaTotalBudget}>(Total: {item.total_budget})</Text>
 					</>
 				)}
 				<TouchableOpacity
@@ -150,19 +148,25 @@ const Budget = ({ navigation }) => {
 		</View>
 	);
 
-	const renderExpenses = ({ item }) => (
-		<TouchableOpacity style={styles.expensesContainer} onPress={() => handleExpense(item)}>
-			<View style={[styles.expensesIcon, { backgroundColor: item.color }]}>
-				<FontAwesome name={item.icon} size={14} color={colors.WHITE} />
-			</View>
-			<View style={styles.expensesTextContainer}>
-				<Text style={styles.expensesName}>{item.name}</Text>
-				<View style={styles.expensesBudgetNameBox}>
-					<Text style={styles.expensesBudgetName}>{item.max_budget}</Text>
+	const renderExpenses = ({ item }) => {
+		const expenseTransactions = transactions.filter((tr) => tr.expenses_id === item.id);
+		const totalSpent = expenseTransactions.reduce((acc, tr) => acc + parseFloat(tr.amount), 0);
+
+		return (
+			<TouchableOpacity style={styles.expensesContainer} onPress={() => handleExpense(item)}>
+				<View style={[styles.expensesIcon, { backgroundColor: item.color }]}>
+					<FontAwesome name={item.icon} size={14} color={colors.WHITE} />
 				</View>
-			</View>
-		</TouchableOpacity>
-	);
+				<View style={styles.expensesTextContainer}>
+					<Text style={styles.expensesName}>{item.name}</Text>
+					<View style={styles.expensesBudgetNameBox}>
+						<Text style={styles.expensesTotalSpent}>{totalSpent} /</Text>
+						<Text style={styles.expensesMaxBudgetName}> {item.max_budget}</Text>
+					</View>
+				</View>
+			</TouchableOpacity>
+		);
+	};
 
 	return (
 		<View style={styles.container}>
@@ -263,13 +267,17 @@ const styles = StyleSheet.create({
 		shadowRadius: 3,
 		elevation: 1,
 	},
-	expenseAreaText: {
+	expenseAreaName: {
 		marginLeft: "3%",
 		marginBottom: "4%",
 		fontSize: 22,
 		fontWeight: "bold",
 	},
-
+	expenseAreaTotalBudget: {
+		marginTop: "1%",
+		fontSize: 18,
+		fontStyle: "italic",
+	},
 	expenseAreaInput: {
 		width: "80%",
 		marginLeft: "3%",
@@ -306,14 +314,20 @@ const styles = StyleSheet.create({
 		fontSize: 16,
 	},
 	expensesBudgetNameBox: {
+		flexDirection: "row",
 		marginVertical: "2%",
 		padding: "5%",
 		borderRadius: 5,
 		backgroundColor: "#F4F4F4",
 	},
-	expensesBudgetName: {
+	expensesTotalSpent: {
 		flexShrink: 1,
 		fontSize: 16,
+	},
+	expensesMaxBudgetName: {
+		flexShrink: 1,
+		fontSize: 16,
+		fontWeight: "bold",
 	},
 	expensesIcon: {
 		alignItems: "center",
