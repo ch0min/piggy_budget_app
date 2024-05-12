@@ -4,43 +4,52 @@ import colors from "../../../../utils/colors";
 // import { RefreshControl } from "react-native";
 import { MaterialIcons, AntDesign } from "@expo/vector-icons";
 
-const UpdateExpense = ({
-	updateExpenseVisible,
-	editableExpenseName,
-	setEditableExpenseName,
-	editableExpenseMaxBudget,
-	setEditableExpenseMaxBudget,
-	handleUpdateExpense,
+const UpdateTransaction = ({
+	updateTransactionVisible,
+	transactionName,
+	setTransactionName,
+	transactionAmount,
+	setTransactionAmount,
+	transactionNote,
+	setTransactionNote,
+	handleUpdateTransaction,
 	onClose,
 }) => {
 	return (
-		<Modal visible={updateExpenseVisible} animationType="fade" transparent={true} onRequestClose={onClose}>
+		<Modal visible={updateTransactionVisible} animationType="fade" transparent={true} onRequestClose={onClose}>
 			<TouchableOpacity style={styles.modalOverlay} activeOpacity={1} onPress={onClose}>
 				<View style={styles.modalContent}>
-					<View style={styles.updateExpenseContainer}>
-						<View style={styles.updateExpenseBtnContainer}>
+					<View style={styles.updateTransactionContainer}>
+						<View style={styles.updateTransactionBtnContainer}>
 							<TextInput
-								style={styles.updateExpenseNameInput}
-								placeholder="Expense name"
+								style={styles.updateTransactionNameInput}
+								placeholder="Transaction name"
 								placeholderTextColor={colors.DARKGRAY}
-								onChangeText={setEditableExpenseName}
-								value={editableExpenseName}
+								onChangeText={setTransactionName}
+								value={transactionName}
 								autoFocus={true}
 							/>
 							<MaterialIcons name="edit" size={24} color={colors.GRAY} />
 						</View>
 
 						<TextInput
-							style={styles.updateExpenseAmountInput}
+							style={styles.updateTransactionAmountInput}
 							placeholder="Insert amount"
 							placeholderTextColor={colors.DARKGRAY}
-							onChangeText={setEditableExpenseMaxBudget}
-							value={editableExpenseMaxBudget}
+							onChangeText={setTransactionAmount}
+							value={transactionAmount}
 							inputMode="decimal"
 							maxLength={9}
 						/>
+						<TextInput
+							style={styles.updateTransactionNoteInput}
+							placeholder="Note (optional)"
+							placeholderTextColor={colors.DARKGRAY}
+							onChangeText={setTransactionNote}
+							value={transactionNote}
+						/>
 
-						<TouchableOpacity style={styles.addBtn} onPress={handleUpdateExpense}>
+						<TouchableOpacity style={styles.addBtn} onPress={handleUpdateTransaction}>
 							<AntDesign name="check" size={34} color={colors.BLACK} />
 						</TouchableOpacity>
 					</View>
@@ -73,19 +82,19 @@ const styles = StyleSheet.create({
 		shadowRadius: 3,
 		elevation: 1,
 	},
-	updateExpenseContainer: {
+	updateTransactionContainer: {
 		width: "100%",
 	},
-	updateExpenseBtnContainer: {
+	updateTransactionBtnContainer: {
 		flexDirection: "row",
 		justifyContent: "space-between",
 	},
-	updateExpenseNameInput: {
+	updateTransactionNameInput: {
 		width: "90%",
 		fontSize: 18,
 		color: colors.BLACK,
 	},
-	updateExpenseAmountInput: {
+	updateTransactionAmountInput: {
 		marginTop: "5%",
 		paddingVertical: "5%",
 		fontSize: 14,
@@ -95,7 +104,7 @@ const styles = StyleSheet.create({
 		borderBottomWidth: 1,
 		borderBottomColor: colors.GRAY,
 	},
-	updateExpenseNoteInput: {
+	updateTransactionNoteInput: {
 		paddingVertical: "5%",
 		fontSize: 14,
 		color: colors.BLACK,
@@ -113,4 +122,4 @@ const styles = StyleSheet.create({
 	},
 });
 
-export default UpdateExpense;
+export default UpdateTransaction;

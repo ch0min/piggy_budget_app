@@ -1,5 +1,5 @@
-import React, { useState, useCallback } from "react";
-import { StyleSheet, View, Modal, Text, TextInput, TouchableOpacity } from "react-native";
+import React from "react";
+import { StyleSheet, View, Modal, TextInput, TouchableOpacity } from "react-native";
 import colors from "../../../../utils/colors";
 // import { RefreshControl } from "react-native";
 import { MaterialIcons, AntDesign } from "@expo/vector-icons";

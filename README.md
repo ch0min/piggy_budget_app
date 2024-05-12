@@ -1,7 +1,18 @@
 **_ TODO _**
 
--  Fix delete expense.
--  Fix Total amount in expenses and transactions.
+NEXT: Rækkefølge
+
+-  Update Transactions
+-  Lav Piechart færdig
+-  Lav Profil billede færdig
+-  Lav Overview Screen
+-  Lav valuta
+-  Lav Loading indicator for alle buttons.
+-  Fix bug med CompleteProfile screen hurtig vises.
+-  Lav splash screen.
+-  Email redirection
+-  CAPTCHA
+-  Wait with fixing update expenses to rerender the screen
 
 -  Categories Screen AddCategory Screen skal moduleres.
 -  ÆNDRE ALT MARGIN OSV TIL PERCENTAGE
@@ -13,7 +24,7 @@
 -  Skift alt til dansk?
 -  Brugt CAPTCHA til BRUTEFORCE!!!!!
 -  SPLASH SCREEN
--  Email redirection
+
 -  Hvorfor bruge expo router vs react native navigation?
 -  useContext for navigation?
 -  Tilføj loading indicator.

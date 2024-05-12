@@ -9,32 +9,35 @@ import { FontAwesome, MaterialIcons, Feather, AntDesign, Entypo } from "@expo/ve
 import ProgressBar from "../../../components/graphs/ProgressBar";
 import UpdateExpense from "./components/updateExpense";
 import AddTransaction from "../budget/components/addTransaction";
+import UpdateTransaction from "../budget/components/updateTransaction";
 
 const Expenses = ({ navigation, route }) => {
 	const {
 		loading,
 		session,
-		expenses,
 		getExpenses,
 		updateExpense,
 		deleteExpense,
 		transactions,
 		getTransactions,
 		createTransaction,
+		updateTransaction,
 		deleteTransaction,
 	} = useUser();
 
-	// const { selectedExpenseArea: selectedExpenseArea } = route.params;
-
 	const { selectedExpense: selectedExpense } = route.params;
 	const [selectedExpenseId, setSelectedExpenseId] = useState(selectedExpense.id);
-	const [editableExpense, setEditableExpense] = useState(selectedExpense);
+	const [currentExpense, setCurrentExpense] = useState(selectedExpense);
+	const [editableExpenseName, setEditableExpenseName] = useState(selectedExpense.name);
+	const [editableExpenseMaxBudget, setEditableExpenseMaxBudget] = useState(String(selectedExpense.max_budget));
 	const [updateExpenseVisible, setUpdateExpenseVisible] = useState(false);
 
 	const [transactionName, setTransactionName] = useState("");
 	const [transactionAmount, setTransactionAmount] = useState("");
 	const [transactionNote, setTransactionNote] = useState("");
 	const [addTransactionVisible, setAddTransactionVisible] = useState(false);
+	const [updateTransactionVisible, setUpdateTransactionVisible] = useState(false);
+	const [currentTransaction, setCurrentTransaction] = useState(null);
 
 	useFocusEffect(
 		useCallback(() => {
@@ -44,33 +47,41 @@ const Expenses = ({ navigation, route }) => {
 		}, [session])
 	);
 
-	useEffect(() => {
-		getExpenses();
-	});
-
-	useEffect(() => {
-		setEditableExpense(selectedExpenseId);
-	}, [selectedExpenseId]);
-
-	const prepareAmountForDB = (displayValue) => {
+	const prepareNumericForDB = (displayValue) => {
 		let normalized = displayValue.replace(/\./g, "").replace(/,/g, ".");
 		return parseFloat(normalized);
 	};
 
-	const handleUpdateExpense = async (expenseName, maxBudget) => {
-		if (!expenseName.trim() || !maxBudget.trim() || isNaN(prepareAmountForDB(maxBudget))) {
-			alert("Please, check your inputs.");
+	const handleUpdateExpense = async () => {
+		if (!editableExpenseName.trim()) {
+			alert("Transaction name can't be empty.");
+			return;
+		}
+		const normalizedMaxBudget = prepareNumericForDB(editableExpenseMaxBudget);
+		if (!normalizedMaxBudget || isNaN(normalizedMaxBudget) || normalizedMaxBudget <= 0) {
+			alert("Please, enter a valid expense max budget limit.");
 			return;
 		}
 
 		try {
-			await updateExpense(selectedExpenseId, expenseName, prepareAmountForDB(maxBudget));
-			getExpenses();
-
+			await updateExpense(selectedExpense.id, editableExpenseName, normalizedMaxBudget, transactionNote);
+			const updatedExpense = {
+				...currentExpense,
+				name: editableExpenseName,
+				max_budget: normalizedMaxBudget,
+			};
+			setCurrentExpense(updatedExpense);
 			setUpdateExpenseVisible(false);
-		} catch {
-			Alert.alert("Failed to update expense: ", error.message);
+			getExpenses();
+		} catch (error) {
+			alert("Failed to update transaction: ", error.message);
 		}
+	};
+
+	const openUpdateExpenseModal = () => {
+		setEditableExpenseName(selectedExpense.name);
+		setEditableExpenseMaxBudget(String(selectedExpense.max_budget));
+		setUpdateExpenseVisible(true);
 	};
 
 	const handleDeleteExpense = async (id) => {
@@ -87,7 +98,7 @@ const Expenses = ({ navigation, route }) => {
 			alert("Transaction name can't be empty.");
 			return;
 		}
-		const normalizedAmount = prepareAmountForDB(transactionAmount);
+		const normalizedAmount = prepareNumericForDB(transactionAmount);
 		if (!normalizedAmount || isNaN(normalizedAmount) || normalizedAmount <= 0) {
 			alert("Please, enter a valid transaction amount.");
 			return;
@@ -97,6 +108,7 @@ const Expenses = ({ navigation, route }) => {
 			return;
 		}
 		await createTransaction(
+			currentTransaction.id,
 			transactionName,
 			prepareAmountForDB(transactionAmount),
 			transactionNote,
@@ -110,6 +122,43 @@ const Expenses = ({ navigation, route }) => {
 		alert("Transaction created");
 	};
 
+	const handleUpdateTransaction = async () => {
+		if (!transactionName.trim()) {
+			alert("Transaction name can't be empty.");
+			return;
+		}
+		const normalizedAmount = prepareAmountForDB(transactionAmount);
+		if (!normalizedAmount || isNaN(normalizedAmount) || normalizedAmount <= 0) {
+			alert("Please, enter a valid transaction amount.");
+			return;
+		}
+		if (transactionNote.trim().length > 20) {
+			alert("Transaction note can't be more than 20 characters.");
+			return;
+		}
+
+		try {
+			await updateTransaction(
+				currentTransaction.id,
+				transactionName,
+				prepareAmountForDB(transactionAmount),
+				transactionNote
+			);
+			setUpdateTransactionVisible(false);
+			getTransactions();
+		} catch (error) {
+			alert("Failed to update transaction: ", error.message);
+		}
+	};
+
+	const openUpdateTransactionModal = (transaction) => {
+		setCurrentTransaction(transaction);
+		setTransactionName(transaction.name);
+		setTransactionAmount(String(transaction.amount));
+		setTransactionNote(transaction.note);
+		setUpdateTransactionVisible(true);
+	};
+
 	const handleDeleteTransaction = async (id) => {
 		try {
 			const message = await deleteTransaction(id);
@@ -121,7 +170,7 @@ const Expenses = ({ navigation, route }) => {
 	};
 
 	const renderTransactions = ({ item }) => (
-		<TouchableOpacity style={styles.transactionItemsContainer}>
+		<TouchableOpacity style={styles.transactionItemsContainer} onPress={() => openUpdateTransactionModal(item)}>
 			<View style={styles.transactionItemsLeft}>
 				<Text style={styles.transactionItemsName}>{item.name}</Text>
 				<Text style={styles.transactionItemsAmount}>{item.amount}</Text>
@@ -149,17 +198,17 @@ const Expenses = ({ navigation, route }) => {
 					</TouchableOpacity>
 					<Text style={styles.heading}>Expense Transactions</Text>
 
-					<TouchableOpacity onPress={() => setUpdateExpenseVisible(true)}>
+					<TouchableOpacity onPress={() => openUpdateExpenseModal()}>
 						<MaterialIcons name={"edit"} size={24} color={colors.DARKGRAY} />
 					</TouchableOpacity>
 				</View>
 
 				<View style={styles.headingSubContainer}>
-					<View style={[styles.expensesIcon, { backgroundColor: selectedExpense.color }]}>
-						<FontAwesome name={selectedExpense.icon} size={44} color={colors.WHITE} />
+					<View style={[styles.expensesIcon, { backgroundColor: currentExpense.color }]}>
+						<FontAwesome name={currentExpense.icon} size={44} color={colors.WHITE} />
 					</View>
 					<View>
-						<Text style={styles.expenseName}>{selectedExpense.name}</Text>
+						<Text style={styles.expenseName}>{currentExpense.name}</Text>
 						<Text style={styles.expenseItemText}>1 Transaction</Text>
 					</View>
 					<TouchableOpacity style={styles.deleteExpenseBtn} onPress={() => handleDeleteExpense(selectedExpenseId)}>
@@ -169,8 +218,8 @@ const Expenses = ({ navigation, route }) => {
 
 				<ProgressBar
 					transactions={transactions}
-					selectedExpense={selectedExpense}
-					maxBudget={selectedExpense.max_budget}
+					selectedExpense={currentExpense}
+					maxBudget={currentExpense.max_budget}
 				/>
 			</View>
 			{/* END */}
@@ -204,8 +253,11 @@ const Expenses = ({ navigation, route }) => {
 			{/* Update Expense Modal */}
 			{updateExpenseVisible && (
 				<UpdateExpense
-					editableExpense={editableExpense}
 					updateExpenseVisible={updateExpenseVisible}
+					editableExpenseName={editableExpenseName}
+					setEditableExpenseName={setEditableExpenseName}
+					editableExpenseMaxBudget={editableExpenseMaxBudget}
+					setEditableExpenseMaxBudget={setEditableExpenseMaxBudget}
 					handleUpdateExpense={handleUpdateExpense}
 					onClose={() => setUpdateExpenseVisible(false)}
 				/>
@@ -227,6 +279,22 @@ const Expenses = ({ navigation, route }) => {
 						onClose={() => setAddTransactionVisible(false)}
 					/>
 				</>
+			)}
+			{/* END */}
+
+			{/* Update Transaction Modal */}
+			{updateTransactionVisible && (
+				<UpdateTransaction
+					updateTransactionVisible={updateTransactionVisible}
+					transactionName={transactionName}
+					setTransactionName={setTransactionName}
+					transactionAmount={transactionAmount}
+					setTransactionAmount={setTransactionAmount}
+					transactionNote={transactionNote}
+					setTransactionNote={setTransactionNote}
+					handleUpdateTransaction={handleUpdateTransaction}
+					onClose={() => setUpdateTransactionVisible(false)}
+				/>
 			)}
 			{/* END */}
 		</View>

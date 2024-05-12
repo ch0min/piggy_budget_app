@@ -301,6 +301,7 @@ export const UserProvider = ({ children }) => {
 			const { data, error } = await supabase.from("expenses").update({ name, max_budget: maxBudget }).match({ id });
 			if (error) throw error;
 
+			getExpenses();
 			setLoading(false);
 			return data;
 		} catch (error) {
@@ -309,27 +310,6 @@ export const UserProvider = ({ children }) => {
 			throw error;
 		}
 	};
-
-	// const updateExpense = async (expenseId, areaId, updates) => {
-	// 	setLoading(true);
-	// 	// const userId = session?.user?.id;
-	// 	try {
-	// 		const { data, error } = await supabase
-	// 			.from("expenses")
-	// 			.update({ ...updates, expense_areas_id: areaId })
-	// 			.match({ id: expenseId });
-
-	// 		if (error) throw error;
-
-	// 		getExpenses();
-	// 		setLoading(false);
-	// 		return data;
-	// 	} catch (error) {
-	// 		console.error("Error updating expense", error.message);
-	// 		setLoading(false);
-	// 		throw error;
-	// 	}
-	// };
 
 	const deleteExpense = (id) => {
 		return new Promise((resolve, reject) => {
@@ -416,6 +396,23 @@ export const UserProvider = ({ children }) => {
 		}
 	};
 
+	const updateTransaction = async (id, name, amount, note) => {
+		setLoading(true);
+		// const userId = session?.user?.id;
+		try {
+			const { data, error } = await supabase.from("transactions").update({ name, amount, note }).match({ id });
+			if (error) throw error;
+
+			getTransactions();
+			setLoading(false);
+			return data;
+		} catch (error) {
+			console.error("Error updating transaction", error.message);
+			setLoading(false);
+			throw error;
+		}
+	};
+
 	const deleteTransaction = (id) => {
 		return new Promise((resolve, reject) => {
 			Alert.alert(
@@ -424,7 +421,6 @@ export const UserProvider = ({ children }) => {
 				[
 					{
 						text: "Cancel",
-						onPress: () => reject("Removal cancelled"),
 						style: "cancel",
 					},
 					{
@@ -640,6 +636,7 @@ export const UserProvider = ({ children }) => {
 				// Transactions Functions
 				getTransactions,
 				createTransaction,
+				updateTransaction,
 				deleteTransaction,
 
 				// categoryList,
