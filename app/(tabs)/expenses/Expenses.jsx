@@ -220,6 +220,7 @@ const Expenses = ({ navigation, route }) => {
 				<ProgressBar
 					transactions={transactions.filter((tr) => tr.expenses_id === selectedExpense.id)}
 					selectedExpense={currentExpense}
+					totalSpent={currentExpense.total_spent}
 					maxBudget={currentExpense.max_budget}
 				/>
 			</View>

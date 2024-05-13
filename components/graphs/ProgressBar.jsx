@@ -4,16 +4,18 @@ import { useUser } from "../../context/UserContext";
 import colors from "../../utils/colors";
 import { LinearGradient } from "expo-linear-gradient";
 
-const ProgressBar = ({ transactions, selectedExpense, maxBudget, onTotalChange }) => {
+const ProgressBar = ({ transactions, totalSpent, maxBudget }) => {
 	const [totalAmount, setTotalAmount] = useState(0);
-	const [totalPercentage, setTotalPercentage] = useState(0);
+	// const [totalPercentage, setTotalPercentage] = useState(0);
 
-	useEffect(() => {
-		const total = transactions.reduce((acc, curr) => acc + parseFloat(curr.amount), 0);
-		setTotalAmount(total);
-		const percentage = (total / maxBudget) * 100;
-		setTotalPercentage(percentage);
-	}, [transactions, maxBudget]);
+	// useEffect(() => {
+	// const total = transactions.reduce((acc, curr) => acc + parseFloat(curr.amount), 0);
+	// setTotalAmount(total);
+	// 	const percentage = (totalSpent / maxBudget) * 100;
+	// 	setTotalPercentage(percentage);
+	// }, [transactions, maxBudget]);
+
+	const totalPercentage = maxBudget > 0 ? (totalSpent / maxBudget) * 100 : 0;
 
 	// useEffect(() => {
 	// 	if (!selectedExpense) return;
@@ -32,7 +34,7 @@ const ProgressBar = ({ transactions, selectedExpense, maxBudget, onTotalChange }
 	return (
 		<View style={styles.container}>
 			<View style={styles.textContainer}>
-				<Text style={styles.progressTextAmount}>{totalAmount}</Text>
+				<Text style={styles.progressTextAmount}>{totalSpent}</Text>
 				<Text style={styles.progressTextPct}>{totalPercentage.toFixed(2)}%</Text>
 				<Text style={styles.progressTextMax}>{maxBudget}</Text>
 			</View>

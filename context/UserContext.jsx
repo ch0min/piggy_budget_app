@@ -164,12 +164,6 @@ export const UserProvider = ({ children }) => {
 		setLoading(true);
 		const userId = session?.user?.id;
 
-		if (!userId) {
-			console.error("No user id found");
-			setLoading(false);
-			return;
-		}
-
 		const { data, error } = await supabase.from("expense_areas").insert([
 			{
 				name: name,
@@ -189,7 +183,6 @@ export const UserProvider = ({ children }) => {
 
 	const updateExpenseArea = async (id, name) => {
 		setLoading(true);
-		// const userId = session?.user?.id;
 		try {
 			const { data, error } = await supabase.from("expense_areas").update({ name }).match({ id });
 			if (error) throw error;
@@ -300,6 +293,7 @@ export const UserProvider = ({ children }) => {
 				{
 					created_at: new Date(),
 					name: name,
+					total_spent: 0,
 					max_budget: maxBudget,
 					icon: icon,
 					color: color,
@@ -310,23 +304,12 @@ export const UserProvider = ({ children }) => {
 
 			if (error) throw error;
 
-			await updateTotalBudgetForArea(expenseAreasId);
+			// await updateTotalBudgetForArea(expenseAreasId);
 		} catch (error) {
 			console.error("Error creating expense", error.message);
 		} finally {
 			setLoading(false);
 		}
-		// if (data) {
-		// 	// console.log(data);
-		// 	setLoading(false);
-
-		// 	await updateTotalBudgetForArea(expenseAreasId);
-		// }
-		// if (error) {
-		// 	console.error("Error creating expense:", error.message);
-		// 	setLoading(false);
-		// 	alert("Failed to create expense");
-		// }
 	};
 
 	const updateExpense = async (id, name, maxBudget, icon, color) => {
@@ -339,31 +322,32 @@ export const UserProvider = ({ children }) => {
 
 			if (error) throw error;
 
-			getExpenses();
-			setLoading(false);
-			return data;
+			// getExpenses();
+			// return data;
 		} catch (error) {
 			console.error("Error updating expense:", error.message);
 			setLoading(false);
 			throw error;
+		} finally {
+			setLoading(false);
 		}
 	};
 
 	const deleteExpense = async (id) => {
 		setLoading(true);
 		try {
-			const { data: expenseData, error: expenseError } = await supabase
-				.from("expenses")
-				.select("expense_areas_id")
-				.eq("id", id)
-				.single();
+			// const { data: expenseData, error: expenseError } = await supabase
+			// 	.from("expenses")
+			// 	.select("expense_areas_id")
+			// 	.eq("id", id)
+			// 	.single();
 
-			if (expenseError) throw expenseError;
+			// if (expenseError) throw expenseError;
 
 			const { error } = await supabase.from("expenses").delete().match({ id });
 			if (error) throw error;
 
-			await updateTotalBudgetForArea(expenseData.expense_areas_id);
+			// await updateTotalBudgetForArea(expenseData.expense_areas_id);
 		} catch (error) {
 			console.error("Error deleting expense:", error.message);
 		} finally {
@@ -371,34 +355,24 @@ export const UserProvider = ({ children }) => {
 		}
 	};
 
-	// const deleteExpense = (id) => {
-	// 	return new Promise((resolve, reject) => {
-	// 		Alert.alert(
-	// 			"Confirm removal",
-	// 			"Do you really want to remove this expense?",
-	// 			[
-	// 				{
-	// 					text: "Cancel",
-	// 					onPress: () => reject("Removal cancelled"),
-	// 					style: "cancel",
-	// 				},
-	// 				{
-	// 					text: "Delete",
-	// 					onPress: async () => {
-	// 						try {
-	// 							await supabase.from("expenses").delete().match({ id: id });
-	// 							resolve("Removal of the expense was successful.");
-	// 						} catch (error) {
-	// 							reject("Removal of expense failed.");
-	// 						}
-	// 					},
-	// 					style: "destructive",
-	// 				},
-	// 			],
-	// 			{ cancelable: false }
-	// 		);
-	// 	});
-	// };
+	const updateExpenseTotalSpent = async (expenseId) => {
+		setLoading(true);
+		try {
+			const { data: transactions, error } = await supabase
+				.from("transactions")
+				.select("amount")
+				.eq("expenses_id", expenseId);
+
+			if (error) throw error;
+
+			const totalSpent = transactions.reduce((acc, curr) => acc + parseFloat(curr.amount), 0);
+			await supabase.from("expenses").update({ total_spent: totalSpent }).eq("id", expenseId);
+		} catch (error) {
+			console.error("Failed to update expense total spent:", error.message);
+		} finally {
+			setLoading(false);
+		}
+	};
 	/*** END ***/
 
 	/*** TRANSACTIONS FUNCTIONS ***/
@@ -430,7 +404,7 @@ export const UserProvider = ({ children }) => {
 		try {
 			const userId = session?.user?.id;
 
-			const { data, error } = await supabase.from("transactions").insert([
+			const { error } = await supabase.from("transactions").insert([
 				{
 					created_at: new Date(),
 					name: name,
@@ -443,29 +417,47 @@ export const UserProvider = ({ children }) => {
 
 			if (error) throw error;
 
-			const { data: expenseData, error: expenseError } = await supabase
-				.from("expenses")
-				.select("expense_areas_id")
-				.eq("id", expensesId)
-				.single();
-
-			if (expenseError) throw expenseError;
-
-			await updateTotalBudgetForArea(expenseData.expense_areas_id);
+			await updateExpenseTotalSpent(expensesId);
 		} catch (error) {
 			console.error("Error creating transaction:", error.message);
 		} finally {
 			setLoading(false);
 		}
-		// if (data) {
-		// 	setLoading(false);
-		// }
-		// if (error) {
-		// 	console.error("Error creating transaction:", error.message);
-		// 	setLoading(false);
-		// 	alert("Failed to create transaction");
-		// }
 	};
+
+	// const createTransaction = async (name, amount, note, expensesId) => {
+	// 	setLoading(true);
+	// 	try {
+	// 		const userId = session?.user?.id;
+
+	// 		const { data, error } = await supabase.from("transactions").insert([
+	// 			{
+	// 				created_at: new Date(),
+	// 				name: name,
+	// 				amount: amount,
+	// 				note: note,
+	// 				expenses_id: expensesId,
+	// 				user_id: userId,
+	// 			},
+	// 		]);
+
+	// 		if (error) throw error;
+
+	// 		const { data: expenseData, error: expenseError } = await supabase
+	// 			.from("expenses")
+	// 			.select("expense_areas_id")
+	// 			.eq("id", expensesId)
+	// 			.single();
+
+	// 		if (expenseError) throw expenseError;
+
+	// 		await updateTotalBudgetForArea(expenseData.expense_areas_id);
+	// 	} catch (error) {
+	// 		console.error("Error creating transaction:", error.message);
+	// 	} finally {
+	// 		setLoading(false);
+	// 	}
+	// };
 
 	const updateTransaction = async (id, name, amount, note) => {
 		setLoading(true);
@@ -473,27 +465,9 @@ export const UserProvider = ({ children }) => {
 			const { data, error } = await supabase.from("transactions").update({ name, amount, note }).match({ id });
 			if (error) throw error;
 
-			const { data: transactionData, error: transactionError } = await supabase
-				.from("transactions")
-				.select("expenses_id")
-				.eq("id", id)
-				.single();
-
-			if (transactionError) throw transactionError;
-
-			const { data: expenseData, error: expenseError } = await supabase
-				.from("expenses")
-				.select("expense_areas_id")
-				.eq("id", transactionData.expenses_id)
-				.single();
-
-			if (expenseError) throw expenseError;
-
-			await updateTotalBudgetForArea(expenseData.expense_areas_id);
-
-			// getTransactions();
-			// setLoading(false);
-			// return data;
+			if (data) {
+				await updateExpenseTotalSpent(data[0].expenses_id);
+			}
 		} catch (error) {
 			console.error("Error updating transaction", error.message);
 		} finally {
@@ -501,29 +475,55 @@ export const UserProvider = ({ children }) => {
 		}
 	};
 
+	// const updateTransaction = async (id, name, amount, note) => {
+	// 	setLoading(true);
+	// 	try {
+	// 		const { data, error } = await supabase.from("transactions").update({ name, amount, note }).match({ id });
+	// 		if (error) throw error;
+
+	// 		const { data: transactionData, error: transactionError } = await supabase
+	// 			.from("transactions")
+	// 			.select("expenses_id")
+	// 			.eq("id", id)
+	// 			.single();
+
+	// 		if (transactionError) throw transactionError;
+
+	// 		const { data: expenseData, error: expenseError } = await supabase
+	// 			.from("expenses")
+	// 			.select("expense_areas_id")
+	// 			.eq("id", transactionData.expenses_id)
+	// 			.single();
+
+	// 		if (expenseError) throw expenseError;
+
+	// 		await updateTotalBudgetForArea(expenseData.expense_areas_id);
+
+	// 		// getTransactions();
+	// 		// setLoading(false);
+	// 		// return data;
+	// 	} catch (error) {
+	// 		console.error("Error updating transaction", error.message);
+	// 	} finally {
+	// 		setLoading(false);
+	// 	}
+	// };
+
 	const deleteTransaction = async (id) => {
 		setLoading(true);
 		try {
-			const { data: transactionData, error: transactionError } = await supabase
+			const { data: transaction, error } = await supabase
 				.from("transactions")
 				.select("expenses_id")
 				.eq("id", id)
 				.single();
 
-			if (transactionError) throw transactionError;
-
-			const { data: expenseData, error: expenseError } = await supabase
-				.from("expenses")
-				.select("expense_areas_id")
-				.eq("id", transactionData.expenses_id)
-				.single();
-
-			if (expenseError) throw expenseError;
-
-			const { error } = await supabase.from("transactions").delete().match({ id });
 			if (error) throw error;
 
-			await updateTotalBudgetForArea(expenseData.expense_areas_id);
+			const { error: deleteError } = await supabase.from("transactions").delete().match({ id });
+			if (deleteError) throw error;
+
+			await updateExpenseTotalSpent(transaction.expenses_id);
 		} catch (error) {
 			console.error("Error deleting transaction", error.message);
 		} finally {
@@ -531,32 +531,34 @@ export const UserProvider = ({ children }) => {
 		}
 	};
 
-	// const deleteTransaction = (id) => {
-	// 	return new Promise((resolve, reject) => {
-	// 		Alert.alert(
-	// 			"Confirm removal",
-	// 			"Do you really want to remove this transaction?",
-	// 			[
-	// 				{
-	// 					text: "Cancel",
-	// 					style: "cancel",
-	// 				},
-	// 				{
-	// 					text: "Delete",
-	// 					onPress: async () => {
-	// 						try {
-	// 							await supabase.from("transactions").delete().match({ id: id });
-	// 							resolve("Removal of the transaction was successful.");
-	// 						} catch (error) {
-	// 							reject("Removal of transaction failed.");
-	// 						}
-	// 					},
-	// 					style: "destructive",
-	// 				},
-	// 			],
-	// 			{ cancelable: false }
-	// 		);
-	// 	});
+	// const deleteTransaction = async (id) => {
+	// 	setLoading(true);
+	// 	try {
+	// 		const { data: transactionData, error: transactionError } = await supabase
+	// 			.from("transactions")
+	// 			.select("expenses_id")
+	// 			.eq("id", id)
+	// 			.single();
+
+	// 		if (transactionError) throw transactionError;
+
+	// 		const { data: expenseData, error: expenseError } = await supabase
+	// 			.from("expenses")
+	// 			.select("expense_areas_id")
+	// 			.eq("id", transactionData.expenses_id)
+	// 			.single();
+
+	// 		if (expenseError) throw expenseError;
+
+	// 		const { error } = await supabase.from("transactions").delete().match({ id });
+	// 		if (error) throw error;
+
+	// 		await updateTotalBudgetForArea(expenseData.expense_areas_id);
+	// 	} catch (error) {
+	// 		console.error("Error deleting transaction", error.message);
+	// 	} finally {
+	// 		setLoading(false);
+	// 	}
 	// };
 
 	return (
@@ -583,7 +585,6 @@ export const UserProvider = ({ children }) => {
 				createExpenseArea,
 				updateExpenseArea,
 				deleteExpenseArea,
-				updateTotalBudgetForArea,
 
 				// Expenses States
 				expenses,
@@ -592,6 +593,7 @@ export const UserProvider = ({ children }) => {
 				createExpense,
 				updateExpense,
 				deleteExpense,
+				updateExpenseTotalSpent,
 
 				// Transactions States
 				transactions,

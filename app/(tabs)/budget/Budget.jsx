@@ -148,25 +148,40 @@ const Budget = ({ navigation }) => {
 		</View>
 	);
 
-	const renderExpenses = ({ item }) => {
-		const expenseTransactions = transactions.filter((tr) => tr.expenses_id === item.id);
-		const totalSpent = expenseTransactions.reduce((acc, tr) => acc + parseFloat(tr.amount), 0);
+	// const renderExpenses = ({ item }) => {
+	// 	const expenseTransactions = transactions.filter((tr) => tr.expenses_id === item.id);
+	// 	const totalSpent = expenseTransactions.reduce((acc, tr) => acc + parseFloat(tr.amount), 0);
 
-		return (
-			<TouchableOpacity style={styles.expensesContainer} onPress={() => handleExpense(item)}>
-				<View style={[styles.expensesIcon, { backgroundColor: item.color }]}>
-					<FontAwesome name={item.icon} size={14} color={colors.WHITE} />
+	// 	return (
+	// 		<TouchableOpacity style={styles.expensesContainer} onPress={() => handleExpense(item)}>
+	// 			<View style={[styles.expensesIcon, { backgroundColor: item.color }]}>
+	// 				<FontAwesome name={item.icon} size={14} color={colors.WHITE} />
+	// 			</View>
+	// 			<View style={styles.expensesTextContainer}>
+	// 				<Text style={styles.expensesName}>{item.name}</Text>
+	// 				<View style={styles.expensesBudgetNameBox}>
+	// 					<Text style={styles.expensesTotalSpent}>{totalSpent} /</Text>
+	// 					<Text style={styles.expensesMaxBudgetName}> {item.max_budget}</Text>
+	// 				</View>
+	// 			</View>
+	// 		</TouchableOpacity>
+	// 	);
+	// };
+
+	const renderExpenses = ({ item }) => (
+		<TouchableOpacity style={styles.expensesContainer} onPress={() => handleExpense(item)}>
+			<View style={[styles.expensesIcon, { backgroundColor: item.color }]}>
+				<FontAwesome name={item.icon} size={14} color={colors.WHITE} />
+			</View>
+			<View style={styles.expensesTextContainer}>
+				<Text style={styles.expensesName}>{item.name}</Text>
+				<View style={styles.expensesBudgetNameBox}>
+					<Text style={styles.expensesTotalSpent}>{item.total_spent} /</Text>
+					<Text style={styles.expensesMaxBudgetName}> {item.max_budget}</Text>
 				</View>
-				<View style={styles.expensesTextContainer}>
-					<Text style={styles.expensesName}>{item.name}</Text>
-					<View style={styles.expensesBudgetNameBox}>
-						<Text style={styles.expensesTotalSpent}>{totalSpent} /</Text>
-						<Text style={styles.expensesMaxBudgetName}> {item.max_budget}</Text>
-					</View>
-				</View>
-			</TouchableOpacity>
-		);
-	};
+			</View>
+		</TouchableOpacity>
+	);
 
 	return (
 		<View style={styles.container}>

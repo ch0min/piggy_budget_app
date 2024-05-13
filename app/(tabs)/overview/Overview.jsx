@@ -1,12 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { StyleSheet, View, ScrollView, Text, Button } from "react-native";
 import { useUser } from "../../../context/UserContext";
-import colors from "../../../utils/colors";
-// import { RefreshControl } from "react-native";
-import Header from "../../../components/headers/Header";
-import PieGraph from "../../../components/graphs/PieGraph";
-
-import { Ionicons } from "@expo/vector-icons";
 
 const Overview = () => {
 	const { loading, session, categoryList, getCategoryList } = useUser();

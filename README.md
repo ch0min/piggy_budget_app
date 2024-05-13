@@ -61,6 +61,7 @@ MINOR BUGS:
 -  react-native-reanimated: used for animations.
 -  react-native-svg: used for SVG's.
 -  react-native-pie-chart: pie chart.
+-  react-native-gifted-charts: graphs
 -  react-native-picker/picker: used for scroll wheel picker.
 
 npm install react-native-keyboard-aware-scroll-view --save
