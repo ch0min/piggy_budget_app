@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, View, Text } from "react-native";
+import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 import PieChart from "react-native-pie-chart";
 import colors from "../../utils/colors";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -11,7 +11,7 @@ const PieGraph = ({ expenseAreas, expenses }) => {
 	const [sliceColor, setSliceColor] = useState([]);
 	const [totalCalcEstimate, setTotalCalcEstimate] = useState(0);
 	const [plannedTotalMaxBudget, setPlannedTotalMaxBudget] = useState(0);
-	const [toggleAllAreas, setToggleAllAreas] = useState(0);
+	const [toggleAllAreas, setToggleAllAreas] = useState(false);
 
 	useEffect(() => {
 		if (expenseAreas.length > 0) {
@@ -56,8 +56,12 @@ const PieGraph = ({ expenseAreas, expenses }) => {
 		setPlannedTotalMaxBudget(maxBudget);
 	};
 
+	const toggleShowAllAreas = () => {
+		setToggleAllAreas(!toggleAllAreas);
+	};
+
 	return (
-		<View style={styles.container}>
+		<TouchableOpacity style={styles.container} onPress={toggleShowAllAreas}>
 			<View style={styles.subContainer}>
 				{values.length > 0 && values.reduce((acc, total) => acc + total, 0) > 0 ? (
 					<PieChart
@@ -77,7 +81,7 @@ const PieGraph = ({ expenseAreas, expenses }) => {
 				</View>
 			</View>
 
-			{expenseAreas.map((area, index) => {
+			{expenseAreas.slice(0, toggleAllAreas ? expenseAreas.length : 3).map((area, index) => {
 				const percentage = (area.total_budget / totalCalcEstimate) * 100;
 				return (
 					<View key={index} style={styles.chartNameContainer}>
@@ -96,7 +100,7 @@ const PieGraph = ({ expenseAreas, expenses }) => {
 					</View>
 				);
 			})}
-		</View>
+		</TouchableOpacity>
 	);
 };
 

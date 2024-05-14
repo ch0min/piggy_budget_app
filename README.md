@@ -2,7 +2,6 @@
 
 NEXT: Rækkefølge Mandag:
 
--  Lav Piechart færdig
 -  1 Transaction fix i Expenses.jsx
 -  Lav Profil billede færdig Tirsdag:
 -  Lav valuta
