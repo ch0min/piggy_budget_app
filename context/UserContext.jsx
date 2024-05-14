@@ -140,6 +140,9 @@ export const UserProvider = ({ children }) => {
 
 	/*** END ***/
 
+	/*** MONTHLY BUDGET FUNCTIONS ***/
+	/*** END ***/
+
 	/*** EXPENSE AREAS FUNCTIONS ***/
 	const [expenseAreas, setExpenseAreas] = useState([]);
 
@@ -510,7 +513,7 @@ export const UserProvider = ({ children }) => {
 			if (error) throw error;
 
 			setValutas(data);
-			console.log(data);
+			// console.log(data);
 		} catch (error) {
 			console.error("Error fetching valutas:", error.message);
 		} finally {
@@ -535,6 +538,9 @@ export const UserProvider = ({ children }) => {
 				signOut,
 				getProfile,
 				updateProfile,
+
+				// Monthly Budget States
+				// Monthly Budget Functions
 
 				// Expense Areas States
 				expenseAreas,

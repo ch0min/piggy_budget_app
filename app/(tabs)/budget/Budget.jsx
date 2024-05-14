@@ -8,6 +8,7 @@ import colors from "../../../utils/colors";
 import BudgetHeader from "../../../components/headers/BudgetHeader";
 import PieGraph from "../../../components/graphs/PieGraph";
 import FormatNumber from "../../../utils/formatNumber";
+import BudgetSwiper from "./months/BudgetSwiper";
 import { FontAwesome, MaterialIcons, Feather, AntDesign, Entypo } from "@expo/vector-icons";
 
 const Budget = ({ navigation }) => {
@@ -211,10 +212,12 @@ const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 	},
+	swiperContainer: {
+		flex: 1,
+	},
 	graphContainer: {
 		flex: 1,
 	},
-
 	horizontalLine: {
 		borderBottomWidth: 1,
 		borderBottomColor: colors.LIGHT,

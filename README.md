@@ -60,7 +60,7 @@ MINOR BUGS:
 -  react-native-pie-chart: pie chart.
 -  react-native-gifted-charts: graphs
 -  react-native-picker/picker: used for scroll wheel picker.
-
+-  react-native-swiper: used for monthly swiper.
 npm install react-native-keyboard-aware-scroll-view --save
 
 **_ BUG HELPER _**
