@@ -12,7 +12,7 @@ import ICONS from "../../../utils/icons";
 import DarkPrimaryExecBtn from "../../../components/buttons/darkPrimaryExecBtn";
 
 const AddExpense = ({ navigation, route }) => {
-	const { loading, expenseAreas, createExpense } = useUser();
+	const { loading, userProfile, expenseAreas, createExpense } = useUser();
 
 	const [keypadVisible, setKeypadVisible] = useState(false);
 	const [maxBudget, setMaxBudget] = useState("");
@@ -70,9 +70,13 @@ const AddExpense = ({ navigation, route }) => {
 			{/* MAX BUDGET */}
 			<View style={styles.maxBudgetContainer}>
 				<TouchableOpacity onPress={() => setKeypadVisible(true)}>
-					<Text style={styles.maxBudgetText}>
-						{maxBudget || <Text style={styles.maxBudgetTextPlaceholder}>Enter a budget limit..</Text>}
-					</Text>
+					{maxBudget ? (
+						<Text style={styles.maxBudgetText}>
+							{maxBudget} {userProfile.valutaName}
+						</Text>
+					) : (
+						<Text style={styles.maxBudgetTextPlaceholder}>Enter a budget limit..</Text>
+					)}
 				</TouchableOpacity>
 				<NumericKeypad
 					keypadVisible={keypadVisible}

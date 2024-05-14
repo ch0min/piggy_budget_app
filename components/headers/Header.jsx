@@ -25,8 +25,8 @@ const Header = () => {
 
 			<View style={styles.header}>
 				<View>
-					<Text style={styles.text}>Welcome,</Text>
 					<Text style={styles.userText}>{userProfile?.first_name}</Text>
+					<Text style={styles.text}>{userProfile?.last_name}</Text>
 				</View>
 			</View>
 		</LinearGradient>
@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 		height: "20%",
 		padding: "5%",
-		gap: "10%"
+		gap: "10%",
 	},
 	header: {
 		display: "flex",

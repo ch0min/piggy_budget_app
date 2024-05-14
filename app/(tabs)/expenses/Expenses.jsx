@@ -8,14 +8,15 @@ import colors from "../../../utils/colors";
 import { FontAwesome, MaterialIcons, Feather, AntDesign, Entypo } from "@expo/vector-icons";
 import ProgressBar from "../../../components/graphs/ProgressBar";
 import UpdateExpense from "./components/updateExpense";
-import AddTransaction from "../budget/components/addTransaction";
-import UpdateTransaction from "../budget/components/updateTransaction";
+import AddTransaction from "./components/addTransaction";
+import UpdateTransaction from "./components/updateTransaction";
 import FormatNumber from "../../../utils/formatNumber";
 
 const Expenses = ({ navigation, route }) => {
 	const {
 		loading,
 		session,
+		userProfile,
 		getExpenses,
 		updateExpense,
 		deleteExpense,
@@ -58,10 +59,20 @@ const Expenses = ({ navigation, route }) => {
 		setCurrentExpense({ ...currentExpense, total_spent: totalSpent });
 	}, [transactions, selectedExpense.id]);
 
+	useEffect(() => {
+		const transactionCount = transactions.filter((tr) => tr.expenses_id === selectedExpenseId).length;
+		setCurrentExpense((prev) => ({ ...prev, transaction_count: transactionCount }));
+	}, [transactions, selectedExpenseId]);
+
 	const prepareNumericForDB = (displayValue) => {
 		let normalized = displayValue.replace(/\./g, "").replace(/,/g, ".");
 		return parseFloat(normalized);
 	};
+
+	useEffect(() => {
+		const transactionCount = transactions.filter((tr) => tr.expenses_id === selectedExpenseId).length;
+		setCurrentExpense((prev) => ({ ...prev, transaction_count: transactionCount }));
+	}, [transactions, selectedExpenseId]);
 
 	const handleUpdateExpense = async () => {
 		if (!editableExpenseName.trim()) {
@@ -181,7 +192,9 @@ const Expenses = ({ navigation, route }) => {
 		<TouchableOpacity style={styles.transactionItemsContainer} onPress={() => openUpdateTransactionModal(item)}>
 			<View style={styles.transactionItemsLeft}>
 				<Text style={styles.transactionItemsName}>{item.name}</Text>
-				<Text style={styles.transactionItemsAmount}>{FormatNumber(item.amount)}</Text>
+				<Text style={styles.transactionItemsAmount}>
+					{FormatNumber(item.amount)} {userProfile.valutaName}
+				</Text>
 			</View>
 
 			<View style={styles.transactionItemsRight}>
@@ -219,7 +232,9 @@ const Expenses = ({ navigation, route }) => {
 					</View>
 					<View style={styles.expenseDetails}>
 						<Text style={styles.expenseName}>{currentExpense.name}</Text>
-						<Text style={styles.expenseItemText}>1 Transaction</Text>
+						<Text style={styles.expenseItemText}>
+							{currentExpense.transaction_count} Transaction{currentExpense.transaction_count !== 1 ? "s" : ""}
+						</Text>
 					</View>
 					<TouchableOpacity style={styles.deleteExpenseBtn} onPress={() => handleDeleteExpense(selectedExpenseId)}>
 						<MaterialIcons name="remove-circle" size={28} color={colors.RED} />

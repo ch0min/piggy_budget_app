@@ -13,6 +13,7 @@ import { FontAwesome, MaterialIcons, Feather, AntDesign, Entypo } from "@expo/ve
 const Budget = ({ navigation }) => {
 	const {
 		session,
+		userProfile,
 		expenseAreas,
 		getExpenseAreas,
 		createExpenseArea,
@@ -20,7 +21,6 @@ const Budget = ({ navigation }) => {
 		deleteExpenseArea,
 		expenses,
 		getExpenses,
-		transactions,
 	} = useUser();
 	const inputRef = useRef(null);
 	const [showCheckmark, setShowCheckmark] = useState(false);
@@ -37,8 +37,6 @@ const Budget = ({ navigation }) => {
 			}
 		}, [session])
 	);
-
-	console.log("Expense Areas from Context:", expenseAreas);
 
 	useEffect(() => {
 		setEditableExpenseAreas(expenseAreas.map((area) => ({ ...area, editableName: area.name })));
@@ -158,8 +156,12 @@ const Budget = ({ navigation }) => {
 			<View style={styles.expensesTextContainer}>
 				<Text style={styles.expensesName}>{item.name}</Text>
 				<View style={styles.expensesBudgetNameBox}>
-					<Text style={styles.expensesTotalSpent}>{FormatNumber(item.total_spent)} /</Text>
-					<Text style={styles.expensesMaxBudgetName}> {FormatNumber(item.max_budget)}</Text>
+					<Text style={styles.expensesTotalSpent}>
+						{FormatNumber(item.total_spent)} {userProfile.valutaName} / {""}
+					</Text>
+					<Text style={styles.expensesMaxBudgetName}>
+						{FormatNumber(item.max_budget)} {userProfile.valutaName}
+					</Text>
 				</View>
 			</View>
 		</TouchableOpacity>

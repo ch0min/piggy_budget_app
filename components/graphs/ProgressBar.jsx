@@ -1,18 +1,25 @@
 import React from "react";
 import { StyleSheet, View, Text } from "react-native";
+import { useUser } from "../../context/UserContext";
 import { LinearGradient } from "expo-linear-gradient";
 import colors from "../../utils/colors";
 import FormatNumber from "../../utils/formatNumber";
 
 const ProgressBar = ({ totalSpent, maxBudget }) => {
+	const { userProfile } = useUser();
+
 	const totalPercentage = maxBudget > 0 ? (totalSpent / maxBudget) * 100 : 0;
 
 	return (
 		<View style={styles.container}>
 			<View style={styles.textContainer}>
-				<Text style={styles.progressTextAmount}>{FormatNumber(totalSpent)}</Text>
+				<Text style={styles.progressTextAmount}>
+					{FormatNumber(totalSpent)} {userProfile.valutaName}
+				</Text>
 				<Text style={styles.progressTextPct}>{totalPercentage.toFixed(2)}%</Text>
-				<Text style={styles.progressTextMax}>{FormatNumber(maxBudget)}</Text>
+				<Text style={styles.progressTextMax}>
+					{FormatNumber(maxBudget)} {userProfile.valutaName}
+				</Text>
 			</View>
 			<View style={styles.progressBarContainer}>
 				<View style={styles.progressBarBackground}>

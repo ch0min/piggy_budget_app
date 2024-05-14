@@ -100,14 +100,17 @@ export const UserProvider = ({ children }) => {
 		try {
 			const { data, error } = await supabase
 				.from("profiles")
-				.select("profile_completed, avatar_url, first_name, last_name")
+				.select("profile_completed, avatar_url, first_name, last_name, valuta_id, valuta:valuta_id (name)")
 				.eq("id", userId)
 				.single();
 
 			if (error) throw error;
 
 			if (data) {
-				setUserProfile(data);
+				setUserProfile({
+					...data,
+					valutaName: data.valuta.name,
+				});
 				setProfileCompleted(data.profile_completed);
 			}
 		} catch (error) {
@@ -249,7 +252,7 @@ export const UserProvider = ({ children }) => {
 
 			getExpenseAreas();
 		} catch (error) {
-			console.log("Failed to update total budget for an expense area:", error.message);
+			console.error("Failed to update total budget for an expense area:", error.message);
 		} finally {
 			setLoading(false);
 		}
@@ -493,6 +496,27 @@ export const UserProvider = ({ children }) => {
 			setLoading(false);
 		}
 	};
+	/*** END ***/
+
+	/*** VALUTA FUNCTIONS ***/
+	const [valutas, setValutas] = useState([]);
+
+	const getValutas = async () => {
+		setLoading(true);
+		try {
+			const { data, error } = await supabase.from("valuta").select(`id, name`);
+
+			if (error) throw error;
+
+			setValutas(data);
+			console.log(data);
+		} catch (error) {
+			console.error("Error fetching valutas:", error.message);
+		} finally {
+			setLoading(false);
+		}
+	};
+	/*** END ***/
 
 	return (
 		<UserContext.Provider
@@ -535,6 +559,11 @@ export const UserProvider = ({ children }) => {
 				createTransaction,
 				updateTransaction,
 				deleteTransaction,
+
+				// Valuta States
+				valutas,
+				// Valuta Functions
+				getValutas,
 			}}
 		>
 			{children}

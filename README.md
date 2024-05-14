@@ -2,17 +2,14 @@
 
 NEXT: Rækkefølge Mandag:
 
--  1 Transaction fix i Expenses.jsx
 -  Lav Profil billede færdig Tirsdag:
--  Lav valuta
 -  Lav Overview Screen Resten af ugen:
 -  Lav Loading indicator for alle buttons.
 -  Fix bug med CompleteProfile screen hurtig vises.
 -  RefreshControl
 -  Lav splash screen.
 -  Email redirection
--  CAPTCHA
-
+-  CAPTCHA £5
 -  Categories Screen AddCategory Screen skal moduleres.
 -  ÆNDRE ALT MARGIN OSV TIL PERCENTAGE
 -  Change colors
@@ -70,12 +67,14 @@ npm install react-native-keyboard-aware-scroll-view --save
 
 -  AsyncStorage.clear().then(() => console.log('Local storage cleared!'));
 
-DB: PUBLIC TABLES: expense_areas: id, uuid user_id (foreign key->profiles), uuid name, text total_budget, numeric
+DB: PUBLIC TABLES: expense_areas: id: uuid, user_id (foreign key->profiles): uuid, name: text, total_budget: numeric
 
-expenses: id, uuid created_at, date user_id (foreign key->profiles), uuid name, text icon, text color, text total_spent, numeric max_budget, numeric expense_areas_id (foreign key->expense_areas), uuid
+expenses: id: uuid, created_at: date, user_id (foreign key->profiles): uuid, name: text, icon: text, color: text, total_spent: numeric, max_budget: numeric, expense_areas_id (foreign key->expense_areas): int
 
-transactions: id, uuid created_at, date user_id (foreign key->profiles), uuid amount, numeric note, text expenses_id (foreign key->expenses), uuid
+transactions: id: uuid, created_at: date, user_id (foreign key->profiles): uuid, amount: numeric, note: text, expenses_id (foreign key->expenses): int
 
-profiles: id, uuid updated_at, date avatar, text first_name, text last_name, text profile_completed, bool
+profiles: id: uuid, updated_at: date, avatar: text, first_name: text, last_name: text, profile_completed: bool, valuta_id: int (foreign key->valuta)
+
+valuta: id: uuid, name: text
 
 AUTH TABLE: users

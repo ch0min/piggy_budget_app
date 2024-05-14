@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
+import { useUser } from "../../context/UserContext";
 import PieChart from "react-native-pie-chart";
 import colors from "../../utils/colors";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { MaterialCommunityIcons, FontAwesome } from "@expo/vector-icons";
 import FormatNumber from "../../utils/formatNumber";
 
 const PieGraph = ({ expenseAreas, expenses }) => {
+	const { userProfile } = useUser();
 	const size = 120;
 	const [values, setValues] = useState([]);
 	const [sliceColor, setSliceColor] = useState([]);
@@ -76,8 +78,13 @@ const PieGraph = ({ expenseAreas, expenses }) => {
 				)}
 				<View style={styles.legendContainer}>
 					<Text style={styles.legendHeading}>Planned total budget</Text>
-					<Text style={styles.legendTotalBudget}>{FormatNumber(plannedTotalMaxBudget)}</Text>
-					<Text style={styles.legendSubHeading}>{FormatNumber(totalCalcEstimate)} spent</Text>
+					<Text style={styles.legendTotalBudget}>
+						{FormatNumber(plannedTotalMaxBudget)} {userProfile.valutaName}
+					</Text>
+					<Text style={styles.legendSubHeading}>
+						<Text style={{ fontSize: 14, fontStyle: "italic", color: colors.DARKGRAY }}>You've spent: </Text>
+						{FormatNumber(totalCalcEstimate)} {userProfile.valutaName}
+					</Text>
 				</View>
 			</View>
 
@@ -95,11 +102,19 @@ const PieGraph = ({ expenseAreas, expenses }) => {
 								{area.name}
 								<Text style={{ color: colors.SILVER }}> ({percentage.toFixed(0)}%)</Text>
 							</Text>
-							<Text style={styles.chartNameTotalBudgetText}>{FormatNumber(area.total_budget)}</Text>
+							<Text style={styles.chartNameTotalBudgetText}>
+								{FormatNumber(area.total_budget)} {userProfile.valutaName}
+							</Text>
 						</View>
 					</View>
 				);
 			})}
+
+			{toggleAllAreas ? (
+				<FontAwesome style={styles.caretIcons} name="angle-double-up" size={22} color={colors.DARKGRAY} />
+			) : (
+				<FontAwesome style={styles.caretIcons} name="angle-double-down" size={22} color={colors.DARKGRAY} />
+			)}
 		</TouchableOpacity>
 	);
 };
@@ -110,7 +125,7 @@ const styles = StyleSheet.create({
 		justifyContent: "center",
 		marginHorizontal: "3%",
 		marginTop: "5%",
-		padding: "6%",
+		padding: "4%",
 		borderRadius: 15,
 		backgroundColor: colors.WHITE,
 		shadowColor: "#000",
@@ -146,7 +161,6 @@ const styles = StyleSheet.create({
 		color: colors.BLACK,
 	},
 	legendSubHeading: {
-		textTransform: "lowercase",
 		fontSize: 16,
 		color: colors.BLACK,
 	},
@@ -169,6 +183,11 @@ const styles = StyleSheet.create({
 	chartNameTotalBudgetText: {
 		marginTop: "1%",
 		fontWeight: "bold",
+	},
+	caretIcons: {
+		flex: 1,
+		alignSelf: "center",
+		marginTop: "3%",
 	},
 });
 
