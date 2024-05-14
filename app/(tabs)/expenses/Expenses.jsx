@@ -49,6 +49,11 @@ const Expenses = ({ navigation, route }) => {
 		}, [session])
 	);
 
+	useEffect(() => {
+		const totalSpent = transactions.reduce((acc, tr) => (tr.expenses_id === currentExpense.id ? acc + parseFloat(tr.amount) : acc), 0)
+		setCurrentExpense({...currentExpense, total_spent: totalSpent})
+	}, [transactions, selectedExpense.id])
+
 	const prepareNumericForDB = (displayValue) => {
 		let normalized = displayValue.replace(/\./g, "").replace(/,/g, ".");
 		return parseFloat(normalized);
@@ -218,8 +223,6 @@ const Expenses = ({ navigation, route }) => {
 				</View>
 
 				<ProgressBar
-					transactions={transactions.filter((tr) => tr.expenses_id === selectedExpense.id)}
-					selectedExpense={currentExpense}
 					totalSpent={currentExpense.total_spent}
 					maxBudget={currentExpense.max_budget}
 				/>

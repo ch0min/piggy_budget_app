@@ -1,35 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { StyleSheet, View, Text } from "react-native";
-import { useUser } from "../../context/UserContext";
 import colors from "../../utils/colors";
 import { LinearGradient } from "expo-linear-gradient";
 
-const ProgressBar = ({ transactions, totalSpent, maxBudget }) => {
-	const [totalAmount, setTotalAmount] = useState(0);
-	// const [totalPercentage, setTotalPercentage] = useState(0);
-
-	// useEffect(() => {
-	// const total = transactions.reduce((acc, curr) => acc + parseFloat(curr.amount), 0);
-	// setTotalAmount(total);
-	// 	const percentage = (totalSpent / maxBudget) * 100;
-	// 	setTotalPercentage(percentage);
-	// }, [transactions, maxBudget]);
-
+const ProgressBar = ({ totalSpent, maxBudget }) => {
 	const totalPercentage = maxBudget > 0 ? (totalSpent / maxBudget) * 100 : 0;
-
-	// useEffect(() => {
-	// 	if (!selectedExpense) return;
-
-	// 	const filteredTransactions = transactions.filter((tr) => tr.expenses_id === selectedExpense.id);
-
-	// 	const total = filteredTransactions.reduce((acc, transaction) => acc + parseFloat(transaction.amount), 0);
-	// 	setTotalAmount(total);
-
-	// 	const percentage = (total / maxBudget) * 100;
-	// 	setTotalPercentage(percentage);
-
-	// 	onTotalChange(total);
-	// }, [transactions, selectedExpense, maxBudget]);
 
 	return (
 		<View style={styles.container}>

@@ -1,13 +1,11 @@
 **_ TODO _**
 
-NEXT: Rækkefølge
-Mandag: 
+NEXT: Rækkefølge Mandag:
+
 -  Lav Piechart færdig
--  Lav Profil billede færdig
-Tirsdag:
+-  Lav Profil billede færdig Tirsdag:
 -  Lav valuta
--  Lav Overview Screen
-Resten af ugen:
+-  Lav Overview Screen Resten af ugen:
 -  Lav Loading indicator for alle buttons.
 -  Fix bug med CompleteProfile screen hurtig vises.
 -  Lav splash screen.
@@ -35,6 +33,7 @@ Exam:
 -  CHANGE DATES ON CREATED_ATS WHEN WE ADD MONTHS
 
 MINOR BUGS:
+
 -  If you edit an existing transaction and tap out, and then click New transaction, then it will placehold the existing one.
 -  Sometimes when you login you will quickly see the CompleteProfile Screen.
 
@@ -70,41 +69,12 @@ npm install react-native-keyboard-aware-scroll-view --save
 
 -  AsyncStorage.clear().then(() => console.log('Local storage cleared!'));
 
+DB: PUBLIC TABLES: expense_areas: id, uuid user_id (foreign key->profiles), uuid name, text total_budget, numeric
 
+expenses: id, uuid created_at, date user_id (foreign key->profiles), uuid name, text icon, text color, text total_spent, numeric max_budget, numeric expense_areas_id (foreign key->expense_areas), uuid
 
-DB: 
-PUBLIC TABLES:
-expense_areas: 
-id, uuid
-user_id (foreign key->profiles), uuid
-name, text
-total_budget, numeric
+transactions: id, uuid created_at, date user_id (foreign key->profiles), uuid amount, numeric note, text expenses_id (foreign key->expenses), uuid
 
-expenses: 
-id, uuid
-created_at, date
-user_id (foreign key->profiles), uuid
-name, text
-icon, text
-color, text
-max_budget, numeric
-expense_areas_id (foreign key->expense_areas), uuid
+profiles: id, uuid updated_at, date avatar, text first_name, text last_name, text profile_completed, bool
 
-transactions:
-id, uuid
-created_at, date
-user_id (foreign key->profiles), uuid
-amount, numeric
-note, text
-expenses_id (foreign key->expenses), uuid
-
-profiles:
-id, uuid
-updated_at, date
-avatar, text
-first_name, text
-last_name, text
-profile_completed, bool
-
-AUTH TABLE:
-users
+AUTH TABLE: users
