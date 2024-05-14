@@ -10,6 +10,7 @@ import ProgressBar from "../../../components/graphs/ProgressBar";
 import UpdateExpense from "./components/updateExpense";
 import AddTransaction from "../budget/components/addTransaction";
 import UpdateTransaction from "../budget/components/updateTransaction";
+import FormatNumber from "../../../utils/formatNumber";
 
 const Expenses = ({ navigation, route }) => {
 	const {
@@ -50,9 +51,12 @@ const Expenses = ({ navigation, route }) => {
 	);
 
 	useEffect(() => {
-		const totalSpent = transactions.reduce((acc, tr) => (tr.expenses_id === currentExpense.id ? acc + parseFloat(tr.amount) : acc), 0)
-		setCurrentExpense({...currentExpense, total_spent: totalSpent})
-	}, [transactions, selectedExpense.id])
+		const totalSpent = transactions.reduce(
+			(acc, tr) => (tr.expenses_id === currentExpense.id ? acc + parseFloat(tr.amount) : acc),
+			0
+		);
+		setCurrentExpense({ ...currentExpense, total_spent: totalSpent });
+	}, [transactions, selectedExpense.id]);
 
 	const prepareNumericForDB = (displayValue) => {
 		let normalized = displayValue.replace(/\./g, "").replace(/,/g, ".");
@@ -177,7 +181,7 @@ const Expenses = ({ navigation, route }) => {
 		<TouchableOpacity style={styles.transactionItemsContainer} onPress={() => openUpdateTransactionModal(item)}>
 			<View style={styles.transactionItemsLeft}>
 				<Text style={styles.transactionItemsName}>{item.name}</Text>
-				<Text style={styles.transactionItemsAmount}>{item.amount}</Text>
+				<Text style={styles.transactionItemsAmount}>{FormatNumber(item.amount)}</Text>
 			</View>
 
 			<View style={styles.transactionItemsRight}>
@@ -222,10 +226,7 @@ const Expenses = ({ navigation, route }) => {
 					</TouchableOpacity>
 				</View>
 
-				<ProgressBar
-					totalSpent={currentExpense.total_spent}
-					maxBudget={currentExpense.max_budget}
-				/>
+				<ProgressBar totalSpent={currentExpense.total_spent} maxBudget={currentExpense.max_budget} />
 			</View>
 			{/* END */}
 

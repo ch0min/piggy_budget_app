@@ -7,6 +7,7 @@ import colors from "../../../utils/colors";
 // import { RefreshControl } from "react-native";
 import Header from "../../../components/headers/Header";
 import PieGraph from "../../../components/graphs/PieGraph";
+import FormatNumber from "../../../utils/formatNumber";
 import { FontAwesome, MaterialIcons, Feather, AntDesign, Entypo } from "@expo/vector-icons";
 
 const Budget = ({ navigation }) => {
@@ -36,6 +37,8 @@ const Budget = ({ navigation }) => {
 			}
 		}, [session])
 	);
+
+	console.log("Expense Areas from Context:", expenseAreas);
 
 	useEffect(() => {
 		setEditableExpenseAreas(expenseAreas.map((area) => ({ ...area, editableName: area.name })));
@@ -107,7 +110,7 @@ const Budget = ({ navigation }) => {
 				) : (
 					<>
 						<Text style={styles.expenseAreaName}>{item.name}</Text>
-						<Text style={styles.expenseAreaTotalBudget}>(Total: {item.total_budget})</Text>
+						{/* <Text style={styles.expenseAreaTotalBudget}>(Total: {item.total_budget})</Text> */}
 					</>
 				)}
 				<TouchableOpacity
@@ -155,8 +158,8 @@ const Budget = ({ navigation }) => {
 			<View style={styles.expensesTextContainer}>
 				<Text style={styles.expensesName}>{item.name}</Text>
 				<View style={styles.expensesBudgetNameBox}>
-					<Text style={styles.expensesTotalSpent}>{item.total_spent} /</Text>
-					<Text style={styles.expensesMaxBudgetName}> {item.max_budget}</Text>
+					<Text style={styles.expensesTotalSpent}>{FormatNumber(item.total_spent)} /</Text>
+					<Text style={styles.expensesMaxBudgetName}> {FormatNumber(item.max_budget)}</Text>
 				</View>
 			</View>
 		</TouchableOpacity>
@@ -166,14 +169,15 @@ const Budget = ({ navigation }) => {
 		<View style={styles.container}>
 			<Header session={session} />
 
-			<View style={styles.graphContainer}>
-				<PieGraph />
-			</View>
-
 			<KeyboardAwareFlatList
 				data={expenseAreas}
 				renderItem={renderExpenseAreas}
 				keyExtractor={(item) => item.id}
+				ListHeaderComponent={
+					<View style={styles.graphContainer}>
+						<PieGraph expenseAreas={expenseAreas} expenses={expenses} />
+					</View>
+				}
 				ListFooterComponent={
 					<View style={styles.createExpenseAreaContainer}>
 						<TextInput
@@ -206,9 +210,7 @@ const styles = StyleSheet.create({
 		flex: 1,
 	},
 	graphContainer: {
-		marginTop: -75,
-		paddingHorizontal: "3%",
-		zIndex: 1,
+		flex: 1,
 	},
 
 	horizontalLine: {
@@ -250,11 +252,9 @@ const styles = StyleSheet.create({
 		justifyContent: "space-between",
 		marginHorizontal: "5%",
 		marginTop: "5%",
-
 		padding: 20,
 		borderRadius: 15,
 		backgroundColor: colors.WHITE,
-
 		shadowColor: "#000",
 		shadowOffset: { width: 0, height: 1 },
 		shadowOpacity: 0.1,
@@ -310,7 +310,7 @@ const styles = StyleSheet.create({
 	expensesBudgetNameBox: {
 		flexDirection: "row",
 		marginVertical: "2%",
-		padding: "5%",
+		padding: "3%",
 		borderRadius: 5,
 		backgroundColor: "#F4F4F4",
 	},
@@ -321,7 +321,7 @@ const styles = StyleSheet.create({
 	expensesMaxBudgetName: {
 		flexShrink: 1,
 		fontSize: 16,
-		fontWeight: "bold",
+		// fontWeight: "bold",
 	},
 	expensesIcon: {
 		alignItems: "center",

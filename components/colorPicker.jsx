@@ -5,7 +5,7 @@ import colors from "../utils/colors";
 const ColorPicker = ({ selectedColor, setSelectedColor, height, width }) => {
 	return (
 		<View style={styles.container}>
-			{colors.CATEGORY_COLOR_LIST.map((color, index) => (
+			{colors.COLOR_LIST.map((color, index) => (
 				<TouchableOpacity
 					key={index}
 					style={[

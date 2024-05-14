@@ -3,11 +3,13 @@
 NEXT: Rækkefølge Mandag:
 
 -  Lav Piechart færdig
+-  1 Transaction fix i Expenses.jsx
 -  Lav Profil billede færdig Tirsdag:
 -  Lav valuta
 -  Lav Overview Screen Resten af ugen:
 -  Lav Loading indicator for alle buttons.
 -  Fix bug med CompleteProfile screen hurtig vises.
+-  RefreshControl
 -  Lav splash screen.
 -  Email redirection
 -  CAPTCHA

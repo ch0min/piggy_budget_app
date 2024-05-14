@@ -24,7 +24,7 @@ const AddExpense = ({ navigation, route }) => {
 	const [selectedExpenseAreaName, setSelectedExpenseAreaName] = useState(selectedExpenseArea.name);
 	const [iconPickerVisible, setIconPickerVisible] = useState(false);
 	const [selectedIcon, setSelectedIcon] = useState("archive");
-	const [selectedColor, setSelectedColor] = useState(colors.CATEGORY_COLOR_LIST[0]);
+	const [selectedColor, setSelectedColor] = useState(colors.COLOR_LIST[0]);
 
 	useEffect(() => {
 		if (selectedExpenseAreaId) {
