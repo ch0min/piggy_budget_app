@@ -5,7 +5,7 @@ import { useUser } from "../../../context/UserContext";
 import { KeyboardAwareFlatList } from "react-native-keyboard-aware-scroll-view";
 import colors from "../../../utils/colors";
 // import { RefreshControl } from "react-native";
-import Header from "../../../components/headers/Header";
+import BudgetHeader from "../../../components/headers/BudgetHeader";
 import PieGraph from "../../../components/graphs/PieGraph";
 import FormatNumber from "../../../utils/formatNumber";
 import { FontAwesome, MaterialIcons, Feather, AntDesign, Entypo } from "@expo/vector-icons";
@@ -169,7 +169,7 @@ const Budget = ({ navigation }) => {
 
 	return (
 		<View style={styles.container}>
-			<Header session={session} />
+			<BudgetHeader session={session} />
 
 			<KeyboardAwareFlatList
 				data={expenseAreas}

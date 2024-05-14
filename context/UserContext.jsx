@@ -171,6 +171,7 @@ export const UserProvider = ({ children }) => {
 			{
 				name: name,
 				user_id: userId,
+				created_at: new Date(),
 			},
 		]);
 

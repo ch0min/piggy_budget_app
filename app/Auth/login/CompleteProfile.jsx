@@ -47,8 +47,6 @@ const CompleteProfile = ({ navigation }) => {
 		setSelectedValutaId(valutaId);
 	};
 
-	console.log(selectedValutaId);
-
 	return (
 		<View style={styles.container}>
 			<View style={styles.subcontainer}>

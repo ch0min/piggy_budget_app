@@ -4,7 +4,7 @@ import { useUser } from "../../context/UserContext";
 import colors from "../../utils/colors";
 import { LinearGradient } from "expo-linear-gradient";
 
-const Header = () => {
+const BudgetHeader = () => {
 	const { user, userProfile, getProfile } = useUser();
 
 	useEffect(() => {
@@ -15,7 +15,7 @@ const Header = () => {
 
 	return (
 		<LinearGradient
-			colors={[colors.PRIMARY, colors.SECONDARY]}
+			colors={[colors.SECONDARY, colors.PRIMARY]}
 			start={{ x: 0, y: 0 }}
 			end={{ x: 1, y: 1 }}
 			locations={[0.1, 1.0]}
@@ -60,4 +60,4 @@ const styles = StyleSheet.create({
 	},
 });
 
-export default Header;
+export default BudgetHeader;
