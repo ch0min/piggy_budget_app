@@ -141,19 +141,91 @@ export const UserProvider = ({ children }) => {
 	/*** END ***/
 
 	/*** MONTHLY BUDGET FUNCTIONS ***/
+	const ensureMonthlyBudget = async (userId, date) => {
+		setLoading(true);
+		const month = date.getMonth() + 1;
+		const year = date.getFullYear();
+
+		try {
+			// First attempt to find an existing budget for a user:
+			const { data, error } = await supabase
+				.from("monthly_budgets")
+				.select("id")
+				.eq("user_id", userId)
+				.eq("month", month)
+				.eq("year", year)
+				.maybeSingle();
+
+			if (error) {
+				console.error("Error searching for monthly budget.", error);
+				throw new Error("Failed to fetch monthly budget.");
+			}
+
+			if (data) {
+				return data.id;
+			} else {
+				// If no existing monthly budget for a user, create a new one:
+				const { data: newBudget, error: createError } = await supabase
+					.from("monthly_budgets")
+					.insert({
+						user_id: userId,
+						month: month,
+						year: year,
+						total_budget_month: 0,
+					})
+					.single();
+
+				if (createError) {
+					console.error("Error creating monthly budget.", createError);
+					throw new Error("Failed to create monthly budget.");
+				}
+				return newBudget.id;
+			}
+		} catch (error) {
+			console.error("Error ensuring monthly budget for a user:", error.message);
+			throw error;
+		} finally {
+			setLoading(false);
+		}
+	};
 	/*** END ***/
 
 	/*** EXPENSE AREAS FUNCTIONS ***/
 	const [expenseAreas, setExpenseAreas] = useState([]);
 
-	const getExpenseAreas = async () => {
+	// const getExpenseAreas = async () => {
+	// 	setLoading(true);
+	// 	try {
+	// 		const userId = user?.id;
+	// 		const { data, error } = await supabase
+	// 			.from("expense_areas")
+	// 			.select(`*`)
+	// 			.eq("user_id", userId)
+	// 			.order("id", { ascending: true });
+	// 		if (error) throw error;
+
+	// 		setExpenseAreas(data);
+	// 		// console.log("Expense Areas fetched:", data);
+	// 	} catch (error) {
+	// 		console.error("Error fetching expense_areas:", error.message);
+	// 	} finally {
+	// 		setLoading(false);
+	// 	}
+	// };
+
+	const getExpenseAreas = async (date) => {
 		setLoading(true);
+		const userId = session?.user?.id;
+		const month = date.getMonth() + 1;
+		const year = date.getFullYear();
 		try {
 			const userId = user?.id;
 			const { data, error } = await supabase
 				.from("expense_areas")
-				.select(`*`)
+				.select(`*, monthly_budgets:monthly_budgets_id (total_budget_month)`)
 				.eq("user_id", userId)
+				.eq("monthly_budgets.month", month)
+				.eq("monthly_budgets.year", year)
 				.order("id", { ascending: true });
 			if (error) throw error;
 
@@ -166,25 +238,59 @@ export const UserProvider = ({ children }) => {
 		}
 	};
 
-	const createExpenseArea = async (name) => {
+	// const getExpenseAreas = async (date) => {
+	// 	setLoading(true);
+	// const userId = session?.user?.id;
+	// const month = date.getMonth() + 1;
+	// const year = date.getFullYear();
+
+	// 	try {
+	// 		const { data, error } = await supabase
+	// 			.from("expense_areas")
+	// 			.select(`*, monthly_budgets:monthly_budgets_id (total_budget_month)`)
+	// 			.eq("user_id", userId)
+	// 			.eq("monthly_budgets.month", month)
+	// 			.eq("monthly_budgets.year", year)
+	// 			.order("id", { ascending: true });
+
+	// 		if (error) throw error;
+	// 		setExpenseAreas(data);
+	// 	} catch (error) {
+	// 		console.error("Error fetching expense areas:", error.message);
+	// 	} finally {
+	// 		setLoading(false);
+	// 	}
+	// };
+
+	const createExpenseArea = async (name, date) => {
 		setLoading(true);
 		const userId = session?.user?.id;
+		// const date = new Date();
 
-		const { data, error } = await supabase.from("expense_areas").insert([
-			{
-				name: name,
-				user_id: userId,
-				created_at: new Date(),
-			},
-		]);
+		try {
+			const monthlyBudgetsId = await ensureMonthlyBudget(userId, date);
 
-		if (data) {
+			if (!monthlyBudgetsId) {
+				console.error("Failed to tain a monthly budget ID.");
+				throw new Error("Failed to obtain a monthly budget ID for a user.");
+			}
+
+			const { data, error } = await supabase.from("expense_areas").insert([
+				{
+					name: name,
+					created_at: new Date(),
+					monthly_budgets_id: monthlyBudgetsId,
+					user_id: userId,
+				},
+			]);
+
+			if (error) throw error;
+
+			// return data;
+		} catch (error) {
+			console.error("Error creating expense area", error.message);
+		} finally {
 			setLoading(false);
-		}
-		if (error) {
-			console.error("Error creating expense area:", error.message);
-			setLoading(false);
-			alert("Failed to create expense area");
 		}
 	};
 
@@ -286,6 +392,31 @@ export const UserProvider = ({ children }) => {
 			setLoading(false);
 		}
 	};
+
+	// const getExpenses = async (date) => {
+	// 	setLoading(true);
+	// 	const userId = session?.user.id;
+	// 	const month = date.getMonth();
+	// 	const year = date.getFullYear();
+
+	// 	try {
+	// 		const { data, error } = await supabase
+	// 			.from("expenses")
+	// 			.select(`*, monthly_budgets(total_budget_month)`)
+	// 			.eq("user_id", userId)
+	// 			.eq("monthly_budgets.month", month)
+	// 			.eq("monthly_budgets.year", year)
+	// 			.order("id", { ascending: true });
+
+	// 		if (error) throw error;
+
+	// 		setExpenses(data);
+	// 	} catch (error) {
+	// 		console.error("Error fetching expenses for user:", error.message);
+	// 	} finally {
+	// 		setLoading(false);
+	// 	}
+	// };
 
 	const createExpense = async (name, maxBudget, icon, color, expenseAreasId) => {
 		setLoading(true);

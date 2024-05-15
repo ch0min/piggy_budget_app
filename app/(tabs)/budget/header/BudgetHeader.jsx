@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { StyleSheet, View, Text, Image } from "react-native";
-import { useUser } from "../../context/UserContext";
-import colors from "../../utils/colors";
+import { useUser } from "../../../../context/UserContext";
+import colors from "../../../../utils/colors";
 import { LinearGradient } from "expo-linear-gradient";
+import Swiper from "react-native-swiper";
 
-const OverviewHeader = () => {
+const BudgetHeader = ({ onMonthChange }) => {
 	const { user, userProfile, getProfile } = useUser();
 
 	useEffect(() => {
@@ -60,4 +61,4 @@ const styles = StyleSheet.create({
 	},
 });
 
-export default OverviewHeader;
+export default BudgetHeader;

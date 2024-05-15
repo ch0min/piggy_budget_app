@@ -5,10 +5,10 @@ import { useUser } from "../../../context/UserContext";
 import { KeyboardAwareFlatList } from "react-native-keyboard-aware-scroll-view";
 import colors from "../../../utils/colors";
 // import { RefreshControl } from "react-native";
-import BudgetHeader from "../../../components/headers/BudgetHeader";
+import BudgetHeader from "./header/BudgetHeader";
 import PieGraph from "../../../components/graphs/PieGraph";
 import FormatNumber from "../../../utils/formatNumber";
-import BudgetSwiper from "./months/BudgetSwiper";
+import MonthlyBudgetSwiper from "./months/MonthlyBudgetSwiper";
 import { FontAwesome, MaterialIcons, Feather, AntDesign, Entypo } from "@expo/vector-icons";
 
 const Budget = ({ navigation }) => {
@@ -24,6 +24,8 @@ const Budget = ({ navigation }) => {
 		getExpenses,
 	} = useUser();
 	const inputRef = useRef(null);
+	const [currentMonth, setCurrentMonth] = useState(new Date());
+
 	const [showCheckmark, setShowCheckmark] = useState(false);
 	const [expenseAreaName, setExpenseAreaName] = useState("");
 
@@ -33,10 +35,10 @@ const Budget = ({ navigation }) => {
 	useFocusEffect(
 		useCallback(() => {
 			if (session) {
-				getExpenseAreas();
+				getExpenseAreas(currentMonth);
 				getExpenses();
 			}
-		}, [session])
+		}, [session, currentMonth])
 	);
 
 	useEffect(() => {
@@ -48,7 +50,7 @@ const Budget = ({ navigation }) => {
 			alert("Area name can't be empty.");
 			return;
 		}
-		await createExpenseArea(expenseAreaName);
+		await createExpenseArea(expenseAreaName, currentMonth);
 		setExpenseAreaName("");
 		setShowCheckmark(false);
 		getExpenseAreas();
@@ -178,6 +180,8 @@ const Budget = ({ navigation }) => {
 				keyExtractor={(item) => item.id}
 				ListHeaderComponent={
 					<View style={styles.graphContainer}>
+						<MonthlyBudgetSwiper currentMonth={currentMonth} setCurrentMonth={setCurrentMonth} />
+
 						<PieGraph expenseAreas={expenseAreas} expenses={expenses} />
 					</View>
 				}

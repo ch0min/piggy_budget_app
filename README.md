@@ -1,7 +1,7 @@
 **_ TODO _**
 
 NEXT: Rækkefølge Mandag:
-
+-  MONTHLY
 -  Lav Profil billede færdig Tirsdag:
 -  Lav Overview Screen Resten af ugen:
 -  Lav Loading indicator for alle buttons.
@@ -9,7 +9,8 @@ NEXT: Rækkefølge Mandag:
 -  RefreshControl
 -  Lav splash screen.
 -  Email redirection
--  CAPTCHA £5
+-  If no expense areas, pie chart skal ikke vises.
+-  CAPTCHA 
 -  Categories Screen AddCategory Screen skal moduleres.
 -  ÆNDRE ALT MARGIN OSV TIL PERCENTAGE
 -  Change colors

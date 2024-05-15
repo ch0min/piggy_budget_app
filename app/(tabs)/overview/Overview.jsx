@@ -5,7 +5,7 @@ import { useUser } from "../../../context/UserContext";
 import { KeyboardAwareFlatList } from "react-native-keyboard-aware-scroll-view";
 import colors from "../../../utils/colors";
 // import { RefreshControl } from "react-native";
-import OverviewHeader from "../../../components/headers/OverviewHeader";
+import OverviewHeader from "./header/OverviewHeader";
 import BarGraph from "../../../components/graphs/BarGraph";
 import FormatNumber from "../../../utils/formatNumber";
 import { FontAwesome, MaterialIcons, Feather, AntDesign, Entypo } from "@expo/vector-icons";

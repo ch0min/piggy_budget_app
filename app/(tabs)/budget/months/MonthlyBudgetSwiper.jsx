@@ -1,0 +1,79 @@
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import { Alert, StyleSheet, View, Text, TextInput, TouchableOpacity, FlatList } from "react-native";
+import { Entypo } from "@expo/vector-icons";
+import colors from "../../../../utils/colors";
+
+const MONTH_NAMES = [
+	"January",
+	"February",
+	"March",
+	"April",
+	"May",
+	"June",
+	"July",
+	"August",
+	"September",
+	"October",
+	"November",
+	"December",
+];
+
+const MonthlyBudgetSwiper = ({ currentMonth, setCurrentMonth }) => {
+	const [localMonth, setLocalMonth] = useState(currentMonth);
+
+	useEffect(() => {
+		setLocalMonth(currentMonth);
+	}, [currentMonth]);
+
+	const changeMonth = (increment) => {
+		let newMonth = new Date(localMonth.getFullYear(), localMonth.getMonth() + increment, 1);
+		setLocalMonth(newMonth);
+		setCurrentMonth(newMonth);
+	};
+
+	return (
+		<View style={styles.container}>
+			<TouchableOpacity style={styles.btn} onPress={() => changeMonth(-1)}>
+				<Entypo name="chevron-thin-left" size={22} color={colors.BLACK} />
+			</TouchableOpacity>
+			<Text style={styles.monthText}>
+				{MONTH_NAMES[localMonth.getMonth()]} {localMonth.getFullYear()}
+			</Text>
+			<TouchableOpacity style={styles.btn} onPress={() => changeMonth(1)}>
+				<Entypo name="chevron-thin-right" size={22} color={colors.BLACK} />
+			</TouchableOpacity>
+		</View>
+	);
+};
+
+const styles = StyleSheet.create({
+	container: {
+		flexDirection: "row",
+		alignItems: "center",
+		justifyContent: "space-between",
+		marginTop: "5%",
+		marginHorizontal: "5%",
+		borderRadius: 20,
+
+		backgroundColor: colors.WHITE,
+
+		shadowColor: "#000",
+		shadowOffset: { width: 0, height: 1 },
+		shadowOpacity: 0.1,
+		shadowRadius: 3,
+		elevation: 1,
+	},
+	btn: {
+		padding: "5%",
+	},
+	buttonText: {
+		fontSize: 18,
+		color: colors.BLACK,
+	},
+	monthText: {
+		fontSize: 18,
+		color: colors.BLACK,
+	},
+});
+
+export default MonthlyBudgetSwiper;
