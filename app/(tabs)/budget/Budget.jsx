@@ -15,6 +15,11 @@ const Budget = ({ navigation }) => {
 	const {
 		session,
 		userProfile,
+		currentMonth,
+		setCurrentMonth,
+		budgetExists,
+		setBudgetExists,
+		createMonthlyBudget,
 		expenseAreas,
 		getExpenseAreas,
 		createExpenseArea,
@@ -24,7 +29,6 @@ const Budget = ({ navigation }) => {
 		getExpenses,
 	} = useUser();
 	const inputRef = useRef(null);
-	const [currentMonth, setCurrentMonth] = useState(new Date());
 
 	const [showCheckmark, setShowCheckmark] = useState(false);
 	const [expenseAreaName, setExpenseAreaName] = useState("");
@@ -35,7 +39,7 @@ const Budget = ({ navigation }) => {
 	useFocusEffect(
 		useCallback(() => {
 			if (session) {
-				getExpenseAreas(currentMonth);
+				getExpenseAreas();
 				getExpenses();
 			}
 		}, [session, currentMonth])
@@ -182,30 +186,53 @@ const Budget = ({ navigation }) => {
 					<View style={styles.graphContainer}>
 						<MonthlyBudgetSwiper currentMonth={currentMonth} setCurrentMonth={setCurrentMonth} />
 
-						<PieGraph expenseAreas={expenseAreas} expenses={expenses} />
+						{budgetExists && expenseAreas === 0 && (
+							<View style={styles.noExpenseAreas}>
+								<Text style={styles.noExpenseAreasText}>No expense areas found for this month.</Text>
+							</View>
+						)}
+
+						{expenseAreas.length > 0 && <PieGraph expenseAreas={expenseAreas} expenses={expenses} />}
 					</View>
 				}
 				ListFooterComponent={
-					<View style={styles.createExpenseAreaContainer}>
-						<TextInput
-							ref={inputRef}
-							style={styles.createExpenseAreaInput}
-							placeholder="New expense area"
-							onChangeText={setExpenseAreaName}
-							value={expenseAreaName}
-							onFocus={() => {
-								setShowCheckmark(false);
-							}}
-							onBlur={() => {
-								setShowCheckmark(true);
-							}}
-						/>
-						{showCheckmark && expenseAreaName.length > 0 && (
-							<TouchableOpacity onPress={handleCreateExpenseArea}>
-								<AntDesign name="check" size={26} color={colors.BLACK} />
+					<>
+						{!budgetExists ? (
+							<TouchableOpacity
+								style={styles.createBudgetButton}
+								onPress={async () => {
+									const budgetId = await createMonthlyBudget(currentMonth);
+									if (budgetId) {
+										setBudgetExists(true);
+										getExpenseAreas();
+									}
+								}}
+							>
+								<Text>Create budget for this month</Text>
 							</TouchableOpacity>
+						) : (
+							<View style={styles.createExpenseAreaContainer}>
+								<TextInput
+									ref={inputRef}
+									style={styles.createExpenseAreaInput}
+									placeholder="New expense area"
+									onChangeText={setExpenseAreaName}
+									value={expenseAreaName}
+									onFocus={() => {
+										setShowCheckmark(false);
+									}}
+									onBlur={() => {
+										setShowCheckmark(true);
+									}}
+								/>
+								{showCheckmark && expenseAreaName.length > 0 && (
+									<TouchableOpacity onPress={handleCreateExpenseArea}>
+										<AntDesign name="check" size={26} color={colors.BLACK} />
+									</TouchableOpacity>
+								)}
+							</View>
 						)}
-					</View>
+					</>
 				}
 			/>
 		</View>
@@ -226,6 +253,21 @@ const styles = StyleSheet.create({
 		borderBottomWidth: 1,
 		borderBottomColor: colors.LIGHT,
 		opacity: 0.5,
+	},
+	createBudgetButton: {
+		marginTop: "10%",
+		padding: 20,
+		borderRadius: 99,
+		backgroundColor: colors.PRIMARY,
+	},
+	noExpenseAreas: {
+		alignItems: "center",
+		justifyContent: "center",
+		marginTop: "10%",
+	},
+	noExpenseAreasText: {
+		fontSize: 16,
+		color: colors.BLACK,
 	},
 	createExpenseAreaContainer: {
 		flexDirection: "row",

@@ -9,7 +9,6 @@ NEXT: Rækkefølge Mandag:
 -  RefreshControl
 -  Lav splash screen.
 -  Email redirection
--  If no expense areas, pie chart skal ikke vises.
 -  CAPTCHA 
 -  Categories Screen AddCategory Screen skal moduleres.
 -  ÆNDRE ALT MARGIN OSV TIL PERCENTAGE

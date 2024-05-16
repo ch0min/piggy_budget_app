@@ -9,5 +9,5 @@ export default {
 	SILVER: "#C0C0C0",
 	DARK: "#343434",
 	RED: "#FF555D",
-	COLOR_LIST: ["#B2BEB5", "#F890CB", "#73AEF0", "#B5D244", "#FFC300", "#FF555D", "#7F00FF"],
+	COLOR_LIST: ["#F890CB", "#73AEF0", "#B5D244", "#FFC300", "#FF555D", "#7F00FF", "#B2BEB5"],
 };

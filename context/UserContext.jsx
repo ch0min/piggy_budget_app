@@ -140,14 +140,18 @@ export const UserProvider = ({ children }) => {
 
 	/*** END ***/
 
-	/*** MONTHLY BUDGET FUNCTIONS ***/
-	const ensureMonthlyBudget = async (userId, date) => {
+	/*** MONTHLY BUDGET FUNCTIONALITY ***/
+	const [currentMonth, setCurrentMonth] = useState(new Date());
+	// const [monthlyBudgetId, setMonthlyBudgetId] = useState(null);
+	const [budgetExists, setBudgetExists] = useState(false);
+
+	const getMonthlyBudgetId = async () => {
 		setLoading(true);
-		const month = date.getMonth() + 1;
-		const year = date.getFullYear();
+		const userId = session?.user?.id;
+		const month = currentMonth.getMonth() + 1;
+		const year = currentMonth.getFullYear();
 
 		try {
-			// First attempt to find an existing budget for a user:
 			const { data, error } = await supabase
 				.from("monthly_budgets")
 				.select("id")
@@ -156,31 +160,44 @@ export const UserProvider = ({ children }) => {
 				.eq("year", year)
 				.maybeSingle();
 
-			if (error) {
-				console.error("Error searching for monthly budget.", error);
-				throw new Error("Failed to fetch monthly budget.");
-			}
+			if (error) throw error;
 
 			if (data) {
 				return data.id;
 			} else {
-				// If no existing monthly budget for a user, create a new one:
-				const { data: newBudget, error: createError } = await supabase
-					.from("monthly_budgets")
-					.insert({
+				return null;
+			}
+		} catch (error) {
+			console.error("Error fetching monthly budget:", error.message);
+		} finally {
+			setLoading(false);
+		}
+	};
+
+	const createMonthlyBudget = async (currentMonth) => {
+		setLoading(true);
+		const userId = session?.user?.id;
+		const month = currentMonth.getMonth() + 1;
+		const year = currentMonth.getFullYear();
+
+		try {
+			const { data, error } = await supabase
+				.from("monthly_budgets")
+				.insert([
+					{
 						user_id: userId,
 						month: month,
 						year: year,
 						total_budget_month: 0,
-					})
-					.single();
+					},
+				])
+				.single();
 
-				if (createError) {
-					console.error("Error creating monthly budget.", createError);
-					throw new Error("Failed to create monthly budget.");
-				}
-				return newBudget.id;
+			if (error) {
+				console.error("Error creating monthly budget.", createError);
+				return new Error(error.message);
 			}
+			getExpenseAreas();
 		} catch (error) {
 			console.error("Error ensuring monthly budget for a user:", error.message);
 			throw error;
@@ -188,6 +205,53 @@ export const UserProvider = ({ children }) => {
 			setLoading(false);
 		}
 	};
+
+	// const ensureMonthlyBudget = async (userId, date) => {
+	// 	setLoading(true);
+	// 	const month = date.getMonth() + 1;
+	// 	const year = date.getFullYear();
+
+	// 	try {
+	// 		// First attempt to find an existing budget for a user:
+	// 		const { data, error } = await supabase
+	// 			.from("monthly_budgets")
+	// 			.select("id")
+	// 			.eq("user_id", userId)
+	// 			.eq("month", month)
+	// 			.eq("year", year)
+	// 			.maybeSingle();
+
+	// 		if (error) {
+	// 			console.error("Error searching for monthly budget.", error);
+	// 			throw new Error("Failed to fetch monthly budget.");
+	// 		}
+
+	// 		if (data) {
+	// 			return data.id;
+	// 		}
+	// 		// If no existing monthly budget for a user, create a new one:
+	// 		const { data: newBudget, error: createError } = await supabase
+	// 			.from("monthly_budgets")
+	// 			.insert({
+	// 				user_id: userId,
+	// 				month: month,
+	// 				year: year,
+	// 				total_budget_month: 0,
+	// 			})
+	// 			.single();
+
+	// 		if (createError) {
+	// 			console.error("Error creating monthly budget.", createError);
+	// 			throw new Error("Failed to create monthly budget.");
+	// 		}
+	// 		return newBudget.id;
+	// 	} catch (error) {
+	// 		console.error("Error ensuring monthly budget for a user:", error.message);
+	// 		throw error;
+	// 	} finally {
+	// 		setLoading(false);
+	// 	}
+	// };
 	/*** END ***/
 
 	/*** EXPENSE AREAS FUNCTIONS ***/
@@ -213,24 +277,40 @@ export const UserProvider = ({ children }) => {
 	// 	}
 	// };
 
-	const getExpenseAreas = async (date) => {
+	const getExpenseAreas = async () => {
 		setLoading(true);
 		const userId = session?.user?.id;
-		const month = date.getMonth() + 1;
-		const year = date.getFullYear();
-		try {
-			const userId = user?.id;
-			const { data, error } = await supabase
-				.from("expense_areas")
-				.select(`*, monthly_budgets:monthly_budgets_id (total_budget_month)`)
-				.eq("user_id", userId)
-				.eq("monthly_budgets.month", month)
-				.eq("monthly_budgets.year", year)
-				.order("id", { ascending: true });
-			if (error) throw error;
+		const month = currentMonth.getMonth() + 1;
+		const year = currentMonth.getFullYear();
 
-			setExpenseAreas(data);
-			// console.log("Expense Areas fetched:", data);
+		try {
+			const { data: budgetData, error: budgetError } = await supabase
+				.from("monthly_budgets")
+				.select("id")
+				.eq("user_id", userId)
+				.eq("month", month)
+				.eq("year", year)
+				.maybeSingle();
+
+			if (budgetError) {
+				console.error("Error fetching monthly budget:", budgetError.message);
+				setBudgetExists(False);
+			}
+
+			if (budgetData) {
+				setBudgetExists(true);
+				const { data: areasData, error: areasError } = await supabase
+					.from("expense_areas")
+					.select("*")
+					.eq("monthly_budgets_id", budgetData.id)
+					.order("id", { ascending: true });
+
+				if (areasError) throw areasError;
+				setExpenseAreas(areasData || []);
+			} else {
+				setExpenseAreas([]);
+				setBudgetExists(false);
+			}
 		} catch (error) {
 			console.error("Error fetching expense_areas:", error.message);
 		} finally {
@@ -238,40 +318,15 @@ export const UserProvider = ({ children }) => {
 		}
 	};
 
-	// const getExpenseAreas = async (date) => {
-	// 	setLoading(true);
-	// const userId = session?.user?.id;
-	// const month = date.getMonth() + 1;
-	// const year = date.getFullYear();
-
-	// 	try {
-	// 		const { data, error } = await supabase
-	// 			.from("expense_areas")
-	// 			.select(`*, monthly_budgets:monthly_budgets_id (total_budget_month)`)
-	// 			.eq("user_id", userId)
-	// 			.eq("monthly_budgets.month", month)
-	// 			.eq("monthly_budgets.year", year)
-	// 			.order("id", { ascending: true });
-
-	// 		if (error) throw error;
-	// 		setExpenseAreas(data);
-	// 	} catch (error) {
-	// 		console.error("Error fetching expense areas:", error.message);
-	// 	} finally {
-	// 		setLoading(false);
-	// 	}
-	// };
-
-	const createExpenseArea = async (name, date) => {
+	const createExpenseArea = async (name) => {
 		setLoading(true);
 		const userId = session?.user?.id;
-		// const date = new Date();
 
 		try {
-			const monthlyBudgetsId = await ensureMonthlyBudget(userId, date);
+			const monthlyBudgetId = await getMonthlyBudgetId();
 
-			if (!monthlyBudgetsId) {
-				console.error("Failed to tain a monthly budget ID.");
+			if (!monthlyBudgetId) {
+				console.error("Failed to obtain a monthly budget ID.");
 				throw new Error("Failed to obtain a monthly budget ID for a user.");
 			}
 
@@ -279,14 +334,14 @@ export const UserProvider = ({ children }) => {
 				{
 					name: name,
 					created_at: new Date(),
-					monthly_budgets_id: monthlyBudgetsId,
+					monthly_budgets_id: monthlyBudgetId,
 					user_id: userId,
 				},
 			]);
 
 			if (error) throw error;
 
-			// return data;
+			getExpenseAreas();
 		} catch (error) {
 			console.error("Error creating expense area", error.message);
 		} finally {
@@ -671,7 +726,11 @@ export const UserProvider = ({ children }) => {
 				updateProfile,
 
 				// Monthly Budget States
+				currentMonth,
+				setCurrentMonth,
+				budgetExists,
 				// Monthly Budget Functions
+				createMonthlyBudget,
 
 				// Expense Areas States
 				expenseAreas,

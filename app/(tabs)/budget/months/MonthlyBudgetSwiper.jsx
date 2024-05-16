@@ -19,16 +19,11 @@ const MONTH_NAMES = [
 ];
 
 const MonthlyBudgetSwiper = ({ currentMonth, setCurrentMonth }) => {
-	const [localMonth, setLocalMonth] = useState(currentMonth);
-
-	useEffect(() => {
-		setLocalMonth(currentMonth);
-	}, [currentMonth]);
-
 	const changeMonth = (increment) => {
-		let newMonth = new Date(localMonth.getFullYear(), localMonth.getMonth() + increment, 1);
-		setLocalMonth(newMonth);
+		let newMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + increment, 1);
 		setCurrentMonth(newMonth);
+
+		console.log("New month set to:", MONTH_NAMES[newMonth.getMonth()], newMonth.getFullYear());
 	};
 
 	return (
@@ -37,7 +32,7 @@ const MonthlyBudgetSwiper = ({ currentMonth, setCurrentMonth }) => {
 				<Entypo name="chevron-thin-left" size={22} color={colors.BLACK} />
 			</TouchableOpacity>
 			<Text style={styles.monthText}>
-				{MONTH_NAMES[localMonth.getMonth()]} {localMonth.getFullYear()}
+				{MONTH_NAMES[currentMonth.getMonth()]} {currentMonth.getFullYear()}
 			</Text>
 			<TouchableOpacity style={styles.btn} onPress={() => changeMonth(1)}>
 				<Entypo name="chevron-thin-right" size={22} color={colors.BLACK} />
