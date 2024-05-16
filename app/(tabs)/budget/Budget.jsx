@@ -115,7 +115,6 @@ const Budget = ({ navigation }) => {
 				) : (
 					<>
 						<Text style={styles.expenseAreaName}>{item.name}</Text>
-						{/* <Text style={styles.expenseAreaTotalBudget}>(Total: {item.total_budget})</Text> */}
 					</>
 				)}
 				<TouchableOpacity

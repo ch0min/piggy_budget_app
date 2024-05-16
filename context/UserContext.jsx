@@ -205,53 +205,6 @@ export const UserProvider = ({ children }) => {
 			setLoading(false);
 		}
 	};
-
-	// const ensureMonthlyBudget = async (userId, date) => {
-	// 	setLoading(true);
-	// 	const month = date.getMonth() + 1;
-	// 	const year = date.getFullYear();
-
-	// 	try {
-	// 		// First attempt to find an existing budget for a user:
-	// 		const { data, error } = await supabase
-	// 			.from("monthly_budgets")
-	// 			.select("id")
-	// 			.eq("user_id", userId)
-	// 			.eq("month", month)
-	// 			.eq("year", year)
-	// 			.maybeSingle();
-
-	// 		if (error) {
-	// 			console.error("Error searching for monthly budget.", error);
-	// 			throw new Error("Failed to fetch monthly budget.");
-	// 		}
-
-	// 		if (data) {
-	// 			return data.id;
-	// 		}
-	// 		// If no existing monthly budget for a user, create a new one:
-	// 		const { data: newBudget, error: createError } = await supabase
-	// 			.from("monthly_budgets")
-	// 			.insert({
-	// 				user_id: userId,
-	// 				month: month,
-	// 				year: year,
-	// 				total_budget_month: 0,
-	// 			})
-	// 			.single();
-
-	// 		if (createError) {
-	// 			console.error("Error creating monthly budget.", createError);
-	// 			throw new Error("Failed to create monthly budget.");
-	// 		}
-	// 		return newBudget.id;
-	// 	} catch (error) {
-	// 		console.error("Error ensuring monthly budget for a user:", error.message);
-	// 		throw error;
-	// 	} finally {
-	// 		setLoading(false);
-	// 	}
-	// };
 	/*** END ***/
 
 	/*** EXPENSE AREAS FUNCTIONS ***/
@@ -448,49 +401,29 @@ export const UserProvider = ({ children }) => {
 		}
 	};
 
-	// const getExpenses = async (date) => {
-	// 	setLoading(true);
-	// 	const userId = session?.user.id;
-	// 	const month = date.getMonth();
-	// 	const year = date.getFullYear();
-
-	// 	try {
-	// 		const { data, error } = await supabase
-	// 			.from("expenses")
-	// 			.select(`*, monthly_budgets(total_budget_month)`)
-	// 			.eq("user_id", userId)
-	// 			.eq("monthly_budgets.month", month)
-	// 			.eq("monthly_budgets.year", year)
-	// 			.order("id", { ascending: true });
-
-	// 		if (error) throw error;
-
-	// 		setExpenses(data);
-	// 	} catch (error) {
-	// 		console.error("Error fetching expenses for user:", error.message);
-	// 	} finally {
-	// 		setLoading(false);
-	// 	}
-	// };
-
 	const createExpense = async (name, maxBudget, icon, color, expenseAreasId) => {
 		setLoading(true);
 		const userId = session?.user?.id;
 		try {
-			const { data, error } = await supabase.from("expenses").insert([
-				{
-					created_at: new Date(),
-					name: name,
-					total_spent: 0,
-					max_budget: maxBudget,
-					icon: icon,
-					color: color,
-					expense_areas_id: expenseAreasId,
-					user_id: userId,
-				},
-			]);
+			const { data: expenseData, error } = await supabase
+				.from("expenses")
+				.insert([
+					{
+						created_at: new Date(),
+						name: name,
+						total_spent: 0,
+						max_budget: maxBudget,
+						icon: icon,
+						color: color,
+						expense_areas_id: expenseAreasId,
+						user_id: userId,
+					},
+				])
+				.single();
 
 			if (error) throw error;
+
+			await updateMonthlyBudget(maxBudget);
 
 			await updateTotalBudgetForArea(expenseAreasId);
 		} catch (error) {
@@ -499,6 +432,33 @@ export const UserProvider = ({ children }) => {
 			setLoading(false);
 		}
 	};
+
+	// const createExpense = async (name, maxBudget, icon, color, expenseAreasId) => {
+	// 	setLoading(true);
+	// 	const userId = session?.user?.id;
+	// 	try {
+	// 		const { data, error } = await supabase.from("expenses").insert([
+	// 			{
+	// 				created_at: new Date(),
+	// 				name: name,
+	// 				total_spent: 0,
+	// 				max_budget: maxBudget,
+	// 				icon: icon,
+	// 				color: color,
+	// 				expense_areas_id: expenseAreasId,
+	// 				user_id: userId,
+	// 			},
+	// 		]);
+
+	// 		if (error) throw error;
+
+	// 		await updateTotalBudgetForArea(expenseAreasId);
+	// 	} catch (error) {
+	// 		console.error("Error creating expense", error.message);
+	// 	} finally {
+	// 		setLoading(false);
+	// 	}
+	// };
 
 	const updateExpense = async (id, name, maxBudget, icon, color) => {
 		setLoading(true);

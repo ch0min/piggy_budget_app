@@ -89,7 +89,8 @@ const PieGraph = ({ expenseAreas, expenses }) => {
 			</View>
 
 			{expenseAreas.slice(0, toggleAllAreas ? expenseAreas.length : 3).map((area, index) => {
-				const percentage = (area.total_budget / totalCalcEstimate) * 100;
+				const percentage = totalCalcEstimate > 0 ? ((area.total_budget || 0) / totalCalcEstimate) * 100 : 0;
+
 				return (
 					<View key={index} style={styles.chartNameContainer}>
 						<MaterialCommunityIcons
@@ -100,10 +101,12 @@ const PieGraph = ({ expenseAreas, expenses }) => {
 						<View style={styles.chartNameTextContainer}>
 							<Text style={styles.chartNameText}>
 								{area.name}
-								<Text style={{ color: colors.SILVER }}> ({percentage.toFixed(0)}%)</Text>
+								{totalCalcEstimate > 0 && (
+									<Text style={{ color: colors.SILVER }}> ({percentage.toFixed(0)}%)</Text>
+								)}
 							</Text>
 							<Text style={styles.chartNameTotalBudgetText}>
-								{FormatNumber(area.total_budget)} {userProfile.valutaName}
+								{FormatNumber(area.total_budget || 0)} {userProfile.valutaName}
 							</Text>
 						</View>
 					</View>

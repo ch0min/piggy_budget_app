@@ -1,7 +1,7 @@
 **_ TODO _**
 
 NEXT: Rækkefølge Mandag:
--  MONTHLY
+
 -  Lav Profil billede færdig Tirsdag:
 -  Lav Overview Screen Resten af ugen:
 -  Lav Loading indicator for alle buttons.
@@ -9,7 +9,7 @@ NEXT: Rækkefølge Mandag:
 -  RefreshControl
 -  Lav splash screen.
 -  Email redirection
--  CAPTCHA 
+-  CAPTCHA
 -  Categories Screen AddCategory Screen skal moduleres.
 -  ÆNDRE ALT MARGIN OSV TIL PERCENTAGE
 -  Change colors
@@ -34,6 +34,8 @@ MINOR BUGS:
 
 -  If you edit an existing transaction and tap out, and then click New transaction, then it will placehold the existing one.
 -  Sometimes when you login you will quickly see the CompleteProfile Screen.
+-  Quickly clicking on the checkmark when creating a new transaction will create multiple.
+-  Quickly deleting multiple transactions shouldnt be a thing. (Maybe just remove the alert)
 
 **_ SECURITY TEST _**
 
@@ -60,21 +62,24 @@ MINOR BUGS:
 -  react-native-pie-chart: pie chart.
 -  react-native-gifted-charts: graphs
 -  react-native-picker/picker: used for scroll wheel picker.
--  react-native-swiper: used for monthly swiper.
-npm install react-native-keyboard-aware-scroll-view --save
+-  react-native-swiper: used for monthly swiper. npm install react-native-keyboard-aware-scroll-view --save
 
 **_ BUG HELPER _**
 
 -  AsyncStorage.clear().then(() => console.log('Local storage cleared!'));
 
-DB: PUBLIC TABLES: expense_areas: id: uuid, user_id (foreign key->profiles): uuid, name: text, total_budget: numeric
+**_ DATABASE STRUCTURE _**
 
-expenses: id: uuid, created_at: date, user_id (foreign key->profiles): uuid, name: text, icon: text, color: text, total_spent: numeric, max_budget: numeric, expense_areas_id (foreign key->expense_areas): int
+expense_areas - id: uuid, user_id (foreign key->profiles): uuid, name: text, total_budget: numeric
 
-transactions: id: uuid, created_at: date, user_id (foreign key->profiles): uuid, amount: numeric, note: text, expenses_id (foreign key->expenses): int
+expenses - id: uuid, created_at: date, user_id (foreign key->profiles): uuid, name: text, icon: text, color: text, total_spent: numeric, max_budget: numeric, expense_areas_id (foreign key->expense_areas): int
 
-profiles: id: uuid, updated_at: date, avatar: text, first_name: text, last_name: text, profile_completed: bool, valuta_id: int (foreign key->valuta)
+transactions - id: uuid, created_at: date, user_id (foreign key->profiles): uuid, amount: numeric, note: text, expenses_id (foreign key->expenses): int
 
-valuta: id: uuid, name: text
+profiles - id: uuid, updated_at: date, avatar: text, first_name: text, last_name: text, profile_completed: bool, valuta_id: int (foreign key->valuta)
+
+valuta - id: uuid, name: text
+
+monthly_budgets - id: uuid, month: int, year: int, user_id: uuid (foreign key to profile), total_budget_month: numeric
 
 AUTH TABLE: users
