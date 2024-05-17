@@ -5,20 +5,20 @@ import { LinearGradient } from "expo-linear-gradient";
 import colors from "../../utils/colors";
 import FormatNumber from "../../utils/formatNumber";
 
-const ProgressBar = ({ totalSpent, maxBudget }) => {
+const ProgressBar = ({ totalSpentExpense, totalBudgetExpense }) => {
 	const { userProfile } = useUser();
 
-	const totalPercentage = maxBudget > 0 ? (totalSpent / maxBudget) * 100 : 0;
+	const totalPercentage = totalBudgetExpense > 0 ? (totalSpentExpense / totalBudgetExpense) * 100 : 0;
 
 	return (
 		<View style={styles.container}>
 			<View style={styles.textContainer}>
 				<Text style={styles.progressTextAmount}>
-					{FormatNumber(totalSpent)} {userProfile.valutaName}
+					{FormatNumber(totalSpentExpense)} {userProfile.valutaName}
 				</Text>
 				<Text style={styles.progressTextPct}>{totalPercentage.toFixed(2)}%</Text>
 				<Text style={styles.progressTextMax}>
-					{FormatNumber(maxBudget)} {userProfile.valutaName}
+					{FormatNumber(totalBudgetExpense)} {userProfile.valutaName}
 				</Text>
 			</View>
 			<View style={styles.progressBarContainer}>

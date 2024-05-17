@@ -52,11 +52,11 @@ const Expenses = ({ navigation, route }) => {
 	);
 
 	useEffect(() => {
-		const totalSpent = transactions.reduce(
+		const totalSpentExpense = transactions.reduce(
 			(acc, tr) => (tr.expenses_id === currentExpense.id ? acc + parseFloat(tr.amount) : acc),
 			0
 		);
-		setCurrentExpense({ ...currentExpense, total_spent: totalSpent });
+		setCurrentExpense({ ...currentExpense, total_spent_expense: totalSpentExpense });
 	}, [transactions, selectedExpense.id]);
 
 	useEffect(() => {
@@ -241,7 +241,10 @@ const Expenses = ({ navigation, route }) => {
 					</TouchableOpacity>
 				</View>
 
-				<ProgressBar totalSpent={currentExpense.total_spent} maxBudget={currentExpense.max_budget} />
+				<ProgressBar
+					totalSpentExpense={currentExpense.total_spent_expense}
+					totalBudgetExpense={currentExpense.total_budget_expense}
+				/>
 			</View>
 			{/* END */}
 

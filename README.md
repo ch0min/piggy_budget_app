@@ -80,6 +80,6 @@ profiles - id: uuid, updated_at: date, avatar: text, first_name: text, last_name
 
 valuta - id: uuid, name: text
 
-monthly_budgets - id: uuid, month: int, year: int, user_id: uuid (foreign key to profile), total_budget_month: numeric
+monthly_budgets - id: uuid, month: int, year: int, user_id: uuid (foreign key to profile), total_spent_month: numeric, total_budget_month: numeric
 
 AUTH TABLE: users

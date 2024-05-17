@@ -163,10 +163,10 @@ const Budget = ({ navigation }) => {
 				<Text style={styles.expensesName}>{item.name}</Text>
 				<View style={styles.expensesBudgetNameBox}>
 					<Text style={styles.expensesTotalSpent}>
-						{FormatNumber(item.total_spent)} {userProfile.valutaName} / {""}
+						{FormatNumber(item.total_spent_expense)} {userProfile.valutaName} / {""}
 					</Text>
-					<Text style={styles.expensesMaxBudgetName}>
-						{FormatNumber(item.max_budget)} {userProfile.valutaName}
+					<Text style={styles.expensesTotalBudgetExpenseName}>
+						{FormatNumber(item.total_budget_expense)} {userProfile.valutaName}
 					</Text>
 				</View>
 			</View>
@@ -197,18 +197,22 @@ const Budget = ({ navigation }) => {
 				ListFooterComponent={
 					<>
 						{!budgetExists ? (
-							<TouchableOpacity
-								style={styles.createBudgetButton}
-								onPress={async () => {
-									const budgetId = await createMonthlyBudget(currentMonth);
-									if (budgetId) {
-										setBudgetExists(true);
-										getExpenseAreas();
-									}
-								}}
-							>
-								<Text>Create budget for this month</Text>
-							</TouchableOpacity>
+							<View style={styles.createBudgetContainer}>
+								<Text style={styles.createBudgetHeading}>Get started now!</Text>
+								<Text style={styles.createBudgetSubheading}>Setup a new monthly budget</Text>
+								<TouchableOpacity
+									style={styles.createBudgetButton}
+									onPress={async () => {
+										const budgetId = await createMonthlyBudget(currentMonth);
+										if (budgetId) {
+											setBudgetExists(true);
+											getExpenseAreas();
+										}
+									}}
+								>
+									<Text style={styles.createBudgetBtnText}>Create Budget</Text>
+								</TouchableOpacity>
+							</View>
 						) : (
 							<View style={styles.createExpenseAreaContainer}>
 								<TextInput
@@ -253,11 +257,35 @@ const styles = StyleSheet.create({
 		borderBottomColor: colors.LIGHT,
 		opacity: 0.5,
 	},
+	createBudgetContainer: {
+		flex: 1,
+		alignItems: "center",
+		justifyContent: "center",
+		width: "100%",
+		marginTop: "35%",
+	},
+	createBudgetHeading: {
+		fontSize: 18,
+		color: colors.DARKGRAY,
+	},
+	createBudgetSubheading: {
+		fontSize: 22,
+		color: colors.DARKGRAY,
+	},
 	createBudgetButton: {
-		marginTop: "10%",
-		padding: 20,
+		alignItems: "center",
+		justifyContent: "center",
+		width: "50%",
+		marginTop: "5%",
+		padding: "5%",
 		borderRadius: 99,
-		backgroundColor: colors.PRIMARY,
+		backgroundColor: colors.SECONDARY,
+	},
+	createBudgetBtnText: {
+		fontSize: 14,
+		textTransform: "uppercase",
+		fontWeight: "bold",
+		color: colors.WHITE,
 	},
 	noExpenseAreas: {
 		alignItems: "center",
@@ -296,7 +324,6 @@ const styles = StyleSheet.create({
 		fontSize: 22,
 		fontWeight: "bold",
 		color: colors.DARKGRAY,
-		// backgroundColor: "red",
 	},
 	expenseAreaItem: {
 		justifyContent: "space-between",
@@ -368,10 +395,9 @@ const styles = StyleSheet.create({
 		flexShrink: 1,
 		fontSize: 16,
 	},
-	expensesMaxBudgetName: {
+	expensesTotalBudgetExpenseName: {
 		flexShrink: 1,
 		fontSize: 16,
-		// fontWeight: "bold",
 	},
 	expensesIcon: {
 		alignItems: "center",

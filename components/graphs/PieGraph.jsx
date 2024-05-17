@@ -7,55 +7,50 @@ import { MaterialCommunityIcons, FontAwesome } from "@expo/vector-icons";
 import FormatNumber from "../../utils/formatNumber";
 
 const PieGraph = ({ expenseAreas, expenses }) => {
-	const { userProfile } = useUser();
+	const { userProfile, totalMonthlyBudget, getMonthlyBudget } = useUser();
 	const size = 120;
 	const [values, setValues] = useState([]);
 	const [sliceColor, setSliceColor] = useState([]);
-	const [totalCalcEstimate, setTotalCalcEstimate] = useState(0);
-	const [plannedTotalMaxBudget, setPlannedTotalMaxBudget] = useState(0);
+	const [totalSpentMonth, setTotalSpentMonth] = useState(0);
 	const [toggleAllAreas, setToggleAllAreas] = useState(false);
 
 	useEffect(() => {
+		calculatePieGraph();
+		getMonthlyBudget();
+	}, [expenseAreas, totalMonthlyBudget]);
+
+	const calculatePieGraph = () => {
 		if (expenseAreas.length > 0) {
-			const values = [];
-			const sliceColor = [];
 			let total = 0;
+			const newValues = [];
+			const newSliceColor = [];
 
 			expenseAreas.forEach((area, index) => {
-				const budget = area.total_budget || 0;
-				if (budget > 0) {
-					values.push(budget);
-					sliceColor.push(colors.COLOR_LIST[index % colors.COLOR_LIST.length]);
-					total += budget;
+				const spentAmount = area.total_budget_area || 0;
+				if (spentAmount > 0) {
+					newValues.push(spentAmount);
+					newSliceColor.push(colors.COLOR_LIST[index % colors.COLOR_LIST.length]);
+					total += spentAmount;
 				}
 			});
 
-			if (total > 0) {
-				setValues(values);
-				setSliceColor(sliceColor);
-				setTotalCalcEstimate(total);
-			} else {
-				handleNoData();
+			if (totalMonthlyBudget > total) {
+				newValues.push(totalMonthlyBudget - total);
+				newSliceColor.push(colors.GRAY);
 			}
+			setTotalSpentMonth(total);
+			setValues(newValues);
+			setSliceColor(newSliceColor);
 		} else {
 			handleNoData();
 		}
-	}, [expenseAreas]);
-
-	useEffect(() => {
-		calculatePlannedTotalExpenses();
-	}, [expenseAreas]);
+		getMonthlyBudget();
+	};
 
 	const handleNoData = () => {
 		setValues([1]);
 		setSliceColor([colors.GRAY]);
-		setTotalCalcEstimate(0);
-	};
-
-	const calculatePlannedTotalExpenses = () => {
-		const maxBudget = expenses.reduce((acc, exp) => acc + parseFloat(exp.max_budget || 0), 0);
-
-		setPlannedTotalMaxBudget(maxBudget);
+		setTotalSpentMonth(0);
 	};
 
 	const toggleShowAllAreas = () => {
@@ -79,17 +74,17 @@ const PieGraph = ({ expenseAreas, expenses }) => {
 				<View style={styles.legendContainer}>
 					<Text style={styles.legendHeading}>Planned total budget</Text>
 					<Text style={styles.legendTotalBudget}>
-						{FormatNumber(plannedTotalMaxBudget)} {userProfile.valutaName}
+						{FormatNumber(totalMonthlyBudget)} {userProfile.valutaName}
 					</Text>
 					<Text style={styles.legendSubHeading}>
 						<Text style={{ fontSize: 14, fontStyle: "italic", color: colors.DARKGRAY }}>You've spent: </Text>
-						{FormatNumber(totalCalcEstimate)} {userProfile.valutaName}
+						{FormatNumber(totalSpentMonth)} {userProfile.valutaName}
 					</Text>
 				</View>
 			</View>
 
 			{expenseAreas.slice(0, toggleAllAreas ? expenseAreas.length : 3).map((area, index) => {
-				const percentage = totalCalcEstimate > 0 ? ((area.total_budget || 0) / totalCalcEstimate) * 100 : 0;
+				const percentage = totalMonthlyBudget > 0 ? ((area.total_budget_area || 0) / totalMonthlyBudget) * 100 : 0;
 
 				return (
 					<View key={index} style={styles.chartNameContainer}>
@@ -101,12 +96,12 @@ const PieGraph = ({ expenseAreas, expenses }) => {
 						<View style={styles.chartNameTextContainer}>
 							<Text style={styles.chartNameText}>
 								{area.name}
-								{totalCalcEstimate > 0 && (
+								{totalSpentMonth > 0 && (
 									<Text style={{ color: colors.SILVER }}> ({percentage.toFixed(0)}%)</Text>
 								)}
 							</Text>
 							<Text style={styles.chartNameTotalBudgetText}>
-								{FormatNumber(area.total_budget || 0)} {userProfile.valutaName}
+								{FormatNumber(area.total_budget_area || 0)} {userProfile.valutaName}
 							</Text>
 						</View>
 					</View>

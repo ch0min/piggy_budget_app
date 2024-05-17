@@ -22,8 +22,6 @@ const MonthlyBudgetSwiper = ({ currentMonth, setCurrentMonth }) => {
 	const changeMonth = (increment) => {
 		let newMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + increment, 1);
 		setCurrentMonth(newMonth);
-
-		console.log("New month set to:", MONTH_NAMES[newMonth.getMonth()], newMonth.getFullYear());
 	};
 
 	return (

@@ -26,7 +26,7 @@ const UpdateExpense = ({
 	useEffect(() => {
 		if (updateExpenseVisible) {
 			setEditableExpenseName(currentExpense.name);
-			setEditableExpenseMaxBudget(String(currentExpense.max_budget));
+			setEditableExpenseMaxBudget(String(currentExpense.total_budget_expense));
 		}
 	}, [updateExpenseVisible, currentExpense]);
 
