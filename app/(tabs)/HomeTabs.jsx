@@ -18,7 +18,7 @@ const HomeTabs = ({ navigation }) => {
 	return (
 		<View style={styles.container}>
 			<Tab.Navigator
-				initialRouteName="Budget" // Change
+				initialRouteName="Overview" // Change
 				screenOptions={{
 					headerShown: false,
 					tabBarActiveTintColor: colors.SECONDARY,

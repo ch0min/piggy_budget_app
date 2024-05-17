@@ -202,6 +202,8 @@ export const UserProvider = ({ children }) => {
 				setTotalMonthlyBudget(0);
 				setBudgetExists(false);
 			}
+
+			return data;
 		} catch (error) {
 			console.error("Error fetching monthly budget:", error.message);
 		} finally {

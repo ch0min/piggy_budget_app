@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Alert, StyleSheet, View, Text, TextInput, TouchableOpacity, FlatList } from "react-native";
 import { Entypo } from "@expo/vector-icons";
 import colors from "../../../../utils/colors";
+// import { MONTH_NAMES } from "../../../../constants/months";
 
 const MONTH_NAMES = [
 	"January",
