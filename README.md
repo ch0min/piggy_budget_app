@@ -7,6 +7,7 @@ NEXT: Rækkefølge Mandag:
 -  Lav Loading indicator for alle buttons.
 -  Fix bug med CompleteProfile screen hurtig vises.
 -  RefreshControl
+-  Rød skrift for hver transaction
 -  Lav splash screen.
 -  Email redirection
 -  CAPTCHA
@@ -19,6 +20,7 @@ NEXT: Rækkefølge Mandag:
 -  SVG
 -  Skift alt til dansk?
 -  SPLASH SCREEN
+-  Fix update expense og transaction i forhold til at opdatere "total_budget_area" og "total_budget_month"
 
 Exam:
 

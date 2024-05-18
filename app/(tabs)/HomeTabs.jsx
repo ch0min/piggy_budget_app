@@ -30,7 +30,7 @@ const HomeTabs = ({ navigation }) => {
 			>
 				<Tab.Screen
 					name="Overview"
-					children={() => <Overview session={session} />}
+					children={() => <Overview session={session} navigation={navigation} />}
 					options={{
 						tabBarIcon: ({ size, color }) => <Entypo name="eye" size={size} color={color} />,
 					}}
