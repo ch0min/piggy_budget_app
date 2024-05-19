@@ -10,6 +10,7 @@ NEXT: Rækkefølge Mandag:
 -  Rød skrift for hver transaction
 -  Lav splash screen.
 -  Email redirection
+-  Complete Profile "cannot find property "name" of null, pga. valuta.
 -  CAPTCHA
 -  Categories Screen AddCategory Screen skal moduleres.
 -  ÆNDRE ALT MARGIN OSV TIL PERCENTAGE

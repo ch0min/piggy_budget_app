@@ -9,6 +9,7 @@ import Overview from "./overview/Overview";
 import Budget from "./budget/Budget";
 import Profile from "./profile/Profile";
 import Settings from "./settings/Settings";
+import CompleteProfile from "../auth/login/CompleteProfile";
 
 const Tab = createBottomTabNavigator();
 
@@ -46,7 +47,7 @@ const HomeTabs = ({ navigation }) => {
 				/>
 				<Tab.Screen
 					name="Profile"
-					component={Profile}
+					component={CompleteProfile}
 					options={{
 						tabBarIcon: ({ size, color }) => <FontAwesome name="user" size={size} color={color} />,
 					}}

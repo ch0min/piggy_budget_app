@@ -3,15 +3,21 @@ import { StyleSheet, View, Text, Image } from "react-native";
 import { useUser } from "../../../../context/UserContext";
 import colors from "../../../../utils/colors";
 import { LinearGradient } from "expo-linear-gradient";
+import PROFILE_AVATARS from "../../../../utils/ProfileAvatars";
 
 const OverviewHeader = () => {
-	const { user, userProfile, getProfile } = useUser();
+	const { session, userProfile, getProfile } = useUser();
 
 	useEffect(() => {
 		if (!userProfile) {
-			getProfile(user?.id);
+			getProfile(session?.user?.id);
 		}
-	}, []);
+	}, [session, getProfile]);
+
+	const getAvatar = (avatarName) => {
+		const avatar = PROFILE_AVATARS.find((a) => a.avatar === avatarName);
+		return avatar ? avatar.image : null;
+	};
 
 	return (
 		<LinearGradient
@@ -21,7 +27,9 @@ const OverviewHeader = () => {
 			locations={[0.1, 1.0]}
 			style={styles.container}
 		>
-			<Text style={styles.text}>{userProfile?.avatar_url}</Text>
+			{userProfile?.avatar_url && (
+				<Image source={getAvatar(userProfile.avatar_url)} style={{ width: 50, height: 50 }} />
+			)}
 
 			<View style={styles.header}>
 				<View>
@@ -38,7 +46,7 @@ const styles = StyleSheet.create({
 		display: "flex",
 		flexDirection: "row",
 		alignItems: "center",
-		height: "20%",
+		height: "31%",
 		padding: "5%",
 		gap: "10%",
 	},
