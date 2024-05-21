@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { StyleSheet, View, Text, Image } from "react-native";
 import { useUser } from "../../../../context/UserContext";
-import colors from "../../../../utils/colors";
+import colors from "../../../../constants/colors";
 import { LinearGradient } from "expo-linear-gradient";
-import PROFILE_AVATARS from "../../../../utils/ProfileAvatars";
+import PROFILE_AVATARS from "../../../../constants/ProfileAvatars";
 
 const OverviewHeader = () => {
 	const { session, userProfile, getProfile } = useUser();
@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
 		display: "flex",
 		flexDirection: "row",
 		alignItems: "center",
-		height: "31%",
+		height: "20%",
 		padding: "5%",
 		gap: "10%",
 	},

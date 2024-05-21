@@ -3,28 +3,28 @@ import { StyleSheet, View, Text, TextInput, TouchableOpacity, Image } from "reac
 import { useUser } from "../../../context/UserContext";
 
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import colors from "../../../utils/colors";
+import colors from "../../../constants/colors";
 import logo2 from "../../../assets/images/logo2.png";
 import arrowLeft from "../../../assets/images/arrowLeft.png";
 
 import PrimaryExecBtn from "../../../components/buttons/primaryExecBtn";
-import TextBtn from "../../../components/auth/textBtn";
+import TextBtn from "../../../components/buttons/textBtn";
 
 const Login = ({ navigation }) => {
-	const { signIn } = useUser();
+	const { loading, signIn } = useUser();
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [message, setMessage] = useState("");
 
 	const handleSignIn = async () => {
 		if (!email || !password) {
-			setMessage("Please enter both email and password");
+			setMessage("Venligst indtast email og password");
 			return;
 		}
 		const result = await signIn(email, password);
 
 		if (result && result.error) {
-			setMessage("Invalid email or password");
+			setMessage("Forkert email eller password");
 		}
 	};
 
@@ -40,22 +40,22 @@ const Login = ({ navigation }) => {
 				<Image source={logo2} style={styles.bgImage} />
 
 				<View style={styles.subContainer}>
-					<Text style={styles.heading}>Welcome back!</Text>
-					<Text style={styles.subheading}>Please, sign in your account</Text>
+					<Text style={styles.heading}>Velkommen tilbage</Text>
+					<Text style={styles.subheading}>Lad os komme igang!</Text>
 
 					<View style={styles.textInputContainer}>
 						<Text style={styles.headingInput}>Email</Text>
 						<View style={styles.textInput}>
 							<TextInput
 								label="Email"
-								placeholder="piggy@address.com"
+								placeholder="piggy@adresse.dk"
 								onChangeText={(text) => setEmail(text)}
 								value={email}
 								autoCapitalize={"none"}
 							/>
 						</View>
 
-						<Text style={styles.headingInput}>Password</Text>
+						<Text style={styles.headingInput}>Kodeord</Text>
 						<View style={styles.textInput}>
 							<TextInput
 								label="Password"
@@ -74,9 +74,9 @@ const Login = ({ navigation }) => {
 						<TextBtn
 							navigation={navigation}
 							navigateTo={"Signup"}
-							text={"Not a Member yet?"}
+							text={"Ikke et medlem endnu?"}
 							colorText={colors.BLACK}
-							btnText={"SIGN UP"}
+							btnText={"REGISTRER NU"}
 						/>
 					</View>
 				</View>
@@ -116,13 +116,13 @@ const styles = StyleSheet.create({
 	heading: {
 		marginTop: "5%",
 		textAlign: "center",
-		fontSize: 30,
+		fontSize: 28,
 		fontWeight: "bold",
 	},
 	subheading: {
 		marginTop: 5,
 		textAlign: "center",
-		fontSize: 12,
+		fontSize: 16,
 	},
 	subContainer: {
 		width: "100%",

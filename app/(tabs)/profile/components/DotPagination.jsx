@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
-import { Alert, StyleSheet, View, Text, TextInput, TouchableOpacity, Image } from "react-native";
+import React from "react";
+import { Alert, StyleSheet, View } from "react-native";
 import Animated, { useAnimatedStyle, withTiming } from "react-native-reanimated";
-import colors from "../../../../utils/colors";
+import colors from "../../../../constants/colors";
 
 const DotPagination = ({ total, current }) => {
 	const renderDots = () => {

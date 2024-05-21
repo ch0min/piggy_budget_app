@@ -1,6 +1,6 @@
 import React from "react";
 import { StyleSheet, View, Modal, TextInput, TouchableOpacity } from "react-native";
-import colors from "../../../../utils/colors";
+import colors from "../../../../constants/colors";
 // import { RefreshControl } from "react-native";
 import { MaterialIcons, AntDesign } from "@expo/vector-icons";
 
@@ -23,7 +23,7 @@ const AddTransaction = ({
 						<View style={styles.createTransactionBtnContainer}>
 							<TextInput
 								style={styles.createTransactionNameInput}
-								placeholder="Transaction name"
+								placeholder="Transaktionsnavn"
 								placeholderTextColor={colors.DARKGRAY}
 								onChangeText={setTransactionName}
 								value={transactionName}
@@ -34,7 +34,7 @@ const AddTransaction = ({
 
 						<TextInput
 							style={styles.createTransactionAmountInput}
-							placeholder="Insert amount"
+							placeholder="Indtast et beløb"
 							placeholderTextColor={colors.DARKGRAY}
 							onChangeText={setTransactionAmount}
 							value={transactionAmount}
@@ -43,7 +43,7 @@ const AddTransaction = ({
 						/>
 						<TextInput
 							style={styles.createTransactionNoteInput}
-							placeholder="Note (optional)"
+							placeholder="Note (valgfri)"
 							placeholderTextColor={colors.DARKGRAY}
 							onChangeText={setTransactionNote}
 							value={transactionNote}

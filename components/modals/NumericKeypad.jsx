@@ -1,6 +1,6 @@
 import React from "react";
-import { StyleSheet, View, Modal, Text, TouchableOpacity, Dimensions } from "react-native";
-import colors from "../../utils/colors";
+import { StyleSheet, View, Modal, Text, TouchableOpacity } from "react-native";
+import colors from "../../constants/colors";
 
 const NumericKeypad = ({ keypadVisible, amount, setAmount, onClose }) => {
 	const keys = ["1", "2", "3", "4", "5", "6", "7", "8", "9", ",", "0", "⌫"];

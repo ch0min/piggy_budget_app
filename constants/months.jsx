@@ -1,16 +1,16 @@
 const MONTH_NAMES = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
+	"Januar",
+	"Februar",
+	"Marts",
+	"April",
+	"Maj",
+	"Juni",
+	"Juli",
+	"August",
+	"September",
+	"Oktober",
+	"November",
+	"December",
 ];
 
 export default MONTH_NAMES;

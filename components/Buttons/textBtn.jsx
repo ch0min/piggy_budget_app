@@ -1,6 +1,6 @@
 import React from "react";
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
-import colors from "../../utils/colors";
+import colors from "../../constants/colors";
 
 const TextBtn = ({ loading, navigation, navigateTo, text, colorText, btnText }) => {
 	return (

@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { StyleSheet, View, Text, Image } from "react-native";
 import { useUser } from "../../../../context/UserContext";
-import colors from "../../../../utils/colors";
+import colors from "../../../../constants/colors";
 import { LinearGradient } from "expo-linear-gradient";
-import PROFILE_AVATARS from "../../../../utils/ProfileAvatars";
+import PROFILE_AVATARS from "../../../../constants/ProfileAvatars";
 
 const BudgetHeader = () => {
 	const { session, userProfile, getProfile } = useUser();

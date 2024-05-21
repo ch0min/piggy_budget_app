@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { Alert } from "react-native";
-import { supabase } from "../utils/supabase";
-import colors from "../utils/colors";
+import { supabase } from "../lib/supabase";
+import colors from "../constants/colors";
 import MONTH_NAMES from "../constants/months";
 
 const UserContext = createContext();
@@ -26,11 +25,13 @@ const calculateMonths = () => {
 };
 
 export const UserProvider = ({ children }) => {
-	const [loading, setLoading] = useState(false);
+	const [loading, setLoading] = useState(true);
+	const [loadingData, setLoadingData] = useState(true);
+	const [refresh, setRefresh] = useState(false);
 
 	/*** AUTH FUNCTIONALITY ***/
 	useEffect(() => {
-		if (!user && !session) {
+		if (!session) {
 			fetchInitialSession();
 		}
 	}, []);
@@ -43,13 +44,15 @@ export const UserProvider = ({ children }) => {
 	const fetchInitialSession = async () => {
 		setLoading(true);
 		try {
-			const {
-				data: { session },
-			} = await supabase.auth.getSession();
-			setSession(session);
-			setUser(session?.user);
-			if (session?.user) {
-				await getProfile(session.user.id);
+			const { data } = await supabase.auth.getSession();
+			if (data.session) {
+				setSession(session);
+				setUser(session?.user);
+
+				if (data.session.user) {
+					console.log("Fetching profile...")
+					await getProfile(data.session.user.id);
+				}
 			}
 		} catch (error) {
 			console.error("Error initializing session and profile", error.message);
@@ -118,6 +121,7 @@ export const UserProvider = ({ children }) => {
 	};
 
 	const getProfile = async (userId) => {
+		setLoading(true);
 		try {
 			const { data, error } = await supabase
 				.from("profiles")
@@ -136,6 +140,8 @@ export const UserProvider = ({ children }) => {
 			}
 		} catch (error) {
 			console.error("Error fetching profile", error.message);
+		} finally {
+			setLoading(false);
 		}
 	};
 
@@ -432,26 +438,6 @@ export const UserProvider = ({ children }) => {
 	/*** EXPENSE AREAS FUNCTIONS ***/
 	const [expenseAreas, setExpenseAreas] = useState([]);
 
-	// const getExpenseAreas = async () => {
-	// 	setLoading(true);
-	// 	try {
-	// 		const userId = user?.id;
-	// 		const { data, error } = await supabase
-	// 			.from("expense_areas")
-	// 			.select(`*`)
-	// 			.eq("user_id", userId)
-	// 			.order("id", { ascending: true });
-	// 		if (error) throw error;
-
-	// 		setExpenseAreas(data);
-	// 		// console.log("Expense Areas fetched:", data);
-	// 	} catch (error) {
-	// 		console.error("Error fetching expense_areas:", error.message);
-	// 	} finally {
-	// 		setLoading(false);
-	// 	}
-	// };
-
 	const getExpenseAreas = async () => {
 		setLoading(true);
 		const userId = session?.user?.id;
@@ -478,7 +464,7 @@ export const UserProvider = ({ children }) => {
 					.from("expense_areas")
 					.select("*")
 					.eq("monthly_budgets_id", budgetData.id)
-					.order("id", { ascending: true });
+					.order("id", { ascending: false });
 
 				if (areasError) throw areasError;
 				setExpenseAreas(areasData || []);
@@ -513,7 +499,6 @@ export const UserProvider = ({ children }) => {
 					user_id: userId,
 				},
 			]);
-
 			if (error) throw error;
 
 			getExpenseAreas();
@@ -708,7 +693,6 @@ export const UserProvider = ({ children }) => {
 				await updateExpenseTotalSpent(id);
 
 				if (expenseAreaId) {
-					console.log(expenseAreaId);
 					await updateTotalBudgetForArea(expenseAreaId);
 
 					// Fetch the expense area to get the monthly budget id:
@@ -1010,6 +994,11 @@ export const UserProvider = ({ children }) => {
 			value={{
 				// Auth States
 				loading,
+				setLoading,
+				loadingData,
+				setLoadingData,
+				refresh,
+				setRefresh,
 				user,
 				userProfile,
 				session,

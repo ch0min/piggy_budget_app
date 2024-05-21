@@ -1,22 +1,19 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useCallback } from "react";
 import { useFocusEffect } from "@react-navigation/native";
-import { Dimensions, StyleSheet, View, Text, TextInput, TouchableOpacity, FlatList } from "react-native";
+import { ActivityIndicator, StyleSheet, View, Text, TouchableOpacity, FlatList } from "react-native";
 import { useUser } from "../../../../context/UserContext";
-import { KeyboardAwareFlatList } from "react-native-keyboard-aware-scroll-view";
-import colors from "../../../../utils/colors";
+import colors from "../../../../constants/colors";
 import FormatNumber from "../../../../utils/formatNumber";
-import { FontAwesome, MaterialIcons, Feather, AntDesign, Entypo } from "@expo/vector-icons";
-
-import LineGraph from "./LineGraph";
-import { ScrollView } from "react-native-gesture-handler";
+import { FontAwesome } from "@expo/vector-icons";
 
 const LatestExpenses = ({ navigation }) => {
-	const { session, userProfile, expenses, getLatestExpenses } = useUser();
+	const { session, userProfile, loadingData, setLoadingData, expenses, getLatestExpenses } = useUser();
 
 	useFocusEffect(
 		useCallback(() => {
 			if (session) {
-				getLatestExpenses();
+				setLoadingData(true);
+				getLatestExpenses().finally(() => setLoadingData(false));
 			}
 		}, [session])
 	);
@@ -50,15 +47,19 @@ const LatestExpenses = ({ navigation }) => {
 			<View style={styles.LatestTransactionsContainer}>
 				<Text style={styles.LatestTransactionHeading}>Seneste udgifter</Text>
 				<View style={styles.horizontalLine} />
-				<FlatList
-					data={expenses}
-					renderItem={renderLatestExpenses}
-					keyExtractor={(exp) => `${exp.id}`}
-					scrollEnabled={false}
-					ListEmptyComponent={
-						<Text style={{ marginTop: "5%", marginLeft: "4%" }}>No expenses found for this area.</Text>
-					}
-				/>
+				{loadingData ? (
+					<ActivityIndicator size="large" style={{ marginVertical: "31%" }} color={colors.DARKGRAY} />
+				) : (
+					<FlatList
+						data={expenses}
+						renderItem={renderLatestExpenses}
+						keyExtractor={(exp) => `${exp.id}`}
+						scrollEnabled={false}
+						ListEmptyComponent={
+							<Text style={{ marginTop: "5%", marginLeft: "4%" }}>No expenses found for this area.</Text>
+						}
+					/>
+				)}
 			</View>
 		</View>
 	);

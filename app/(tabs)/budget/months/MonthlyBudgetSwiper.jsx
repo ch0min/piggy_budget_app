@@ -1,23 +1,8 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
-import { Alert, StyleSheet, View, Text, TextInput, TouchableOpacity, FlatList } from "react-native";
+import React from "react";
+import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 import { Entypo } from "@expo/vector-icons";
-import colors from "../../../../utils/colors";
-// import { MONTH_NAMES } from "../../../../constants/months";
-
-const MONTH_NAMES = [
-	"January",
-	"February",
-	"March",
-	"April",
-	"May",
-	"June",
-	"July",
-	"August",
-	"September",
-	"October",
-	"November",
-	"December",
-];
+import colors from "../../../../constants/colors";
+import MONTH_NAMES from "../../../../constants/months";
 
 const MonthlyBudgetSwiper = ({ currentMonth, setCurrentMonth }) => {
 	const changeMonth = (increment) => {

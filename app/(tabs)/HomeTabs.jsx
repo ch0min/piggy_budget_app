@@ -2,7 +2,7 @@ import React from "react";
 import { StyleSheet, View } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { useUser } from "../../context/UserContext";
-import colors from "../../utils/colors";
+import colors from "../../constants/colors";
 import { FontAwesome, MaterialCommunityIcons, Entypo } from "@expo/vector-icons";
 
 import Overview from "./overview/Overview";

@@ -1,9 +1,9 @@
 import React from "react";
 import { StyleSheet, View, Modal, TouchableOpacity } from "react-native";
 import { Picker } from "@react-native-picker/picker";
-import colors from "../../utils/colors";
+import colors from "../../constants/colors";
 
-const PickerWheel = ({ pickerVisible, items, selectedValue, onValueChange, onClose }) => {
+const PickerWheel = ({ pickerVisible, items, selectedValue, onValueChange, onClose, loading }) => {
 	return (
 		<Modal
 			visible={pickerVisible}
@@ -11,7 +11,7 @@ const PickerWheel = ({ pickerVisible, items, selectedValue, onValueChange, onClo
 			transparent={true}
 			onRequestClose={onClose} // Android
 		>
-			<TouchableOpacity style={styles.modalOverlay} activeOpacity={1} onPressOut={onClose}>
+			<TouchableOpacity style={styles.modalOverlay} activeOpacity={1} onPressOut={onClose} disabled={loading}>
 				<View style={styles.pickerModal} onStartShouldSetResponder={() => true}>
 					<Picker style={styles.picker} selectedValue={selectedValue} onValueChange={onValueChange}>
 						{items.map((item) => (

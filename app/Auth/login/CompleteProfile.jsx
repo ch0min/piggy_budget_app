@@ -3,13 +3,11 @@ import { Alert, StyleSheet, View, Text, TextInput, TouchableOpacity, Image } fro
 import { useUser } from "../../../context/UserContext";
 import { LinearGradient } from "expo-linear-gradient";
 
-import colors from "../../../utils/colors";
+import colors from "../../../constants/colors";
 import PickerWheel from "../../../components/modals/PickerWheel";
-import PrimaryExecBtn from "../../../components/buttons/primaryExecBtn";
 
 import ProfileAvatars from "../../(tabs)/profile/components/ProfileAvatars";
-import questionmark from "../../../assets/images/profile_images/questionmark.png";
-import PROFILE_AVATARS from "../../../utils/ProfileAvatars";
+import PROFILE_AVATARS from "../../../constants/ProfileAvatars";
 
 const CompleteProfile = ({ navigation }) => {
 	const { loading, profileCompleted, userProfile, updateProfile, valutas, getValutas } = useUser();
@@ -21,11 +19,12 @@ const CompleteProfile = ({ navigation }) => {
 	const [selectedValutaId, setSelectedValutaId] = useState(1);
 	const [valutaPickerVisible, setValutaPickerVisible] = useState(userProfile?.valuta_id);
 
+	console.log("CompleteProfile screen");
+
 	useEffect(() => {
 		getValutas();
 	}, []);
 
-	console.log(valutas);
 	useEffect(() => {
 		if (userProfile?.valuta_id) {
 			setSelectedValutaId(userProfile.valuta_id);
@@ -34,7 +33,7 @@ const CompleteProfile = ({ navigation }) => {
 
 	const handleUpdateProfile = async () => {
 		if (!avatarUrl || !firstName || !lastName || !selectedValutaId) {
-			Alert.alert("Please fill out all fields.");
+			Alert.alert("Venligst, udfyld alle felter.");
 			return;
 		}
 

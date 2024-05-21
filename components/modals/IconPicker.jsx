@@ -1,17 +1,16 @@
 import React from "react";
 import { StyleSheet, View, ScrollView, Modal, TouchableOpacity } from "react-native";
-import { Picker } from "@react-native-picker/picker";
-import colors from "../../utils/colors";
+import colors from "../../constants/colors";
 import { FontAwesome } from "@expo/vector-icons";
 
-const IconPicker = ({ iconPickerVisible, icons, handleIconSelect, onClose }) => {
+const IconPicker = ({ iconPickerVisible, icons, handleIconSelect, onClose, loading }) => {
 	return (
 		<Modal
 			visible={iconPickerVisible}
 			transparent={true}
 			onRequestClose={onClose} // Android
 		>
-			<TouchableOpacity style={styles.modalOverlay} onPressOut={onClose}>
+			<TouchableOpacity style={styles.modalOverlay} onPressOut={onClose} disabled={loading}>
 				<View style={styles.modalContainer} onStartShouldSetResponder={() => true}>
 					<ScrollView
 						horizontal={false}

@@ -1,14 +1,14 @@
 import React, { useState } from "react";
-import { StyleSheet, View, Text, TouchableOpacity, TextInput, Image } from "react-native";
+import { ActivityIndicator, StyleSheet, View, Text, TouchableOpacity, TextInput, Image } from "react-native";
 import { useUser } from "../../../context/UserContext";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { isValidEmail, isPasswordStrongEnough } from "../../../utils/customValidationHelpers";
 
-import colors from "../../../utils/colors";
+import colors from "../../../constants/colors";
 import logo from "../../../assets/images/logo.png";
 import arrowLeft from "../../../assets/images/arrowLeft.png";
 import PrimaryExecBtn from "../../../components/buttons/primaryExecBtn";
-import TextBtn from "../../../components/auth/textBtn";
+import TextBtn from "../../../components/buttons/textBtn";
 
 const Signup = ({ navigation }) => {
 	const { loading, signUp } = useUser();
@@ -23,15 +23,15 @@ const Signup = ({ navigation }) => {
 
 		// Validation
 		if (!isValidEmail(email)) {
-			setMessage("Please enter a valid email address.");
+			setMessage("Venligst, indtast en gyldig email adresse.");
 			return;
 		}
 		if (password !== confirmPassword) {
-			setMessage("The passwords do not match. Please try again.");
+			setMessage("Kodeordene stemmer ikke overens, venligst prøv igen.");
 			return;
 		}
 		if (!isPasswordStrongEnough(password)) {
-			setMessage("Password must be atleast 6 characters long.");
+			setMessage("Kodeordet skal mindst være på 6 tegn.");
 			return;
 		}
 
@@ -52,7 +52,7 @@ const Signup = ({ navigation }) => {
 				</TouchableOpacity>
 				<Image style={styles.logo} source={logo} />
 			</View>
-			<Text style={styles.heading}>Create Account</Text>
+			<Text style={styles.heading}>Opret en bruger</Text>
 
 			<View style={styles.subContainer}>
 				<View style={styles.textInputContainer}>
@@ -60,14 +60,14 @@ const Signup = ({ navigation }) => {
 					<View style={styles.textInput}>
 						<TextInput
 							label="Email"
-							placeholder="ex. email@address.com"
+							placeholder="email@adresse.dk"
 							onChangeText={(text) => setEmail(text)}
 							value={email}
 							autoCapitalize={"none"}
 						/>
 					</View>
 
-					<Text style={styles.headingInput}>Password</Text>
+					<Text style={styles.headingInput}>Kodeord</Text>
 					<View style={styles.textInput}>
 						<TextInput
 							label="Password"
@@ -78,7 +78,7 @@ const Signup = ({ navigation }) => {
 						/>
 					</View>
 
-					<Text style={styles.headingInput}>Confirm Password</Text>
+					<Text style={styles.headingInput}>Gentag kodeord</Text>
 					<View style={styles.textInput}>
 						<TextInput
 							label="Password"
@@ -95,15 +95,15 @@ const Signup = ({ navigation }) => {
 					<PrimaryExecBtn
 						loading={loading}
 						execFunction={handleSignUp}
-						btnText={loading ? "Loading.." : "Sign up"}
+						btnText={loading ? <ActivityIndicator color={colors.WHITE} /> : "Opret nu"}
 					/>
 					<TextBtn
 						loading={loading}
 						navigation={navigation}
 						navigateTo={"Login"}
-						text={"Already a Member?"}
+						text={"Allerede medlem?"}
 						colorText={colors.BLACK}
-						btnText={"SIGN IN"}
+						btnText={"LOG IND"}
 					/>
 				</View>
 			</View>

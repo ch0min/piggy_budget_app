@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Dimensions, StyleSheet, View, Text } from "react-native";
+import { ActivityIndicator, Dimensions, StyleSheet, View, Text } from "react-native";
 import { useUser } from "../../../../context/UserContext";
-import colors from "../../../../utils/colors";
+import colors from "../../../../constants/colors";
 import { LineChart } from "react-native-chart-kit";
 import FormatNumber from "../../../../utils/formatNumber";
 // import { RefreshControl } from "react-native";
@@ -10,6 +10,7 @@ const LineGraph = ({}) => {
 	const { session, userProfile, totalMonthlyBudget, chartData, savings, getMonthlyBudgetLineChart, expenses } =
 		useUser();
 	const [currentDate, setCurrentDate] = useState(new Date());
+	const [loadingGraph, setLoadingGraph] = useState(true);
 
 	useEffect(() => {
 		const interval = setInterval(() => {
@@ -24,6 +25,7 @@ const LineGraph = ({}) => {
 
 	useEffect(() => {
 		if (session) {
+			setLoadingGraph(true);
 			getMonthlyBudgetLineChart();
 		}
 	}, [session, currentDate, totalMonthlyBudget, expenses]);
@@ -48,6 +50,7 @@ const LineGraph = ({}) => {
 						Du har sparet: {FormatNumber(savings)} {userProfile.valuta.name}
 					</Text>
 				</View>
+
 				<LineChart
 					data={chartData}
 					width={Dimensions.get("window").width - 40}

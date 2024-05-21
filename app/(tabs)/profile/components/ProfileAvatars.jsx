@@ -1,8 +1,8 @@
-import React, { useState, useEffect, act } from "react";
-import { Dimensions, StyleSheet, View, ScrollView, Text, TextInput, TouchableOpacity, Image } from "react-native";
+import React, { useState } from "react";
+import { Dimensions, StyleSheet, View, ScrollView, TouchableOpacity, Image } from "react-native";
 import { useUser } from "../../../../context/UserContext";
-import colors from "../../../../utils/colors";
-import PROFILE_AVATARS from "../../../../utils/ProfileAvatars";
+import colors from "../../../../constants/colors";
+import PROFILE_AVATARS from "../../../../constants/ProfileAvatars";
 import DotPagination from "./DotPagination";
 
 const screenWidth = Dimensions.get("window").width;

@@ -1,5 +1,6 @@
 import "react-native-url-polyfill/auto";
-import { StatusBar, StyleSheet, View, ActivityIndicator } from "react-native";
+import React, { useEffect } from "react";
+import { ActivityIndicator, StatusBar, StyleSheet, View } from "react-native";
 import { useUser } from "../context/UserContext";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -19,10 +20,12 @@ import Expenses from "./(tabs)/expenses/Expenses";
 const Stack = createNativeStackNavigator();
 
 const RootNavigator = () => {
-	const { user, profileCompleted } = useUser();
+	const { loading, session, profileCompleted } = useUser();
 
 	// AsyncStorage.clear().then(() => console.log("Local storage cleared!"));
 
+	console.log(`Session updated: ${JSON.stringify(session)}`);
+	console.log(`Profile Completed updated: ${profileCompleted}`);
 	return (
 		<View style={styles.container}>
 			<StatusBar barStyle="light-content" />
@@ -35,7 +38,48 @@ const RootNavigator = () => {
 						gestureEnabled: false,
 					}}
 				>
-					{user ? (
+					{session?.user && profileCompleted ? (
+						<>
+							<Stack.Screen name="HomeTabs" component={HomeTabs} />
+							<Stack.Screen
+								name="Expenses"
+								component={Expenses}
+								options={{
+									gestureEnabled: true,
+								}}
+							/>
+							<Stack.Screen
+								name="AddExpense"
+								component={AddExpense}
+								options={{
+									presentation: "modal",
+									gestureEnabled: true,
+								}}
+							/>
+						</>
+					) : (
+						<Stack.Screen name="CompleteProfile" component={CompleteProfile} />
+					)}
+					{!session?.user && (
+						<>
+							<Stack.Screen name="Landing" component={Landing} />
+							<Stack.Screen name="Signup" component={Signup} />
+							<Stack.Screen name="Login" component={Login} />
+							<Stack.Screen name="VerifyEmail" component={VerifyEmail} />
+						</>
+					)}
+				</Stack.Navigator>
+			</NavigationContainer>
+
+			{/* <NavigationContainer>
+				<Stack.Navigator
+					initialRouteName="Landing"
+					screenOptions={{
+						headerShown: false,
+						gestureEnabled: false,
+					}}
+				>
+					{session?.user ? (
 						profileCompleted ? (
 							<>
 								<Stack.Screen name="HomeTabs" component={HomeTabs} />
@@ -67,7 +111,7 @@ const RootNavigator = () => {
 						</>
 					)}
 				</Stack.Navigator>
-			</NavigationContainer>
+			</NavigationContainer> */}
 		</View>
 	);
 };
@@ -75,6 +119,11 @@ const RootNavigator = () => {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
+	},
+	initialSetup: {
+		flex: 1,
+		alignItems: "center",
+		justifyContent: "center",
 	},
 });
 

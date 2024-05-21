@@ -1,18 +1,19 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, View, Modal, Text, TextInput, TouchableOpacity } from "react-native";
+import { ActivityIndicator, StyleSheet, View, Text, TextInput, TouchableOpacity } from "react-native";
 import { useUser } from "../../../context/UserContext";
-import colors from "../../../utils/colors";
+import colors from "../../../constants/colors";
 import NumericKeypad from "../../../components/modals/NumericKeypad";
 import PickerWheel from "../../../components/modals/PickerWheel";
 import IconPicker from "../../../components/modals/IconPicker";
 import ColorPicker from "../../../components/colorPicker";
 
 import { FontAwesome, MaterialIcons } from "@expo/vector-icons";
-import ICONS from "../../../utils/icons";
+import ICONS from "../../../constants/icons";
 import DarkPrimaryExecBtn from "../../../components/buttons/darkPrimaryExecBtn";
 
 const AddExpense = ({ navigation, route }) => {
 	const { loading, userProfile, expenseAreas, createExpense } = useUser();
+	const [creating, setCreating] = useState(false);
 
 	const [keypadVisible, setKeypadVisible] = useState(false);
 	const [maxBudget, setMaxBudget] = useState("");
@@ -54,107 +55,132 @@ const AddExpense = ({ navigation, route }) => {
 
 	const handleCreateExpense = async () => {
 		if (selectedExpenseAreaId && name) {
-			let maxBudgetForDB = prepareMaxBudgetForDB(maxBudget);
-			await createExpense(name, maxBudgetForDB, selectedIcon, selectedColor, selectedExpenseAreaId);
+			setCreating(true);
 
-			navigation.goBack();
+			try {
+				let maxBudgetForDB = prepareMaxBudgetForDB(maxBudget);
+				await createExpense(name, maxBudgetForDB, selectedIcon, selectedColor, selectedExpenseAreaId);
+
+				navigation.goBack();
+			} catch (error) {
+				console.error("Failed to create expense:", error);
+			}
+			setCreating(false);
 		}
 	};
 
 	return (
 		<View style={styles.container}>
-			<View style={styles.headingContainer}>
-				<Text style={styles.heading}>Add Expense</Text>
-			</View>
+			{creating ? (
+				<ActivityIndicator size="large" style={{ marginVertical: "75%" }} color={colors.DARKGRAY} />
+			) : (
+				<>
+					<View style={styles.headingContainer}>
+						<Text style={styles.heading}>Tilføj en udgift</Text>
+					</View>
 
-			{/* MAX BUDGET */}
-			<View style={styles.maxBudgetContainer}>
-				<TouchableOpacity onPress={() => setKeypadVisible(true)}>
-					{maxBudget ? (
-						<Text style={styles.maxBudgetText}>
-							{maxBudget} {userProfile.valutaName}
-						</Text>
-					) : (
-						<Text style={styles.maxBudgetTextPlaceholder}>Enter a budget limit..</Text>
-					)}
-				</TouchableOpacity>
-				<NumericKeypad
-					keypadVisible={keypadVisible}
-					amount={maxBudget}
-					setAmount={setMaxBudget}
-					onClose={() => setKeypadVisible(false)}
-				/>
-			</View>
-			{/* END */}
+					{/* MAX BUDGET */}
+					<View style={styles.maxBudgetContainer}>
+						<TouchableOpacity onPress={() => setKeypadVisible(true)}>
+							{maxBudget ? (
+								<Text style={styles.maxBudgetText}>
+									{maxBudget} {userProfile.valutaName}
+								</Text>
+							) : (
+								<Text style={styles.maxBudgetTextPlaceholder}>Indtast en budget grænse..</Text>
+							)}
+						</TouchableOpacity>
+						<NumericKeypad
+							keypadVisible={keypadVisible}
+							amount={maxBudget}
+							setAmount={setMaxBudget}
+							onClose={() => setKeypadVisible(false)}
+						/>
+					</View>
+					{/* END */}
 
-			{/* NAME EXPENSE */}
-			<View style={styles.nameExpenseContainer}>
-				<Text style={styles.nameExpenseHeading}>Name</Text>
-				<View style={styles.nameExpenseInput}>
-					<TextInput
-						style={styles.nameExpenseInputText}
-						placeholder="Required"
-						onChangeText={(text) => {
-							if (text.length <= 35) {
-								setName(text);
-							} else {
-								alert("Name cannot be longer than 35 characters.");
-							}
-						}}
-						value={name}
-					/>
-					<MaterialIcons name="edit" size={24} color={colors.GRAY} />
-				</View>
-			</View>
-			{/* END */}
+					{/* NAME EXPENSE */}
+					<View style={styles.nameExpenseContainer}>
+						<Text style={styles.nameExpenseHeading}>Navn</Text>
+						<View style={styles.nameExpenseInput}>
+							<TextInput
+								style={styles.nameExpenseInputText}
+								placeholder="Påkrævet"
+								onChangeText={(text) => {
+									if (text.length <= 35) {
+										setName(text);
+									} else {
+										alert("Navn kan ikke være længere end 35 tegn.");
+									}
+								}}
+								value={name}
+							/>
+							<MaterialIcons name="edit" size={24} color={colors.GRAY} />
+						</View>
+					</View>
+					{/* END */}
 
-			{/* EXPENSE AREA */}
-			<View style={styles.expenseAreaContainer}>
-				<Text style={styles.expenseAreaHeading}>Expense area</Text>
-				<TouchableOpacity
-					style={styles.expenseAreaInput}
-					onPress={() => setExpenseAreaPickerVisible(!expenseAreaPickerVisible)}
-				>
-					<Text style={styles.expenseAreaInputText}>{selectedExpenseAreaName || "Select an area"}</Text>
-				</TouchableOpacity>
-				<PickerWheel
-					pickerVisible={expenseAreaPickerVisible}
-					items={expenseAreas}
-					selectedValue={selectedExpenseAreaId}
-					onValueChange={handleExpenseArea}
-					onClose={() => setExpenseAreaPickerVisible(false)}
-				/>
-			</View>
-			{/* END */}
+					{/* EXPENSE AREA */}
+					<View style={styles.expenseAreaContainer}>
+						<Text style={styles.expenseAreaHeading}>Udgiftsområde</Text>
+						<TouchableOpacity
+							style={styles.expenseAreaInput}
+							onPress={() => setExpenseAreaPickerVisible(!expenseAreaPickerVisible)}
+							disabled={creating}
+						>
+							<Text style={styles.expenseAreaInputText}>{selectedExpenseAreaName || "Vælg et område"}</Text>
+						</TouchableOpacity>
+						<PickerWheel
+							pickerVisible={expenseAreaPickerVisible}
+							items={expenseAreas}
+							selectedValue={selectedExpenseAreaId}
+							onValueChange={handleExpenseArea}
+							onClose={() => setExpenseAreaPickerVisible(false)}
+							loading={creating}
+						/>
+					</View>
+					{/* END */}
 
-			{/* APPEARANCE */}
-			<View style={styles.appearanceContainer}>
-				<Text style={styles.appearanceHeading}>Appearence</Text>
-				<View style={styles.appearanceInput}>
-					<TouchableOpacity
-						style={[styles.iconPickerPreview, { backgroundColor: selectedColor }]}
-						onPress={() => setIconPickerVisible(true)}
-					>
-						<FontAwesome name={selectedIcon} size={22} color={colors.WHITE} />
-					</TouchableOpacity>
-					<Text style={styles.appearanceText}>{name}</Text>
+					{/* APPEARANCE */}
+					<View style={styles.appearanceContainer}>
+						<Text style={styles.appearanceHeading}>Udseende</Text>
+						<View style={styles.appearanceInput}>
+							<TouchableOpacity
+								style={[styles.iconPickerPreview, { backgroundColor: selectedColor }]}
+								onPress={() => setIconPickerVisible(true)}
+								disabled={creating}
+							>
+								<FontAwesome name={selectedIcon} size={22} color={colors.WHITE} />
+							</TouchableOpacity>
+							<Text style={styles.appearanceText}>{name}</Text>
 
-					<IconPicker
-						iconPickerVisible={iconPickerVisible}
-						icons={ICONS}
-						handleIconSelect={handleIconSelect}
-						onClose={() => setIconPickerVisible(false)}
-					/>
-				</View>
-				<View style={styles.colorPickerContainer}>
-					<ColorPicker selectedColor={selectedColor} setSelectedColor={setSelectedColor} height={35} width={35} />
-				</View>
-			</View>
-			{/* END */}
+							<IconPicker
+								iconPickerVisible={iconPickerVisible}
+								icons={ICONS}
+								handleIconSelect={handleIconSelect}
+								onClose={() => setIconPickerVisible(false)}
+								loading={creating}
+							/>
+						</View>
+						<View style={styles.colorPickerContainer}>
+							<ColorPicker
+								selectedColor={selectedColor}
+								setSelectedColor={setSelectedColor}
+								height={35}
+								width={35}
+								loading={creating}
+							/>
+						</View>
+					</View>
+					{/* END */}
 
-			<View style={styles.addExpenseBtn}>
-				{!keypadVisible && <DarkPrimaryExecBtn btnText={"Add"} execFunction={handleCreateExpense} />}
-			</View>
+					<View style={styles.addExpenseBtn}>
+						{!keypadVisible && (
+							<DarkPrimaryExecBtn loading={creating} btnText={"Tilføj"} execFunction={handleCreateExpense} />
+						)}
+					</View>
+				</>
+			)}
 		</View>
 	);
 };

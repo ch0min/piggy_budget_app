@@ -1,8 +1,8 @@
 import React from "react";
-import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
-import colors from "../utils/colors";
+import { StyleSheet, View, TouchableOpacity } from "react-native";
+import colors from "../constants/colors";
 
-const ColorPicker = ({ selectedColor, setSelectedColor, height, width }) => {
+const ColorPicker = ({ selectedColor, setSelectedColor, height, width, loading }) => {
 	return (
 		<View style={styles.container}>
 			{colors.COLOR_LIST.map((color, index) => (
@@ -13,6 +13,7 @@ const ColorPicker = ({ selectedColor, setSelectedColor, height, width }) => {
 						selectedColor === color && { borderWidth: 2 },
 					]}
 					onPress={() => setSelectedColor(color)}
+					disabled={loading}
 				/>
 			))}
 		</View>

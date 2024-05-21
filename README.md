@@ -2,7 +2,6 @@
 
 NEXT: Rækkefølge Mandag:
 
--  Lav Profil billede færdig Tirsdag:
 -  Lav Overview Screen Resten af ugen:
 -  Lav Loading indicator for alle buttons.
 -  Fix bug med CompleteProfile screen hurtig vises.
@@ -20,7 +19,6 @@ NEXT: Rækkefølge Mandag:
 -  Login with google or facebook?
 -  SVG
 -  Skift alt til dansk?
--  SPLASH SCREEN
 -  Fix update expense og transaction i forhold til at opdatere "total_budget_area" og "total_budget_month"
 
 Exam:

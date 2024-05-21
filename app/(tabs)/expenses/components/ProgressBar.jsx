@@ -1,9 +1,9 @@
 import React from "react";
 import { StyleSheet, View, Text } from "react-native";
-import { useUser } from "../../context/UserContext";
+import { useUser } from "../../../../context/UserContext";
 import { LinearGradient } from "expo-linear-gradient";
-import colors from "../../utils/colors";
-import FormatNumber from "../../utils/formatNumber";
+import colors from "../../../../constants/colors";
+import FormatNumber from "../../../../utils/formatNumber";
 
 const ProgressBar = ({ totalSpentExpense, totalBudgetExpense }) => {
 	const { userProfile } = useUser();

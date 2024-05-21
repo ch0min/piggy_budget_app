@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { StyleSheet, View, Text, Image } from "react-native";
-import colors from "../../../utils/colors";
+import colors from "../../../constants/colors";
 import { LinearGradient } from "expo-linear-gradient";
 import logo from "../../../assets/images/logo2.png";
 
 const VerifyEmail = ({ navigation }) => {
-	const [countdown, setCountdown] = useState(10); // Start countdown from 3 seconds
+	const [countdown, setCountdown] = useState(10);
 
 	useEffect(() => {
 		const timer = setTimeout(() => {
@@ -31,12 +31,12 @@ const VerifyEmail = ({ navigation }) => {
 	return (
 		<LinearGradient colors={[colors.SECONDARY, colors.PRIMARY]} locations={[0.3, 1.0]} style={styles.container}>
 			<View style={styles.subContainer}>
-				<Text style={styles.heading}>Thank you for signing up!</Text>
-				<Text style={styles.subheading}>Please check your email to verify your account.</Text>
+				<Text style={styles.heading}>Tak for din oprettelse!</Text>
+				<Text style={styles.subheading}>Venligst tjek din email for at verificere din bruger.</Text>
 				<Image source={logo} style={styles.logo} />
 
-				<Text style={styles.redirectedHeading}>You will be redirected, shortly.</Text>
-				<Text style={styles.countdown}>Redirecting in {countdown}...</Text>
+				<Text style={styles.redirectedHeading}>Du vil blive omdirigeret om lidt.</Text>
+				<Text style={styles.countdown}>Omdirigerer om {countdown}...</Text>
 			</View>
 		</LinearGradient>
 	);
