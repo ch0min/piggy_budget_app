@@ -7,7 +7,7 @@ import FormatNumber from "../../../../utils/formatNumber";
 // import { RefreshControl } from "react-native";
 
 const LineGraph = ({}) => {
-	const { session, userProfile, totalMonthlyBudget, chartData, savings, getMonthlyBudgetLineChart, expenses } =
+	const { userProfile, totalMonthlyBudget, chartData, savings, getMonthlyBudgetLineChart, expenses } =
 		useUser();
 	const [currentDate, setCurrentDate] = useState(new Date());
 	const [loadingGraph, setLoadingGraph] = useState(true);
@@ -24,11 +24,9 @@ const LineGraph = ({}) => {
 	}, [currentDate]);
 
 	useEffect(() => {
-		if (session) {
-			setLoadingGraph(true);
-			getMonthlyBudgetLineChart();
-		}
-	}, [session, currentDate, totalMonthlyBudget, expenses]);
+		setLoadingGraph(true);
+		getMonthlyBudgetLineChart();
+	}, [currentDate, totalMonthlyBudget, expenses]);
 
 	const formatNumber = (num) => {
 		num = parseFloat(num);

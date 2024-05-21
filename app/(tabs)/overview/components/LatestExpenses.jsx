@@ -7,15 +7,13 @@ import FormatNumber from "../../../../utils/formatNumber";
 import { FontAwesome } from "@expo/vector-icons";
 
 const LatestExpenses = ({ navigation }) => {
-	const { session, userProfile, loadingData, setLoadingData, expenses, getLatestExpenses } = useUser();
+	const { userProfile, loadingData, setLoadingData, expenses, getLatestExpenses } = useUser();
 
 	useFocusEffect(
 		useCallback(() => {
-			if (session) {
-				setLoadingData(true);
-				getLatestExpenses().finally(() => setLoadingData(false));
-			}
-		}, [session])
+			setLoadingData(true);
+			getLatestExpenses().finally(() => setLoadingData(false));
+		}, [])
 	);
 
 	const handleExpense = (exp) => {

@@ -7,13 +7,13 @@ import LineGraph from "./components/LineGraph";
 import LatestExpenses from "./components/LatestExpenses";
 
 const Overview = ({ navigation }) => {
-	const { session } = useUser();
+	const {} = useUser();
 	const [loadingOverview, setLoadingOverview] = useState(true);
 
 	useEffect(() => {
 		setTimeout(() => {
 			setLoadingOverview(false);
-		}, 2000);
+		}, 1000);
 	}, []);
 
 	return (
@@ -22,7 +22,7 @@ const Overview = ({ navigation }) => {
 				<ActivityIndicator size="large" style={{ marginVertical: "75%" }} color={colors.DARKGRAY} />
 			) : (
 				<View style={styles.subContainer}>
-					<OverviewHeader session={session} />
+					<OverviewHeader />
 
 					<LineGraph />
 					<ScrollView style={styles.scrollContainer}>

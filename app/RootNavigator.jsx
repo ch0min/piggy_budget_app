@@ -20,12 +20,10 @@ import Expenses from "./(tabs)/expenses/Expenses";
 const Stack = createNativeStackNavigator();
 
 const RootNavigator = () => {
-	const { loading, session, profileCompleted } = useUser();
+	const { user, profileCompleted } = useUser();
 
 	// AsyncStorage.clear().then(() => console.log("Local storage cleared!"));
 
-	console.log(`Session updated: ${JSON.stringify(session)}`);
-	console.log(`Profile Completed updated: ${profileCompleted}`);
 	return (
 		<View style={styles.container}>
 			<StatusBar barStyle="light-content" />
@@ -38,7 +36,7 @@ const RootNavigator = () => {
 						gestureEnabled: false,
 					}}
 				>
-					{session?.user && profileCompleted ? (
+					{user && profileCompleted ? (
 						<>
 							<Stack.Screen name="HomeTabs" component={HomeTabs} />
 							<Stack.Screen
@@ -60,7 +58,7 @@ const RootNavigator = () => {
 					) : (
 						<Stack.Screen name="CompleteProfile" component={CompleteProfile} />
 					)}
-					{!session?.user && (
+					{!user && (
 						<>
 							<Stack.Screen name="Landing" component={Landing} />
 							<Stack.Screen name="Signup" component={Signup} />

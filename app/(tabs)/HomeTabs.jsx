@@ -31,7 +31,7 @@ const HomeTabs = ({ navigation }) => {
 			>
 				<Tab.Screen
 					name="Overview"
-					children={() => <Overview session={session} navigation={navigation} />}
+					children={() => <Overview navigation={navigation} />}
 					options={{
 						tabBarIcon: ({ size, color }) => <Entypo name="eye" size={size} color={color} />,
 					}}
@@ -47,7 +47,7 @@ const HomeTabs = ({ navigation }) => {
 				/>
 				<Tab.Screen
 					name="Profile"
-					component={CompleteProfile}
+					component={Profile}
 					options={{
 						tabBarIcon: ({ size, color }) => <FontAwesome name="user" size={size} color={color} />,
 					}}

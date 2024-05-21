@@ -6,13 +6,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import PROFILE_AVATARS from "../../../../constants/ProfileAvatars";
 
 const OverviewHeader = () => {
-	const { session, userProfile, getProfile } = useUser();
-
-	useEffect(() => {
-		if (!userProfile) {
-			getProfile(session?.user?.id);
-		}
-	}, [session, getProfile]);
+	const { userProfile } = useUser();
 
 	const getAvatar = (avatarName) => {
 		const avatar = PROFILE_AVATARS.find((a) => a.avatar === avatarName);

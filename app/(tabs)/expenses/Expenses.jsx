@@ -22,7 +22,6 @@ import FormatNumber from "../../../utils/formatNumber";
 
 const Expenses = ({ navigation, route }) => {
 	const {
-		session,
 		loadingData,
 		setLoadingData,
 		userProfile,
@@ -56,11 +55,9 @@ const Expenses = ({ navigation, route }) => {
 
 	useFocusEffect(
 		useCallback(() => {
-			if (session) {
-				setLoadingData(true);
-				getTransactions().finally(() => setLoadingData(false));
-			}
-		}, [session])
+			setLoadingData(true);
+			getTransactions().finally(() => setLoadingData(false));
+		}, [])
 	);
 
 	useEffect(() => {

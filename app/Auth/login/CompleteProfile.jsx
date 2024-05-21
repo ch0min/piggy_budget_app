@@ -1,16 +1,24 @@
 import React, { useState, useEffect } from "react";
-import { Alert, StyleSheet, View, Text, TextInput, TouchableOpacity, Image } from "react-native";
+import { ActivityIndicator, Alert, StyleSheet, View, Text, TextInput, TouchableOpacity, Image } from "react-native";
 import { useUser } from "../../../context/UserContext";
 import { LinearGradient } from "expo-linear-gradient";
-
 import colors from "../../../constants/colors";
 import PickerWheel from "../../../components/modals/PickerWheel";
-
+import logo from "../../../assets/images/logo2.png";
 import ProfileAvatars from "../../(tabs)/profile/components/ProfileAvatars";
 import PROFILE_AVATARS from "../../../constants/ProfileAvatars";
 
 const CompleteProfile = ({ navigation }) => {
-	const { loading, profileCompleted, userProfile, updateProfile, valutas, getValutas } = useUser();
+	const {
+		loading,
+		setLoading,
+		profileCompleted,
+		setProfileCompleted,
+		userProfile,
+		updateProfile,
+		valutas,
+		getValutas,
+	} = useUser();
 	const [selectedAvatar, setSelectedAvatar] = useState(PROFILE_AVATARS[16]);
 
 	const [avatarUrl, setAvatarUrl] = useState("");
@@ -19,17 +27,28 @@ const CompleteProfile = ({ navigation }) => {
 	const [selectedValutaId, setSelectedValutaId] = useState(1);
 	const [valutaPickerVisible, setValutaPickerVisible] = useState(userProfile?.valuta_id);
 
-	console.log("CompleteProfile screen");
+	// Splash Loading:
+	if (loading) {
+		return (
+			<LinearGradient colors={[colors.SECONDARY, colors.PRIMARY]} locations={[0.3, 1.0]} style={styles.container}>
+				<View style={styles.loadingContainer}>
+					<Text style={styles.heading}>Velkommen tilbage</Text>
+					<Text style={styles.subheading}>Vi har savnet dig!</Text>
+					<Image source={logo} style={styles.logo} />
+				</View>
+			</LinearGradient>
+		);
+	}
 
 	useEffect(() => {
 		getValutas();
 	}, []);
 
 	useEffect(() => {
-		if (userProfile?.valuta_id) {
+		if (userProfile && userProfile.valuta_id) {
 			setSelectedValutaId(userProfile.valuta_id);
 		}
-	}, [userProfile]);
+	}, []);
 
 	const handleUpdateProfile = async () => {
 		if (!avatarUrl || !firstName || !lastName || !selectedValutaId) {
@@ -55,75 +74,78 @@ const CompleteProfile = ({ navigation }) => {
 		setSelectedValutaId(valutaId);
 	};
 
-	return (
-		<LinearGradient
-			colors={[colors.PRIMARY, colors.SECONDARY]}
-			start={{ x: 0, y: 0 }}
-			end={{ x: 1, y: 1 }}
-			locations={[0.1, 1.0]}
-			style={styles.container}
-		>
-			<View style={styles.subcontainer}>
-				<View style={styles.headingContainer}>
-					<Text style={styles.heading}>Hop med ombord, du er der snart..</Text>
-					<Text style={styles.subheading}>Færdiggør din profil</Text>
-				</View>
-
-				<View style={styles.textInputContainer}>
-					<View style={styles.textInput}>
-						<TextInput
-							label="FirstName"
-							placeholder="Fornavn"
-							placeholderTextColor={{ color: colors.WHITE }}
-							onChangeText={(text) => setFirstName(text)}
-							value={firstName || ""}
-						/>
+	if (!profileCompleted) {
+		return (
+			<LinearGradient
+				colors={[colors.PRIMARY, colors.SECONDARY]}
+				start={{ x: 0, y: 0 }}
+				end={{ x: 1, y: 1 }}
+				locations={[0.1, 1.0]}
+				style={styles.container}
+			>
+				<View style={styles.subcontainer}>
+					<View style={styles.headingContainer}>
+						<Text style={styles.heading}>Hop med ombord, du er der snart..</Text>
+						<Text style={styles.subheading}>Færdiggør din profil</Text>
 					</View>
 
-					<View style={styles.textInput}>
-						<TextInput
-							label="LastName"
-							placeholder="Efternavn"
-							placeholderTextColor={{ color: colors.WHITE }}
-							onChangeText={(text) => setLastName(text)}
-							value={lastName || ""}
-						/>
-					</View>
-				</View>
+					<View style={styles.textInputContainer}>
+						<View style={styles.textInput}>
+							<TextInput
+								label="FirstName"
+								placeholder="Fornavn"
+								placeholderTextColor={{ color: colors.WHITE }}
+								onChangeText={(text) => setFirstName(text)}
+								value={firstName || ""}
+							/>
+						</View>
 
-				<View style={styles.pickerContainer}>
-					<Text style={styles.pickerHeading}>Vælg din foretrukne valuta</Text>
-					<TouchableOpacity style={styles.pickerInput} onPress={() => setValutaPickerVisible(true)}>
-						<Text style={styles.pickerInputText}>
-							{valutas.find((v) => v.id === Number(selectedValutaId))?.name || "Valuta"}
-						</Text>
+						<View style={styles.textInput}>
+							<TextInput
+								label="LastName"
+								placeholder="Efternavn"
+								placeholderTextColor={{ color: colors.WHITE }}
+								onChangeText={(text) => setLastName(text)}
+								value={lastName || ""}
+							/>
+						</View>
+					</View>
+
+					<View style={styles.pickerContainer}>
+						<Text style={styles.pickerHeading}>Vælg din foretrukne valuta</Text>
+						<TouchableOpacity style={styles.pickerInput} onPress={() => setValutaPickerVisible(true)}>
+							<Text style={styles.pickerInputText}>
+								{valutas.find((v) => v.id === Number(selectedValutaId))?.name || "Valuta"}
+							</Text>
+						</TouchableOpacity>
+						{valutaPickerVisible && (
+							<PickerWheel
+								pickerVisible={valutaPickerVisible}
+								items={valutas}
+								selectedValue={selectedValutaId}
+								onValueChange={handleValuta}
+								onClose={() => setValutaPickerVisible(false)}
+							/>
+						)}
+					</View>
+					<View style={styles.avatarContainer}>
+						<Text style={styles.avatarHeading}>Vælg din avatar</Text>
+					</View>
+
+					<ProfileAvatars
+						selectedAvatar={selectedAvatar}
+						setSelectedAvatar={setSelectedAvatar}
+						setAvatarUrl={setAvatarUrl}
+					/>
+
+					<TouchableOpacity style={styles.btn} onPress={() => handleUpdateProfile()} disabled={loading}>
+						<Text style={styles.btnText}>Kom igang</Text>
 					</TouchableOpacity>
-					{valutaPickerVisible && (
-						<PickerWheel
-							pickerVisible={valutaPickerVisible}
-							items={valutas}
-							selectedValue={selectedValutaId}
-							onValueChange={handleValuta}
-							onClose={() => setValutaPickerVisible(false)}
-						/>
-					)}
 				</View>
-				<View style={styles.avatarContainer}>
-					<Text style={styles.avatarHeading}>Vælg din avatar</Text>
-				</View>
-
-				<ProfileAvatars
-					selectedAvatar={selectedAvatar}
-					setSelectedAvatar={setSelectedAvatar}
-					setAvatarUrl={setAvatarUrl}
-				/>
-
-				<TouchableOpacity style={styles.btn} onPress={() => handleUpdateProfile()} disabled={loading}>
-					<Text style={styles.btnText}>Kom igang</Text>
-				</TouchableOpacity>
-			</View>
-		</LinearGradient>
-	);
+			</LinearGradient>
+		);
+	}
+	return null;
 };
 
 const styles = StyleSheet.create({
@@ -133,6 +155,43 @@ const styles = StyleSheet.create({
 	},
 	subcontainer: {
 		flex: 1,
+	},
+	loadingContainer: {
+		alignItems: "center",
+		width: "100%",
+		height: "100%",
+		marginTop: "60%",
+	},
+	heading: {
+		alignSelf: "flex-start",
+		marginBottom: "2%",
+		marginLeft: "5%",
+		fontSize: 20,
+		color: colors.GRAY,
+	},
+	subheading: {
+		alignSelf: "flex-start",
+		marginLeft: "5%",
+		fontSize: 32,
+		fontWeight: "bold",
+		color: colors.WHITE,
+	},
+	logoContainer: {
+		alignItems: "center",
+		justifyContent: "center",
+	},
+	logo: {
+		width: 250,
+		height: 250,
+		marginVertical: "12%",
+
+		// Shadow for iOS
+		shadowColor: "#000",
+		shadowOffset: { width: 0, height: 10 },
+		shadowOpacity: 0.2,
+		shadowRadius: 3,
+		// Android
+		elevation: 1,
 	},
 	headingContainer: {
 		display: "flex",

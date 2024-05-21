@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, View, Text, TextInput, TouchableOpacity, Image } from "react-native";
 import { useUser } from "../../../context/UserContext";
-
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import colors from "../../../constants/colors";
+import logo from "../../../assets/images/logo.png";
 import logo2 from "../../../assets/images/logo2.png";
 import arrowLeft from "../../../assets/images/arrowLeft.png";
 

@@ -31,35 +31,34 @@ export const UserProvider = ({ children }) => {
 
 	/*** AUTH FUNCTIONALITY ***/
 	useEffect(() => {
-		if (!session) {
-			fetchInitialSession();
-		}
+		const fetchSession = async () => {
+			setLoading(true);
+			try {
+				const {
+					data: { session },
+				} = await supabase.auth.getSession();
+				if (session) {
+					setSession(session);
+					setUser(session?.user);
+					console.log("Fetching profile...");
+					await getProfile(session.user.id);
+				} else {
+					console.log("No user in session...");
+				}
+			} catch (error) {
+				console.error("Error initializing session and profile", error.message);
+			} finally {
+				setLoading(false);
+			}
+		};
+
+		fetchSession();
 	}, []);
 
 	const [session, setSession] = useState(null);
 	const [user, setUser] = useState(null);
 	const [userProfile, setUserProfile] = useState(null);
 	const [profileCompleted, setProfileCompleted] = useState(false);
-
-	const fetchInitialSession = async () => {
-		setLoading(true);
-		try {
-			const { data } = await supabase.auth.getSession();
-			if (data.session) {
-				setSession(session);
-				setUser(session?.user);
-
-				if (data.session.user) {
-					console.log("Fetching profile...")
-					await getProfile(data.session.user.id);
-				}
-			}
-		} catch (error) {
-			console.error("Error initializing session and profile", error.message);
-		} finally {
-			setLoading(false);
-		}
-	};
 
 	const signIn = async (email, password) => {
 		setLoading(true);

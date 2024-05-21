@@ -23,7 +23,6 @@ import { FontAwesome, MaterialIcons, AntDesign, Entypo } from "@expo/vector-icon
 
 const Budget = ({ navigation }) => {
 	const {
-		session,
 		loading,
 		setLoading,
 		userProfile,
@@ -54,12 +53,10 @@ const Budget = ({ navigation }) => {
 
 	useFocusEffect(
 		useCallback(() => {
-			if (session) {
-				setLoadingData(true);
-				getExpenseAreas().finally(() => setLoadingData(false));
-				getExpenses();
-			}
-		}, [session, currentMonth])
+			setLoadingData(true);
+			getExpenseAreas().finally(() => setLoadingData(false));
+			getExpenses();
+		}, [currentMonth])
 	);
 
 	useEffect(() => {
@@ -208,7 +205,7 @@ const Budget = ({ navigation }) => {
 
 	return (
 		<View style={styles.container}>
-			<BudgetHeader session={session} />
+			<BudgetHeader />
 
 			{loadingData ? (
 				<ActivityIndicator size="large" style={{ marginVertical: "50%" }} color={colors.DARKGRAY} />
