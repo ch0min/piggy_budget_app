@@ -6,48 +6,51 @@ import colors from "../../../../constants/colors";
 import { MaterialCommunityIcons, FontAwesome } from "@expo/vector-icons";
 import FormatNumber from "../../../../utils/formatNumber";
 
-const PieGraph = ({ expenseAreas }) => {
-	const { userProfile, totalMonthlyBudget, getMonthlyBudget } = useUser();
+const PieGraph = ({ expenseAreas, expenses, colorIndex, setColorIndex }) => {
+	const { userProfile, totalSpentMonth, setTotalSpentMonth, totalBudgetMonth, setTotalBudgetMonth, getMonthlyBudget } =
+		useUser();
 	const size = 120;
 	const [values, setValues] = useState([1]);
 	const [sliceColor, setSliceColor] = useState([colors.GRAY]);
-	const [totalSpentMonth, setTotalSpentMonth] = useState(0);
 	const [toggleAllAreas, setToggleAllAreas] = useState(false);
 	const [loadingGraph, setLoadingGraph] = useState(true);
 
 	useEffect(() => {
-		setLoadingGraph(true);
 		calculatePieGraph();
 		getMonthlyBudget();
-	}, [expenseAreas, totalMonthlyBudget]);
+	}, [expenseAreas, totalBudgetMonth]);
+
+	const calculateAreaSpentAmount = (areaId) => {
+		return expenses
+			.filter((exp) => exp.expense_areas_id === areaId)
+			.reduce((total, exp) => total + exp.total_spent_expense, 0);
+	};
+
+	const remainingBudgetLeft = totalBudgetMonth - totalSpentMonth;
 
 	const calculatePieGraph = () => {
 		if (expenseAreas.length > 0) {
-			let total = 0;
 			const newValues = [];
 			const newSliceColor = [];
+			let totalSpent = 0;
 
 			expenseAreas.forEach((area, index) => {
-				const spentAmount = area.total_budget_area || 0;
+				const spentAmount = calculateAreaSpentAmount(area.id) || 0;
 				if (spentAmount > 0) {
 					newValues.push(spentAmount);
 					newSliceColor.push(colors.COLOR_LIST[index % colors.COLOR_LIST.length]);
-					total += spentAmount;
+					totalSpent += spentAmount;
 				}
 			});
 
-			if (totalMonthlyBudget > total) {
-				newValues.push(totalMonthlyBudget - total);
+			if (totalBudgetMonth > totalSpent) {
+				newValues.push(totalBudgetMonth - totalSpent);
 				newSliceColor.push(colors.GRAY);
 			}
-			if (newValues.length > 0) {
-				setValues(newValues);
-				setSliceColor(newSliceColor);
-			} else {
-				setValues([1]);
-				setSliceColor([colors.GRAY]);
-			}
-			setTotalSpentMonth(total);
+
+			setTotalSpentMonth(totalSpent);
+			setValues(newValues);
+			setSliceColor(newSliceColor);
 		} else {
 			handleNoData();
 		}
@@ -55,9 +58,10 @@ const PieGraph = ({ expenseAreas }) => {
 	};
 
 	const handleNoData = () => {
-		setValues([1]);
+		setValues([100]);
 		setSliceColor([colors.GRAY]);
 		setTotalSpentMonth(0);
+		setTotalBudgetMonth(0);
 	};
 
 	const toggleShowAllAreas = () => {
@@ -67,7 +71,7 @@ const PieGraph = ({ expenseAreas }) => {
 	return (
 		<TouchableOpacity style={styles.container} onPress={toggleShowAllAreas}>
 			<View style={styles.subContainer}>
-				{values.length > 0 && values.reduce((acc, total) => acc + total, 0) > 0 && (
+				{values.length > 0 && values.reduce((acc, total) => acc + total, 0) > 0 ? (
 					<PieChart
 						style={styles.pieChart}
 						widthAndHeight={size}
@@ -75,21 +79,30 @@ const PieGraph = ({ expenseAreas }) => {
 						sliceColor={sliceColor}
 						coverRadius={0.65}
 					/>
+				) : (
+					<PieChart
+						style={styles.pieChart}
+						widthAndHeight={size}
+						series={[100]}
+						sliceColor={[colors.GRAY]}
+						coverRadius={0.65}
+					/>
 				)}
 				<View style={styles.legendContainer}>
 					<Text style={styles.legendHeading}>Planlagt total budget</Text>
 					<Text style={styles.legendTotalBudget}>
-						{FormatNumber(totalMonthlyBudget)} {userProfile.valutaName}
+						{FormatNumber(totalBudgetMonth)} {userProfile.valutaName}
 					</Text>
 					<Text style={styles.legendSubHeading}>
-						<Text style={{ fontSize: 14, fontStyle: "italic", color: colors.DARKGRAY }}>Du har brugt: </Text>
-						{FormatNumber(totalSpentMonth)} {userProfile.valutaName}
+						{FormatNumber(remainingBudgetLeft)} {userProfile.valutaName}
+						<Text style={{ fontSize: 14, color: colors.DARKGRAY }}> tilbage</Text>
 					</Text>
 				</View>
 			</View>
 
 			{expenseAreas.slice(0, toggleAllAreas ? expenseAreas.length : 3).map((area, index) => {
-				const percentage = totalMonthlyBudget > 0 ? ((area.total_budget_area || 0) / totalMonthlyBudget) * 100 : 0;
+				const actualAreaSpentAmount = calculateAreaSpentAmount(area.id);
+				const percentage = totalBudgetMonth > 0 ? ((actualAreaSpentAmount || 0) / totalBudgetMonth) * 100 : 0;
 
 				return (
 					<View key={index} style={styles.chartNameContainer}>
@@ -106,7 +119,7 @@ const PieGraph = ({ expenseAreas }) => {
 								)}
 							</Text>
 							<Text style={styles.chartNameTotalBudgetText}>
-								{FormatNumber(area.total_budget_area || 0)} {userProfile.valutaName}
+								-{FormatNumber(actualAreaSpentAmount || 0)} {userProfile.valutaName}
 							</Text>
 						</View>
 					</View>
@@ -164,7 +177,7 @@ const styles = StyleSheet.create({
 		color: colors.BLACK,
 	},
 	legendSubHeading: {
-		fontSize: 16,
+		fontSize: 14,
 		color: colors.BLACK,
 	},
 	chartNameContainer: {
@@ -186,6 +199,7 @@ const styles = StyleSheet.create({
 	chartNameTotalBudgetText: {
 		marginTop: "1%",
 		fontWeight: "bold",
+		color: colors.RED,
 	},
 	caretIcons: {
 		flex: 1,

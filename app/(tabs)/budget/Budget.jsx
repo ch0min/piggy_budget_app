@@ -32,6 +32,8 @@ const Budget = ({ navigation }) => {
 		setRefresh,
 		currentMonth,
 		setCurrentMonth,
+		totalSpentMonth,
+		totalBudgetMonth,
 		budgetExists,
 		setBudgetExists,
 		createMonthlyBudget,
@@ -47,12 +49,14 @@ const Budget = ({ navigation }) => {
 
 	const [showCheckmark, setShowCheckmark] = useState(false);
 	const [expenseAreaName, setExpenseAreaName] = useState("");
+	const [colorIndex, setColorIndex] = useState(0);
 
 	const [editableExpenseAreas, setEditableExpenseAreas] = useState([]);
 	const [editableId, setEditableId] = useState(null);
 
 	useFocusEffect(
 		useCallback(() => {
+			setLoading(true);
 			setLoadingData(true);
 			getExpenseAreas().finally(() => setLoadingData(false));
 			getExpenses();
@@ -86,12 +90,16 @@ const Budget = ({ navigation }) => {
 	};
 
 	const handleUpdateExpenseAreaName = (id, newName) => {
+		setLoading(true);
+
 		const updatedAreas = editableExpenseAreas.map((area) => {
 			if (area.id === id) {
 				return { ...area, editableName: newName };
 			}
 			return area;
 		});
+		setLoading(false);
+
 		setEditableExpenseAreas(updatedAreas);
 	};
 
@@ -231,7 +239,14 @@ const Budget = ({ navigation }) => {
 								</View>
 							)}
 
-							{expenseAreas.length > 0 && <PieGraph expenseAreas={expenseAreas} expenses={expenses} />}
+							{expenseAreas.length > 0 && (
+								<PieGraph
+									totalSpentMonth={totalSpentMonth}
+									totalBudgetMonth={totalBudgetMonth}
+									expenseAreas={expenseAreas || []}
+									expenses={expenses || []}
+								/>
+							)}
 
 							<>
 								{!budgetExists ? (
@@ -345,7 +360,7 @@ const styles = StyleSheet.create({
 		flexDirection: "row",
 		justifyContent: "space-between",
 		marginHorizontal: "5%",
-		marginVertical: "5%",
+		marginTop: "5%",
 
 		padding: 20,
 		borderRadius: 15,

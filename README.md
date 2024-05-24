@@ -3,23 +3,18 @@
 NEXT: Rækkefølge Mandag:
 
 -  Lav Overview Screen Resten af ugen:
--  Lav Loading indicator for alle buttons.
--  Fix bug med CompleteProfile screen hurtig vises.
--  RefreshControl
--  Rød skrift for hver transaction
 -  Lav splash screen.
 -  Email redirection
 -  Complete Profile "cannot find property "name" of null, pga. valuta.
 -  CAPTCHA
--  Categories Screen AddCategory Screen skal moduleres.
 -  ÆNDRE ALT MARGIN OSV TIL PERCENTAGE
--  Change colors
 -  Change fonts
 -  Fix details on both iOS and Android so they look the same.
--  Login with google or facebook?
--  SVG
--  Skift alt til dansk?
 -  Fix update expense og transaction i forhold til at opdatere "total_budget_area" og "total_budget_month"
+
+-  Bug:
+-  update expense
+-  update transaction
 
 Exam:
 

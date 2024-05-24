@@ -170,7 +170,8 @@ export const UserProvider = ({ children }) => {
 	const [currentMonth, setCurrentMonth] = useState(new Date());
 	const [monthlyBudgetId, setMonthlyBudgetId] = useState(null);
 	const [budgetExists, setBudgetExists] = useState(false);
-	const [totalMonthlyBudget, setTotalMonthlyBudget] = useState(0);
+	const [totalSpentMonth, setTotalSpentMonth] = useState(0);
+	const [totalBudgetMonth, setTotalBudgetMonth] = useState(0);
 
 	const getMonthlyBudgetId = async () => {
 		setLoading(true);
@@ -221,11 +222,13 @@ export const UserProvider = ({ children }) => {
 
 			if (data) {
 				setMonthlyBudgetId(data.id);
-				setTotalMonthlyBudget(data.total_budget_month);
+				setTotalSpentMonth(data.total_spent_month);
+				setTotalBudgetMonth(data.total_budget_month);
 				setBudgetExists(true);
 			} else {
 				setMonthlyBudgetId(null);
-				setTotalMonthlyBudget(0);
+				setTotalSpentMonth(0);
+				setTotalBudgetMonth(0);
 				setBudgetExists(false);
 			}
 
@@ -274,42 +277,70 @@ export const UserProvider = ({ children }) => {
 		setLoading(true);
 		try {
 			// Fetch all expense areas for the specific monthly budget id:
-			const { data: areaData, error: areaError } = await supabase
-				.from("expense_areas")
-				.select("id")
+			const { data: expenseData, error: expenseError } = await supabase
+				.from("expenses")
+				.select("total_spent_expense")
 				.eq("monthly_budgets_id", monthlyBudgetId);
 
-			if (areaError) throw areaError;
+			if (expenseError) throw expenseError;
 
-			let totalBudgetMonth = 0;
-
-			for (const area of expenseAreas) {
-				const { data: expenseData, error: expenseError } = await supabase
-					.from("expenses")
-					.select("total_budget_expense")
-					.eq("expense_areas_id", area.id);
-
-				if (expenseError) {
-					console.error("Error fetching expenses for area", expenseError.message);
-					continue;
-				}
-
-				totalBudgetMonth += expenseData.reduce((acc, curr) => acc + parseFloat(curr.total_budget_expense), 0);
-			}
+			const totalSpentMonth = expenseData.reduce((acc, exp) => acc + parseFloat(exp.total_spent_expense || 0), 0);
 
 			const { error: updateError } = await supabase
 				.from("monthly_budgets")
-				.update({ total_budget_month: totalBudgetMonth })
+				.update({ total_spent_month: totalSpentMonth })
 				.eq("id", monthlyBudgetId);
 
 			if (updateError) throw updateError;
+
+			console.log("Monthly budget spent updated successfully.");
 		} catch (error) {
 			console.error("Error updating monthly budget for a user:", error.message);
-			throw error;
 		} finally {
 			setLoading(false);
 		}
 	};
+
+	// const updateMonthlyBudget = async (monthlyBudgetId) => {
+	// 	setLoading(true);
+	// 	try {
+	// 		// Fetch all expense areas for the specific monthly budget id:
+	// 		const { data: areaData, error: areaError } = await supabase
+	// 			.from("expense_areas")
+	// 			.select("id")
+	// 			.eq("monthly_budgets_id", monthlyBudgetId);
+
+	// 		if (areaError) throw areaError;
+
+	// 		let totalBudgetMonth = 0;
+
+	// 		for (const area of expenseAreas) {
+	// 			const { data: expenseData, error: expenseError } = await supabase
+	// 				.from("expenses")
+	// 				.select("total_budget_expense")
+	// 				.eq("expense_areas_id", area.id);
+
+	// 			if (expenseError) {
+	// 				console.error("Error fetching expenses for area", expenseError.message);
+	// 				continue;
+	// 			}
+
+	// 			totalBudgetMonth += expenseData.reduce((acc, curr) => acc + parseFloat(curr.total_budget_expense), 0);
+	// 		}
+
+	// 		const { error: updateError } = await supabase
+	// 			.from("monthly_budgets")
+	// 			.update({ total_budget_month: totalBudgetMonth })
+	// 			.eq("id", monthlyBudgetId);
+
+	// 		if (updateError) throw updateError;
+	// 	} catch (error) {
+	// 		console.error("Error updating monthly budget for a user:", error.message);
+	// 		throw error;
+	// 	} finally {
+	// 		setLoading(false);
+	// 	}
+	// };
 
 	const updateMonthlySpent = async (monthlyBudgetId) => {
 		setLoading(true);
@@ -330,13 +361,10 @@ export const UserProvider = ({ children }) => {
 					.select("total_spent_expense")
 					.eq("expense_areas_id", area.id);
 
-				if (expenseError) {
-					console.error("Expense error:", expenseError.message);
-					continue;
-				}
+				if (expenseError) throw expenseError;
 
-				const areaTotal = expenseData.reduce((acc, curr) => acc + parseFloat(curr.total_spent_expense || 0), 0);
-				totalSpentMonth += areaTotal;
+				const total = expenseData.reduce((total, exp) => total + parseFloat(exp.total_spent_expense || 0), 0);
+				totalSpentMonth += total;
 			}
 
 			const { error: updateError } = await supabase
@@ -463,7 +491,7 @@ export const UserProvider = ({ children }) => {
 					.from("expense_areas")
 					.select("*")
 					.eq("monthly_budgets_id", budgetData.id)
-					.order("id", { ascending: false });
+					.order("id", { ascending: true });
 
 				if (areasError) throw areasError;
 				setExpenseAreas(areasData || []);
@@ -769,16 +797,24 @@ export const UserProvider = ({ children }) => {
 
 			if (transactionError) throw transactionError;
 
-			const totalSpentExpense = transactionData.reduce((acc, curr) => acc + parseFloat(curr.amount), 0);
+			const totalSpentExpense = transactionData.reduce((acc, tr) => acc + parseFloat(tr.amount), 0);
 
-			const { data: expenseData, error: updateError } = await supabase
+			const { error: updateError } = await supabase
 				.from("expenses")
 				.update({ total_spent_expense: totalSpentExpense })
 				.eq("id", expenseId);
 
 			if (updateError) throw updateError;
-			//
-			//   await supabase.from("expenses").update({ total_spent_expense: totalSpentExpense }).eq("id", expenseId);
+
+			const { data: expenseData, error: expenseError } = await supabase
+				.from("expenses")
+				.select("monthly_budgets_id")
+				.eq("id", expenseId)
+				.single();
+
+			if (expenseError) throw expenseError;
+
+			await updateMonthlyBudget.expenseData.monthly_budgets_id;
 		} catch (error) {
 			console.error("Failed to update expense total spent:", error.message);
 		} finally {
@@ -876,48 +912,70 @@ export const UserProvider = ({ children }) => {
 
 			if (transactionError) throw transactionError;
 
-			if (transactionData) {
-				const expenseId = transactionData[0].expenses_id;
-
-				// Update total_spent on the specific expense:
-				await updateExpenseTotalSpent(expenseId);
-
-				// Fetching the expense_area_id for the expense:
-				const { data: expenseData, error: expenseError } = await supabase
-					.from("expenses")
-					.select("expense_areas_id")
-					.eq("id", expenseId)
-					.single();
-
-				if (expenseError) throw expenseError;
-
-				// Fetching the monthly_budgets_id from expense areas:
-				if (expenseData) {
-					const areaId = expenseData.expense_areas_id;
-
-					await updateTotalBudgetForArea(areaId);
-
-					const { data: areaData, error: areaError } = await supabase
-						.from("expense_areas")
-						.select("monthly_budgets_id")
-						.eq("id", areaId)
-						.single();
-
-					if (areaError) throw areaError;
-
-					if (areaData && areaData.monthly_budgets_id) {
-						await updateMonthlyBudget(areaData.monthly_budgets_id);
-						await updateMonthlySpent(areaData.monthly_budgets_id);
-						await updateExpenseTotalSpent(expenseData.expense_areas_id);
-					}
-				}
+			if (!transactionData || transactionData.length === 0) {
+				throw new Error("Transaction update failed or no data returned.");
 			}
+
+			console.log("Transaction updated successfully, proceeding to update related expense totals.");
+			// Additional logic here...
 		} catch (error) {
 			console.error("Error updating transaction", error.message);
 		} finally {
 			setLoading(false);
 		}
 	};
+
+	// const updateTransaction = async (id, name, amount, note) => {
+	// 	setLoading(true);
+	// 	try {
+	// 		const { data: transactionData, error: transactionError } = await supabase
+	// 			.from("transactions")
+	// 			.update({ name, amount, note })
+	// 			.match({ id });
+
+	// 		if (transactionError) throw transactionError;
+
+	// 		if (transactionData.length === 0) throw new Error("Transaction update failed or no data returned.");
+
+	// 		if (transactionData) {
+	// 			const expenseId = transactionData[0].expenses_id;
+	// 			// Update total_spent on the specific expense:
+	// 			await updateExpenseTotalSpent(expenseId);
+
+	// 			// Fetching the expense_area_id for the expense:
+	// 			const { data: expenseData, error: expenseError } = await supabase
+	// 				.from("expenses")
+	// 				.select("expense_areas_id")
+	// 				.eq("id", expenseId)
+	// 				.single();
+
+	// 			if (expenseError) throw expenseError;
+
+	// 			// Fetching the monthly_budgets_id from expense areas:
+	// 			if (expenseData) {
+	// 				const expenseAreaId = expenseData.expense_areas_id;
+	// 				await updateTotalBudgetForArea(expenseAreaId);
+
+	// 				const { data: areaData, error: areaError } = await supabase
+	// 					.from("expense_areas")
+	// 					.select("monthly_budgets_id")
+	// 					.eq("id", expenseAreaId)
+	// 					.single();
+
+	// 				if (areaError) throw areaError;
+
+	// 				if (areaData && areaData.monthly_budgets_id) {
+	// 					await updateMonthlySpent(areaData.monthly_budgets_id);
+	// 					await updateMonthlyBudget(areaData.monthly_budgets_id);
+	// 				}
+	// 			}
+	// 		}
+	// 	} catch (error) {
+	// 		console.error("Error updating transaction", error.message);
+	// 	} finally {
+	// 		setLoading(false);
+	// 	}
+	// };
 
 	const deleteTransaction = async (id) => {
 		setLoading(true);
@@ -1014,10 +1072,12 @@ export const UserProvider = ({ children }) => {
 				currentMonth,
 				setCurrentMonth,
 				budgetExists,
-				totalMonthlyBudget,
+				totalSpentMonth,
+				totalBudgetMonth,
 				chartData,
 				savings,
-				setTotalMonthlyBudget,
+				setTotalSpentMonth,
+				setTotalBudgetMonth,
 				// Monthly Budget Functions
 				getMonthlyBudget,
 				createMonthlyBudget,
