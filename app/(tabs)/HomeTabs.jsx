@@ -14,60 +14,58 @@ import CompleteProfile from "../auth/login/CompleteProfile";
 const Tab = createBottomTabNavigator();
 
 const HomeTabs = ({ navigation }) => {
-	const { loading, session } = useUser();
+  const { loading, session } = useUser();
 
-	return (
-		<View style={styles.container}>
-			<Tab.Navigator
-				initialRouteName="Budget" // Change
-				screenOptions={{
-					headerShown: false,
-					tabBarActiveTintColor: colors.SECONDARY,
-					tabBarInactiveTintColor: colors.DARKGRAY,
-					tabBarStyle: {
-						borderTopWidth: 0,
-					},
-				}}
-			>
-				<Tab.Screen
-					name="Overview"
-					children={() => <Overview navigation={navigation} />}
-					options={{
-						tabBarIcon: ({ size, color }) => <Entypo name="eye" size={size} color={color} />,
-					}}
-				/>
-				<Tab.Screen
-					name="Budget"
-					component={Budget}
-					options={{
-						tabBarIcon: ({ size, color }) => (
-							<MaterialCommunityIcons name="chart-arc" size={size} color={color} />
-						),
-					}}
-				/>
-				<Tab.Screen
-					name="Profile"
-					component={Profile}
-					options={{
-						tabBarIcon: ({ size, color }) => <FontAwesome name="user" size={size} color={color} />,
-					}}
-				/>
-				<Tab.Screen
-					name="Settings"
-					component={Settings}
-					options={{
-						tabBarIcon: ({ size, color }) => <MaterialCommunityIcons name="tools" size={size} color={color} />,
-					}}
-				/>
-			</Tab.Navigator>
-		</View>
-	);
+  return (
+    <View style={styles.container}>
+      <Tab.Navigator
+        initialRouteName="Profile" // Change
+        screenOptions={{
+          headerShown: false,
+          tabBarActiveTintColor: colors.SECONDARY,
+          tabBarInactiveTintColor: colors.DARKGRAY,
+          tabBarStyle: {
+            borderTopWidth: 0,
+          },
+        }}
+      >
+        <Tab.Screen
+          name="Overview"
+          children={() => <Overview navigation={navigation} />}
+          options={{
+            tabBarIcon: ({ size, color }) => <Entypo name="eye" size={size} color={color} />,
+          }}
+        />
+        <Tab.Screen
+          name="Budget"
+          component={Budget}
+          options={{
+            tabBarIcon: ({ size, color }) => <MaterialCommunityIcons name="chart-arc" size={size} color={color} />,
+          }}
+        />
+        <Tab.Screen
+          name="Profile"
+          component={Profile}
+          options={{
+            tabBarIcon: ({ size, color }) => <FontAwesome name="user" size={size} color={color} />,
+          }}
+        />
+        <Tab.Screen
+          name="Settings"
+          component={Settings}
+          options={{
+            tabBarIcon: ({ size, color }) => <MaterialCommunityIcons name="tools" size={size} color={color} />,
+          }}
+        />
+      </Tab.Navigator>
+    </View>
+  );
 };
 
 const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-	},
+  container: {
+    flex: 1,
+  },
 });
 
 export default HomeTabs;
