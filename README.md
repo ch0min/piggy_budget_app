@@ -2,6 +2,7 @@
 
 NEXT: Rækkefølge Mandag:
 
+-  nå du ændrer valuta vis det i budget og expense.
 -  Lav Overview Screen Resten af ugen:
 -  Lav splash screen.
 -  Email redirection
@@ -10,21 +11,11 @@ NEXT: Rækkefølge Mandag:
 -  ÆNDRE ALT MARGIN OSV TIL PERCENTAGE
 -  Change fonts
 -  Fix details on both iOS and Android so they look the same.
--  Fix update expense og transaction i forhold til at opdatere "total_budget_area" og "total_budget_month"
-
--  Bug:
--  update expense
--  update transaction
 
 Exam:
 
 -  Hvorfor bruge expo router vs react native navigation?
 -  useContext for navigation?
--  Tilføj loading indicator.
--  ADD SHADOW ON ANDROID
--  CHECK ALL RLS in SUPABASE
--  Fix information for expenses til max antal characters.
--  CHANGE DATES ON CREATED_ATS WHEN WE ADD MONTHS
 
 MINOR BUGS:
 

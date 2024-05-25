@@ -1,10 +1,11 @@
 import React from "react";
-import { StyleSheet, View, Modal, TextInput, TouchableOpacity } from "react-native";
+import { ActivityIndicator, StyleSheet, View, Text, Modal, TextInput, TouchableOpacity } from "react-native";
 import colors from "../../../../constants/colors";
 // import { RefreshControl } from "react-native";
 import { MaterialIcons, AntDesign } from "@expo/vector-icons";
 
 const UpdateTransaction = ({
+	loading,
 	updateTransactionVisible,
 	transactionName,
 	setTransactionName,
@@ -41,16 +42,24 @@ const UpdateTransaction = ({
 							inputMode="decimal"
 							maxLength={9}
 						/>
-						<TextInput
-							style={styles.updateTransactionNoteInput}
-							placeholder="Note (valfri)"
-							placeholderTextColor={colors.DARKGRAY}
-							onChangeText={setTransactionNote}
-							value={transactionNote}
-						/>
+						<View style={styles.noteContainer}>
+							<TextInput
+								style={styles.updateTransactionNoteInput}
+								placeholder="Note (valgfri)"
+								placeholderTextColor={colors.DARKGRAY}
+								onChangeText={setTransactionNote}
+								value={transactionNote}
+								maxLength={20}
+							/>
+							<Text style={styles.charsLeft}>({20 - transactionNote.length} tegn tilbage)</Text>
+						</View>
 
 						<TouchableOpacity style={styles.addBtn} onPress={handleUpdateTransaction}>
-							<AntDesign name="check" size={34} color={colors.BLACK} />
+							{loading ? (
+								<ActivityIndicator size="small" style={{ marginVertical: "2%" }} color={colors.DARKGRAY} />
+							) : (
+								<AntDesign name="check" size={34} color={colors.BLACK} />
+							)}
 						</TouchableOpacity>
 					</View>
 				</View>
@@ -104,12 +113,20 @@ const styles = StyleSheet.create({
 		borderBottomWidth: 1,
 		borderBottomColor: colors.GRAY,
 	},
-	updateTransactionNoteInput: {
+	noteContainer: {
+		flexDirection: "row",
+		justifyContent: "space-between",
 		paddingVertical: "5%",
-		fontSize: 14,
-		color: colors.BLACK,
 		borderBottomWidth: 1,
 		borderBottomColor: colors.GRAY,
+	},
+	updateTransactionNoteInput: {
+		fontSize: 14,
+		color: colors.BLACK,
+	},
+	charsLeft: {
+		fontSize: 12,
+		color: colors.DARKGRAY,
 	},
 	addBtn: {
 		alignItems: "center",
