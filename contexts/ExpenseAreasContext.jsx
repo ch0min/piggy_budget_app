@@ -7,9 +7,17 @@ const ExpenseAreasContext = createContext();
 
 export const ExpenseAreasProvider = ({ children }) => {
 	const { user } = useAuth();
-	const { currentMonth, getMonthlyBudgetId, setBudgetExists } = useMonthly();
+	const {
+		currentMonth,
+		getMonthlyBudgetId,
+		updateMonthlySpent,
+		updateMonthlyBudget,
+		setBudgetExists,
+		getMonthlyBudgetLineChart,
+		updatePiggyBankSavings,
+	} = useMonthly();
 
-	const [loading, setLoading] = useState(true);
+	const [loading, setLoading] = useState(false);
 	const [refresh, setRefresh] = useState(false);
 
 	/*** EXPENSE AREAS FUNCTIONALITY ***/
@@ -121,6 +129,7 @@ export const ExpenseAreasProvider = ({ children }) => {
 			await updateMonthlyBudget(area.monthly_budgets_id);
 			await updateMonthlySpent(area.monthly_budgets_id);
 			await getMonthlyBudgetLineChart();
+			await updatePiggyBankSavings();
 		} catch (error) {
 			console.error("Error deleting expense area:", error.message);
 		} finally {

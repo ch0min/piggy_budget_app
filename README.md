@@ -2,6 +2,13 @@
 
 NEXT: Rækkefølge Mandag:
 
+-  Fix: Activity Indicators buttons: update expense, delete transaction
+   -  Fix loading state for expense areas input field checkmark.
+   -  Create Monthly budget btn
+   -  CUD: Expenses
+   -  CUD: Transactions
+-
+
 -  nå du ændrer valuta vis det i budget og expense.
 -  Lav Overview Screen Resten af ugen:
 -  Lav splash screen.
@@ -68,5 +75,7 @@ profiles - id: uuid, updated_at: date, avatar: text, first_name: text, last_name
 valuta - id: uuid, name: text
 
 monthly_budgets - id: uuid, month: int, year: int, user_id: uuid (foreign key to profile), total_spent_month: numeric, total_budget_month: numeric
+
+piggy_bank - id: uuid, total_savings: numeric, monthly_budgets_id (foreign key->monthly_budgets), user_id(foreign key->profiles)
 
 AUTH TABLE: users

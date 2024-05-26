@@ -18,8 +18,8 @@ const Budget = ({ navigation }) => {
 
 	useFocusEffect(
 		useCallback(() => {
-			setLoading(true);
-			setLoadingData(true);
+			// setLoading(true);
+			// setLoadingData(true);
 			getExpenseAreas().finally(() => setLoadingData(false));
 			getExpenses();
 		}, [currentMonth])
@@ -81,29 +81,27 @@ const Budget = ({ navigation }) => {
 
 	return (
 		<View style={styles.container}>
-			{loadingData ? (
-				<ActivityIndicator size="large" style={{ marginVertical: "50%" }} color={colors.DARKGRAY} />
-			) : (
-				<ExpenseAreasList
-					loading={loading}
-					refresh={refresh}
-					onRefresh={onRefresh}
-					editableId={editableId}
-					setEditableId={setEditableId}
-					currentMonth={currentMonth}
-					expenseAreaName={expenseAreaName}
-					setExpenseAreaName={setExpenseAreaName}
-					expenseAreas={expenseAreas}
-					getExpenseAreas={getExpenseAreas}
-					handleUpdateExpenseAreaName={handleUpdateExpenseAreaName}
-					handleDeleteExpenseArea={handleDeleteExpenseArea}
-					saveUpdatedExpenseArea={saveUpdatedExpenseArea}
-					editableExpenseAreas={editableExpenseAreas}
-					expenses={expenses}
-					handleExpense={handleExpense}
-					handleAddExpense={handleAddExpense}
-				/>
-			)}
+			{/* { ? ( */}
+			{/* <ActivityIndicator size="large" style={{ marginVertical: "50%" }} color={colors.DARKGRAY} /> */}
+			<ExpenseAreasList
+				loading={loading}
+				refresh={refresh}
+				onRefresh={onRefresh}
+				editableId={editableId}
+				setEditableId={setEditableId}
+				currentMonth={currentMonth}
+				expenseAreaName={expenseAreaName}
+				setExpenseAreaName={setExpenseAreaName}
+				expenseAreas={expenseAreas}
+				getExpenseAreas={getExpenseAreas}
+				handleUpdateExpenseAreaName={handleUpdateExpenseAreaName}
+				handleDeleteExpenseArea={handleDeleteExpenseArea}
+				saveUpdatedExpenseArea={saveUpdatedExpenseArea}
+				editableExpenseAreas={editableExpenseAreas}
+				expenses={expenses}
+				handleExpense={handleExpense}
+				handleAddExpense={handleAddExpense}
+			/>
 		</View>
 	);
 };

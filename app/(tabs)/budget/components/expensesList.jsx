@@ -8,7 +8,7 @@ import ProgressBarMini from "./ProgressBarMini";
 
 const ExpensesList = ({ item, expenses, handleExpense }) => {
 	const { userProfile } = useAuth();
-	
+
 	const renderExpenses = ({ item }) => (
 		<TouchableOpacity style={styles.expensesContainer} onPress={() => handleExpense(item)}>
 			<View style={styles.expensesSubContainer}>
@@ -19,9 +19,13 @@ const ExpensesList = ({ item, expenses, handleExpense }) => {
 				<View style={styles.expensesTextContainer}>
 					<Text style={styles.expensesName}>{item.name}</Text>
 					<View style={styles.expensesBudgetNameBox}>
-						<Text style={styles.expensesTotalSpent}>
-							-{FormatNumber(item.total_spent_expense)} {userProfile.valuta.name}
-						</Text>
+						{item.total_spent_expense > 0 ? (
+							<Text style={styles.expensesTotalSpent}>
+								-{FormatNumber(item.total_spent_expense)} {userProfile.valuta.name}
+							</Text>
+						) : (
+							<Text style={styles.expensesTotalSpentNull}>0 {userProfile.valuta.name}</Text>
+						)}
 					</View>
 				</View>
 			</View>
@@ -79,6 +83,12 @@ const styles = StyleSheet.create({
 		fontSize: 14,
 		fontWeight: "bold",
 		color: colors.RED,
+	},
+	expensesTotalSpentNull: {
+		flexShrink: 1,
+		fontSize: 14,
+		fontWeight: "bold",
+		color: colors.BLACK,
 	},
 	expensesTotalBudgetExpenseName: {
 		flexShrink: 1,

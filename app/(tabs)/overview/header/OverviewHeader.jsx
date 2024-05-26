@@ -15,7 +15,7 @@ const OverviewHeader = ({ navigation }) => {
 	};
 
 	const handleNavigateSettings = () => {
-		navigation.navigate("Profile");
+		navigation.navigate("Settings");
 	};
 
 	return (

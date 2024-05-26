@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { ActivityIndicator, StyleSheet, View, Text, TextInput, TouchableOpacity } from "react-native";
 import { useAuth } from "../../../contexts/AuthContext";
+import { useMonthly } from "../../../contexts/MonthlyContext";
 import { useExpenseAreas } from "../../../contexts/ExpenseAreasContext";
 import { useExpenses } from "../../../contexts/ExpensesContext";
 
@@ -17,11 +18,11 @@ import DarkPrimaryExecBtn from "../../../components/buttons/darkPrimaryExecBtn";
 const AddExpense = ({ navigation, route }) => {
 	const { userProfile } = useAuth();
 	const { expenseAreas } = useExpenseAreas();
-	const { loading, createExpense } = useExpenses();
-	const [creating, setCreating] = useState(false);
+	const { loading, setLoading, createExpense } = useExpenses();
+	// const [creating, setCreating] = useState(false);
 
 	const [keypadVisible, setKeypadVisible] = useState(false);
-	const [maxBudget, setMaxBudget] = useState("");
+	const [totalBudgetExpense, setTotalBudgetExpense] = useState("");
 	const [name, setName] = useState("");
 	const [expenseAreaPickerVisible, setExpenseAreaPickerVisible] = useState(false);
 
@@ -39,7 +40,7 @@ const AddExpense = ({ navigation, route }) => {
 		}
 	}, [expenseAreas, selectedExpenseAreaId]);
 
-	const prepareMaxBudgetForDB = (displayValue) => {
+	const prepareTotalBudgetExpenseForDB = (displayValue) => {
 		let normalized = displayValue.replace(/\./g, "").replace(/,/g, ".");
 		return parseFloat(normalized);
 	};
@@ -60,24 +61,34 @@ const AddExpense = ({ navigation, route }) => {
 
 	const handleCreateExpense = async () => {
 		if (selectedExpenseAreaId && name) {
-			setCreating(true);
+			setLoading(true);
 
 			try {
-				let maxBudgetForDB = prepareMaxBudgetForDB(maxBudget);
-				await createExpense(name, maxBudgetForDB, selectedIcon, selectedColor, selectedExpenseAreaId);
+				let totalBudgetExpenseForDB = prepareTotalBudgetExpenseForDB(totalBudgetExpense);
+				await createExpense(name, totalBudgetExpenseForDB, selectedIcon, selectedColor, selectedExpenseAreaId);
 
 				navigation.goBack();
 			} catch (error) {
 				console.error("Failed to create expense:", error);
 			}
-			setCreating(false);
+			setLoading(false);
+		}
+	};
+
+	const isFormComplete = () => {
+		if (totalBudgetExpense !== "" && name !== "" && selectedExpenseAreaId !== "") {
+			console.log("Korrekt ");
+		} else {
+			alert("Venligst udfyld alle felter.");
 		}
 	};
 
 	return (
 		<View style={styles.container}>
-			{creating ? (
-				<ActivityIndicator size="large" style={{ marginVertical: "75%" }} color={colors.DARKGRAY} />
+			{loading ? (
+				<View style={styles.overlayCreatingActivityIndicator}>
+					<ActivityIndicator size="large" style={{ marginVertical: "75%" }} color={colors.DARKGRAY} />
+				</View>
 			) : (
 				<>
 					<View style={styles.headingContainer}>
@@ -85,20 +96,20 @@ const AddExpense = ({ navigation, route }) => {
 					</View>
 
 					{/* MAX BUDGET */}
-					<View style={styles.maxBudgetContainer}>
+					<View style={styles.totalBudgetExpenseContainer}>
 						<TouchableOpacity onPress={() => setKeypadVisible(true)}>
-							{maxBudget ? (
-								<Text style={styles.maxBudgetText}>
-									{maxBudget} {userProfile.valutaName}
+							{totalBudgetExpense ? (
+								<Text style={styles.totalBudgetExpenseText}>
+									{totalBudgetExpense} {userProfile.valutaName}
 								</Text>
 							) : (
-								<Text style={styles.maxBudgetTextPlaceholder}>Indtast en budget grænse..</Text>
+								<Text style={styles.totalBudgetExpenseTextPlaceholder}>Indtast en budget grænse..</Text>
 							)}
 						</TouchableOpacity>
 						<NumericKeypad
 							keypadVisible={keypadVisible}
-							amount={maxBudget}
-							setAmount={setMaxBudget}
+							amount={totalBudgetExpense}
+							setAmount={setTotalBudgetExpense}
 							onClose={() => setKeypadVisible(false)}
 						/>
 					</View>
@@ -131,7 +142,7 @@ const AddExpense = ({ navigation, route }) => {
 						<TouchableOpacity
 							style={styles.expenseAreaInput}
 							onPress={() => setExpenseAreaPickerVisible(!expenseAreaPickerVisible)}
-							disabled={creating}
+							disabled={loading}
 						>
 							<Text style={styles.expenseAreaInputText}>{selectedExpenseAreaName || "Vælg et område"}</Text>
 						</TouchableOpacity>
@@ -141,7 +152,7 @@ const AddExpense = ({ navigation, route }) => {
 							selectedValue={selectedExpenseAreaId}
 							onValueChange={handleExpenseArea}
 							onClose={() => setExpenseAreaPickerVisible(false)}
-							loading={creating}
+							loading={loading}
 						/>
 					</View>
 					{/* END */}
@@ -153,7 +164,7 @@ const AddExpense = ({ navigation, route }) => {
 							<TouchableOpacity
 								style={[styles.iconPickerPreview, { backgroundColor: selectedColor }]}
 								onPress={() => setIconPickerVisible(true)}
-								disabled={creating}
+								disabled={loading}
 							>
 								<FontAwesome name={selectedIcon} size={22} color={colors.WHITE} />
 							</TouchableOpacity>
@@ -164,7 +175,7 @@ const AddExpense = ({ navigation, route }) => {
 								icons={ICONS}
 								handleIconSelect={handleIconSelect}
 								onClose={() => setIconPickerVisible(false)}
-								loading={creating}
+								loading={loading}
 							/>
 						</View>
 						<View style={styles.colorPickerContainer}>
@@ -173,15 +184,15 @@ const AddExpense = ({ navigation, route }) => {
 								setSelectedColor={setSelectedColor}
 								height={35}
 								width={35}
-								loading={creating}
+								loading={loading}
 							/>
 						</View>
 					</View>
 					{/* END */}
 
 					<View style={styles.addExpenseBtn}>
-						{!keypadVisible && (
-							<DarkPrimaryExecBtn loading={creating} btnText={"Tilføj"} execFunction={handleCreateExpense} />
+						{!keypadVisible && totalBudgetExpense !== "" && name !== "" && selectedExpenseAreaId !== "" && (
+							<DarkPrimaryExecBtn loading={loading} btnText={"Tilføj"} execFunction={handleCreateExpense} />
 						)}
 					</View>
 				</>
@@ -204,7 +215,7 @@ const styles = StyleSheet.create({
 		textTransform: "uppercase",
 		color: colors.DARKGRAY,
 	},
-	maxBudgetContainer: {
+	totalBudgetExpenseContainer: {
 		alignItems: "center",
 		justifyContent: "center",
 		height: "15%",
@@ -212,11 +223,11 @@ const styles = StyleSheet.create({
 		borderBottomWidth: 1,
 		borderBottomColor: colors.GRAY,
 	},
-	maxBudgetText: {
+	totalBudgetExpenseText: {
 		fontSize: 52,
 		color: colors.BLACK,
 	},
-	maxBudgetTextPlaceholder: {
+	totalBudgetExpenseTextPlaceholder: {
 		fontSize: 26,
 		color: colors.DARKGRAY,
 	},

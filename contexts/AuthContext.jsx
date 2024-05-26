@@ -4,7 +4,7 @@ import { supabase } from "../lib/supabase";
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-	const [loading, setLoading] = useState(true);
+	const [loading, setLoading] = useState(false);
 	const [refresh, setRefresh] = useState(false);
 
 	const [session, setSession] = useState(null);

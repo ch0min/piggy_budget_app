@@ -6,7 +6,7 @@ import Bubble from "./components/Bubble";
 import ProfileAvatar from "./components/ProfileAvatar";
 import ProfileDetails from "./components/ProfileDetails";
 
-const Profile = () => {
+const Settings = () => {
 	const { user, userProfile } = useAuth();
 
 	return (
@@ -88,4 +88,4 @@ const styles = StyleSheet.create({
 	},
 });
 
-export default Profile;
+export default Settings;

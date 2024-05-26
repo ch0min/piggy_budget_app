@@ -29,8 +29,12 @@ const LineGraph = ({}) => {
 
 	useEffect(() => {
 		setLoadingGraph(true);
-		getMonthlyBudgetLineChart();
-	}, [currentDate, totalMonthlyBudget, expenses]);
+		const fetchData = async () => {
+			await getMonthlyBudgetLineChart();
+			setLoadingGraph(false);
+		};
+		fetchData();
+	}, []);
 
 	const formatNumber = (num) => {
 		num = parseFloat(num);
@@ -42,6 +46,12 @@ const LineGraph = ({}) => {
 			return num.toString();
 		}
 	};
+
+	if (loadingGraph) {
+		return (
+			<ActivityIndicator size="large" style={{ marginTop: "30%", marginBottom: "40%" }} color={colors.DARKGRAY} />
+		);
+	}
 
 	return (
 		<View style={styles.container}>

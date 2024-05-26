@@ -6,6 +6,7 @@ import LineGraph from "./components/LineGraph";
 import LatestExpenses from "./components/LatestExpenses";
 
 const Overview = ({ navigation }) => {
+
 	const [loadingOverview, setLoadingOverview] = useState(true);
 
 	useEffect(() => {
@@ -17,12 +18,13 @@ const Overview = ({ navigation }) => {
 	return (
 		<View style={styles.container}>
 			{loadingOverview ? (
-				<ActivityIndicator size="large" style={{ marginVertical: "75%" }} color={colors.DARKGRAY} />
+				<ActivityIndicator size="large" style={{ marginVertical: "70%" }} color={colors.DARKGRAY} />
 			) : (
 				<View style={styles.subContainer}>
-					<OverviewHeader navigation={navigation}/>
+					<OverviewHeader navigation={navigation} />
 
 					<LineGraph />
+
 					<ScrollView style={styles.scrollContainer}>
 						<LatestExpenses navigation={navigation} />
 					</ScrollView>

@@ -2,14 +2,16 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
 import { useAuth } from "./AuthContext";
 import { useMonthly } from "./MonthlyContext";
+import { useExpenseAreas } from "./ExpenseAreasContext";
 
 const ExpensesContext = createContext();
 
 export const ExpensesProvider = ({ children }) => {
 	const { user } = useAuth();
-	const { updateMonthlySpent, updateMonthlyBudget, getMonthlyBudgetLineChart } = useMonthly();
+	const { updateMonthlySpent, updateMonthlyBudget, getMonthlyBudgetLineChart, updatePiggyBankSavings } = useMonthly();
+	const { updateTotalBudgetForArea } = useExpenseAreas();
 
-	const [loading, setLoading] = useState(true);
+	const [loading, setLoading] = useState(false);
 	const [refresh, setRefresh] = useState(false);
 
 	/*** EXPENSES FUNCTIONS ***/
@@ -145,8 +147,7 @@ export const ExpensesProvider = ({ children }) => {
 			if (areaData && areaData.monthly_budgets_id) {
 				await updateMonthlyBudget(areaData.monthly_budgets_id);
 			}
-
-			console.log("Expense updated successfully", updatedExpense);
+			await updatePiggyBankSavings();
 		} catch (error) {
 			console.error("Error updating expense:", error.message);
 		} finally {
@@ -186,6 +187,7 @@ export const ExpensesProvider = ({ children }) => {
 					await updateMonthlySpent(areaData.monthly_budgets_id);
 				}
 				await getMonthlyBudgetLineChart();
+				await updatePiggyBankSavings();
 			}
 		} catch (error) {
 			console.error("Error deleting expense:", error.message);
@@ -230,6 +232,7 @@ export const ExpensesProvider = ({ children }) => {
 		<ExpensesContext.Provider
 			value={{
 				loading,
+				setLoading,
 				refresh,
 				setRefresh,
 

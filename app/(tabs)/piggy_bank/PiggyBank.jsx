@@ -1,21 +1,42 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, View, Text, Button } from "react-native";
+import { StyleSheet, View, Text } from "react-native";
+import { useAuth } from "../../../contexts/AuthContext";
+import { useMonthly } from "../../../contexts/MonthlyContext";
+import PiggyBankGoal from "./components/PiggyBankGoal";
+import PiggyBankSavings from "./components/PiggyBankSavings";
 
-const Settings = () => {
+const PiggyBank = () => {
+	const { user } = useAuth;
+	const { totalSavings, getTotalPiggyBankSavings } = useMonthly();
+
+	useEffect(() => {
+		getTotalPiggyBankSavings();
+	}, [totalSavings]);
+
+	console.log(totalSavings);
+
 	return (
-		<View>
-			<View style={styles.verticallySpaced}></View>
+		<View style={styles.container}>
+			<View style={styles.headerContainer}>
+				<PiggyBankGoal />
+			</View>
+			<View style={styles.footerContainer}>
+				<PiggyBankSavings totalSavings={totalSavings} />
+			</View>
 		</View>
 	);
 };
 
 const styles = StyleSheet.create({
-	verticallySpaced: {
-		marginTop: 20,
-		paddingTop: 4,
-		paddingBottom: 4,
-		alignSelf: "stretch",
+	container: {
+		flex: 1,
+	},
+	headerContainer: {
+		flex: 1,
+	},
+	footerContainer: {
+		flex: 1,
 	},
 });
 
-export default Settings;
+export default PiggyBank;

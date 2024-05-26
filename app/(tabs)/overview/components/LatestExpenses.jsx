@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 import { ActivityIndicator, StyleSheet, View, Text, TouchableOpacity, FlatList } from "react-native";
 import { useAuth } from "../../../../contexts/AuthContext";
@@ -51,7 +51,7 @@ const LatestExpenses = ({ navigation }) => {
 				<Text style={styles.LatestTransactionHeading}>Seneste udgifter</Text>
 				<View style={styles.horizontalLine} />
 				{loadingData ? (
-					<ActivityIndicator size="large" style={{ marginVertical: "31%" }} color={colors.DARKGRAY} />
+					<ActivityIndicator size="large" style={{ marginVertical: "10%" }} color={colors.DARKGRAY} />
 				) : (
 					<FlatList
 						data={expenses}

@@ -1,7 +1,10 @@
 import React, { useState, useRef } from "react";
-import { StyleSheet, View, Text, TextInput, TouchableOpacity, Keyboard } from "react-native";
+import { ActivityIndicator, StyleSheet, View, Text, TextInput, TouchableOpacity, Keyboard } from "react-native";
 import { useMonthly } from "../../../../contexts/MonthlyContext";
+import { useExpenseAreas } from "../../../../contexts/ExpenseAreasContext";
 import colors from "../../../../constants/colors";
+import { AntDesign } from "@expo/vector-icons";
+
 import PieGraph from "./PieGraph";
 import MonthlyBudgetSwiper from "../months/MonthlyBudgetSwiper";
 
@@ -13,9 +16,9 @@ const BudgetHeader = ({
 	expenseAreas,
 	getExpenseAreas,
 	expenses,
-	handleExpense
 }) => {
 	const { setCurrentMonth, createMonthlyBudget, budgetExists, setBudgetExists } = useMonthly();
+	const { createExpenseArea } = useExpenseAreas();
 	const inputRef = useRef(null);
 	const [showCheckmark, setShowCheckmark] = useState(false);
 
@@ -24,7 +27,7 @@ const BudgetHeader = ({
 			alert("Area name can't be empty.");
 			return;
 		}
-		await createExpenseArea(expenseAreaName, currentMonth);
+		await createExpenseArea(expenseAreaName);
 		Keyboard.dismiss();
 		setExpenseAreaName("");
 		setShowCheckmark(false);
@@ -73,8 +76,12 @@ const BudgetHeader = ({
 							}}
 						/>
 						{showCheckmark && expenseAreaName.length > 0 && (
-							<TouchableOpacity onPress={handleCreateExpenseArea}>
-								<AntDesign name="check" size={26} color={colors.BLACK} />
+							<TouchableOpacity onPress={handleCreateExpenseArea} disabled={loading}>
+								{loading ? (
+									<ActivityIndicator size="small" style={{ marginVertical: "2%" }} color={colors.DARKGRAY} />
+								) : (
+									<AntDesign name="check" size={26} color={colors.BLACK} />
+								)}
 							</TouchableOpacity>
 						)}
 					</View>

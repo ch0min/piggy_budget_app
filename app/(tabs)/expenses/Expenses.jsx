@@ -54,7 +54,7 @@ const Expenses = ({ navigation, route }) => {
 	const [transactionName, setTransactionName] = useState("");
 	const [transactionAmount, setTransactionAmount] = useState("");
 	const [transactionNote, setTransactionNote] = useState("");
-	const [addTransactionVisible, setAddTransactionVisible] = useState(false);
+	const [createTransactionVisible, setCreateTransactionVisible] = useState(false);
 	const [updateTransactionVisible, setUpdateTransactionVisible] = useState(false);
 	const [currentTransaction, setCurrentTransaction] = useState(null);
 
@@ -171,13 +171,12 @@ const Expenses = ({ navigation, route }) => {
 
 		setLoadingTransactionCreationAndUpdating(true);
 		try {
-			await createTransaction(transactionName, normalizedAmount, transactionNote, selectedExpense.id);
+			await createTransaction(transactionName, normalizedAmount, transactionNote, selectedExpenseId);
 			setTransactionName("");
 			setTransactionAmount("");
 			setTransactionNote("");
-			setAddTransactionVisible(false);
+			setCreateTransactionVisible(false);
 			getTransactions();
-			alert("Transaktion oprettet");
 		} finally {
 			setLoadingTransactionCreationAndUpdating(false);
 		}
@@ -221,8 +220,7 @@ const Expenses = ({ navigation, route }) => {
 		setTransactionName("");
 		setTransactionAmount("");
 		setTransactionNote("");
-		true;
-		setUpdateTransactionVisible(true);
+		setCreateTransactionVisible(true);
 	};
 
 	const openUpdateTransactionModal = (transaction) => {
@@ -235,8 +233,7 @@ const Expenses = ({ navigation, route }) => {
 
 	const handleDeleteTransaction = async (id) => {
 		try {
-			const message = await deleteTransaction(id);
-			Alert.alert("Expense removed", message, [{ text: "OK" }]);
+			await deleteTransaction(id);
 			getTransactions();
 		} catch (error) {
 			Alert.alert("Error", error);
@@ -371,11 +368,11 @@ const Expenses = ({ navigation, route }) => {
 					{/* END */}
 
 					{/* Add Transaction Modal */}
-					{addTransactionVisible && (
+					{createTransactionVisible && (
 						<>
 							<AddTransaction
 								loading={loadingTransactionCreationAndUpdating}
-								addTransactionVisible={addTransactionVisible}
+								createTransactionVisible={createTransactionVisible}
 								transactionName={transactionName}
 								setTransactionName={setTransactionName}
 								transactionAmount={transactionAmount}
@@ -383,7 +380,7 @@ const Expenses = ({ navigation, route }) => {
 								transactionNote={transactionNote}
 								setTransactionNote={setTransactionNote}
 								handleCreateTransaction={handleCreateTransaction}
-								onClose={() => setAddTransactionVisible(false)}
+								onClose={() => setCreateTransactionVisible(false)}
 							/>
 						</>
 					)}

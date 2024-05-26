@@ -5,7 +5,7 @@ import { MaterialIcons, AntDesign } from "@expo/vector-icons";
 
 const AddTransaction = ({
 	loading,
-	addTransactionVisible,
+	createTransactionVisible,
 	transactionName,
 	setTransactionName,
 	transactionAmount,
@@ -16,7 +16,7 @@ const AddTransaction = ({
 	onClose,
 }) => {
 	return (
-		<Modal visible={addTransactionVisible} animationType="fade" transparent={true} onRequestClose={onClose}>
+		<Modal visible={createTransactionVisible} animationType="fade" transparent={true} onRequestClose={onClose}>
 			<TouchableOpacity style={styles.modalOverlay} activeOpacity={1} onPress={onClose}>
 				<View style={styles.modalContent}>
 					<View style={styles.createTransactionContainer}>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
+import { ActivityIndicator, StyleSheet, View, Text, TouchableOpacity } from "react-native";
+import { useIsFocused } from "@react-navigation/native";
 import { useAuth } from "../../../../contexts/AuthContext";
 import { useMonthly } from "../../../../contexts/MonthlyContext";
 import PieChart from "react-native-pie-chart";
@@ -9,17 +10,34 @@ import FormatNumber from "../../../../utils/formatNumber";
 
 const PieGraph = ({ expenseAreas, expenses }) => {
 	const { userProfile } = useAuth();
-	const { totalSpentMonth, setTotalSpentMonth, totalBudgetMonth, setTotalBudgetMonth, getMonthlyBudget } =
-		useMonthly();
+	const {
+		loadingData,
+		setLoadingData,
+		totalSpentMonth,
+		setTotalSpentMonth,
+		totalBudgetMonth,
+		setTotalBudgetMonth,
+		getMonthlyBudget,
+	} = useMonthly();
+	const isFocused = useIsFocused(); // Checking if the screen is focused.
+
 	const size = 120;
 	const [values, setValues] = useState([1]);
 	const [sliceColor, setSliceColor] = useState([colors.GRAY]);
 	const [toggleAllAreas, setToggleAllAreas] = useState(false);
 
 	useEffect(() => {
-		calculatePieGraph();
-		getMonthlyBudget();
-	}, [expenseAreas, totalBudgetMonth]);
+		if (isFocused) {
+			setLoadingData(true);
+			const fetchData = async () => {
+				calculatePieGraph();
+				getMonthlyBudget();
+				setLoadingData(false);
+			};
+			fetchData();
+		}
+	}, [isFocused, expenseAreas, totalBudgetMonth]);
+	// }, [expenseAreas, totalBudgetMonth]);
 
 	const calculateAreaSpentAmount = (areaId) => {
 		return expenses
@@ -68,6 +86,12 @@ const PieGraph = ({ expenseAreas, expenses }) => {
 	const toggleShowAllAreas = () => {
 		setToggleAllAreas(!toggleAllAreas);
 	};
+
+	if (loadingData) {
+		return (
+			<ActivityIndicator size="large" style={{ marginTop: "30%", marginBottom: "40%" }} color={colors.DARKGRAY} />
+		);
+	}
 
 	return (
 		<TouchableOpacity style={styles.container} onPress={toggleShowAllAreas}>
@@ -119,9 +143,13 @@ const PieGraph = ({ expenseAreas, expenses }) => {
 									<Text style={{ color: colors.SILVER }}> ({percentage.toFixed(0)}%)</Text>
 								)}
 							</Text>
-							<Text style={styles.chartNameTotalBudgetText}>
-								-{FormatNumber(actualAreaSpentAmount || 0)} {userProfile.valutaName}
-							</Text>
+							{actualAreaSpentAmount > 0 ? (
+								<Text style={styles.chartNameTotalBudgetText}>
+									-{FormatNumber(actualAreaSpentAmount)} {userProfile.valutaName}
+								</Text>
+							) : (
+								<Text style={styles.chartNameTotalBudgetTextNull}>0 {userProfile.valutaName}</Text>
+							)}
 						</View>
 					</View>
 				);
@@ -201,6 +229,11 @@ const styles = StyleSheet.create({
 		marginTop: "1%",
 		fontWeight: "bold",
 		color: colors.RED,
+	},
+	chartNameTotalBudgetTextNull: {
+		marginTop: "1%",
+		fontWeight: "bold",
+		color: colors.BLACK,
 	},
 	caretIcons: {
 		flex: 1,

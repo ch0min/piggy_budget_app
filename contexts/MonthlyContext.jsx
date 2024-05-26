@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
 import { useAuth } from "./AuthContext";
-
 import colors from "../constants/colors";
 import MONTH_NAMES from "../constants/months";
 
@@ -28,7 +27,7 @@ const calculateMonths = () => {
 
 export const MonthlyProvider = ({ children }) => {
 	const { user } = useAuth();
-	const [loading, setLoading] = useState(true);
+	const [loading, setLoading] = useState(false);
 	const [loadingData, setLoadingData] = useState(true);
 	const [refresh, setRefresh] = useState(false);
 
@@ -38,6 +37,7 @@ export const MonthlyProvider = ({ children }) => {
 	const [budgetExists, setBudgetExists] = useState(false);
 	const [totalSpentMonth, setTotalSpentMonth] = useState(0);
 	const [totalBudgetMonth, setTotalBudgetMonth] = useState(0);
+	// const [expenseAreasForMonth, setExpenseAreasForMonth] = useState([]);
 
 	const getMonthlyBudgetId = async () => {
 		setLoading(true);
@@ -130,7 +130,7 @@ export const MonthlyProvider = ({ children }) => {
 				console.error("Error creating monthly budget.", createError);
 				return new Error(error.message);
 			}
-			getExpenseAreas();
+			// getExpenseAreas();
 		} catch (error) {
 			console.error("Error creating monthly budget for a user:", error.message);
 			throw error;
@@ -191,7 +191,7 @@ export const MonthlyProvider = ({ children }) => {
 
 			let totalBudgetMonth = 0;
 
-			for (const area of expenseAreas) {
+			for (const area of areaData) {
 				const { data: expenseData, error: expenseError } = await supabase
 					.from("expenses")
 					.select("total_budget_expense")
@@ -296,7 +296,73 @@ export const MonthlyProvider = ({ children }) => {
 			setLoading(true);
 		}
 	};
-	// LINE CHART END
+	/*** LINE CHART END ***/
+
+	/*** END ***/
+
+	/*** PIGGY BANK FUNCTIONALITY ***/
+	const [totalSavings, setTotalSavings] = useState(0);
+
+	const getTotalPiggyBankSavings = async () => {
+		setLoading(true);
+		const userId = user?.id;
+		try {
+			const { data, error } = await supabase
+				.from("piggy_bank")
+				.select(`*`)
+				.eq("user_id", userId)
+				.order("id", { ascending: true });
+
+			if (error) {
+				console.error("Error fetching monthly_budgets for piggy bank savings:", error.message);
+			}
+			return data;
+		} catch (error) {
+			console.error("Error getTotalSavings:", error.message);
+		} finally {
+			setLoading(false);
+		}
+	};
+
+	const updatePiggyBankSavings = async () => {
+		const userId = user?.id;
+
+		try {
+			const { data, error } = await supabase
+				.from("monthly_budgets")
+				.select("total_spent_month, total_budget_month")
+				.eq("user_id", userId);
+
+			if (error) {
+				console.error("Error getting monthly budgets for piggy bank:", error.message);
+				return;
+			}
+
+			const totalSavings = data.reduce(
+				(acc, month) => acc + (month.total_budget_month - month.total_spent_month),
+				0
+			);
+
+			const { data: savingsData, error: savingsError } = await supabase.from("piggy_bank").upsert(
+				{
+					user_id: userId,
+					total_savings: totalSavings,
+				},
+				{
+					onConflict: "user_id",
+				}
+			);
+
+			if (savingsError) {
+				console.error("Error updating piggy bank savings:", savingsError.message);
+			} else {
+				console.log("Piggy bank savings updated successfully", savingsData);
+			}
+			setTotalSavings(totalSavings);
+		} catch (error) {
+			console.error("Error updatePiggyBankSavings:", error.message);
+		}
+	};
 
 	/*** END ***/
 
@@ -317,6 +383,9 @@ export const MonthlyProvider = ({ children }) => {
 				setBudgetExists,
 				totalSpentMonth,
 				totalBudgetMonth,
+				// expenseAreasForMonth,
+				// setExpenseAreasForMonth,
+
 				chartData,
 				savings,
 				setTotalSpentMonth,
@@ -328,6 +397,13 @@ export const MonthlyProvider = ({ children }) => {
 				updateMonthlySpent,
 				updateMonthlyBudget,
 				getMonthlyBudgetLineChart,
+
+				// // Piggy Bank States
+				totalSavings,
+				setTotalSavings,
+				// // Piggy Bank Functions
+				getTotalPiggyBankSavings,
+				updatePiggyBankSavings,
 			}}
 		>
 			{children}

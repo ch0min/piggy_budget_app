@@ -5,7 +5,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import colors from "../../../constants/colors";
 import PickerWheel from "../../../components/modals/PickerWheel";
 import logo from "../../../assets/images/logo2.png";
-import ProfileAvatars from "../../(tabs)/profile/components/ProfileAvatars";
+import ProfileAvatars from "../../(tabs)/settings/components/ProfileAvatars";
 import PROFILE_AVATARS from "../../../constants/ProfileAvatars";
 
 const CompleteProfile = ({ navigation }) => {
