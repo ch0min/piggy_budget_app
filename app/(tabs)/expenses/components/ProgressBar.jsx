@@ -1,12 +1,12 @@
 import React from "react";
 import { StyleSheet, View, Text } from "react-native";
-import { useUser } from "../../../../context/UserContext";
+import { useAuth } from "../../../../contexts/AuthContext";
 import { LinearGradient } from "expo-linear-gradient";
 import colors from "../../../../constants/colors";
 import FormatNumber from "../../../../utils/formatNumber";
 
 const ProgressBar = ({ totalSpentExpense, totalBudgetExpense }) => {
-	const { userProfile } = useUser();
+	const { userProfile } = useAuth();
 
 	const totalPercentage = totalBudgetExpense > 0 ? (totalSpentExpense / totalBudgetExpense) * 100 : 0;
 

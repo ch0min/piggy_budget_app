@@ -1,14 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { ActivityIndicator, Dimensions, StyleSheet, View, Text } from "react-native";
-import { useUser } from "../../../../context/UserContext";
+import { useAuth } from "../../../../contexts/AuthContext";
+import { useMonthly } from "../../../../contexts/MonthlyContext";
+import { useExpenses } from "../../../../contexts/ExpensesContext";
+
 import colors from "../../../../constants/colors";
 import { LineChart } from "react-native-chart-kit";
 import FormatNumber from "../../../../utils/formatNumber";
-// import { RefreshControl } from "react-native";
 
 const LineGraph = ({}) => {
-	const { userProfile, totalMonthlyBudget, chartData, savings, getMonthlyBudgetLineChart, expenses } =
-		useUser();
+	const { userProfile } = useAuth();
+	const { totalMonthlyBudget, chartData, savings, getMonthlyBudgetLineChart } = useMonthly();
+	const { expenses } = useExpenses();
+
 	const [currentDate, setCurrentDate] = useState(new Date());
 	const [loadingGraph, setLoadingGraph] = useState(true);
 

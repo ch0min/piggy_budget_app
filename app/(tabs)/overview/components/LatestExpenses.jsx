@@ -1,13 +1,18 @@
 import React, { useCallback } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 import { ActivityIndicator, StyleSheet, View, Text, TouchableOpacity, FlatList } from "react-native";
-import { useUser } from "../../../../context/UserContext";
+import { useAuth } from "../../../../contexts/AuthContext";
+import { useMonthly } from "../../../../contexts/MonthlyContext";
+import { useExpenses } from "../../../../contexts/ExpensesContext";
+
 import colors from "../../../../constants/colors";
 import FormatNumber from "../../../../utils/formatNumber";
 import { FontAwesome } from "@expo/vector-icons";
 
 const LatestExpenses = ({ navigation }) => {
-	const { userProfile, loadingData, setLoadingData, expenses, getLatestExpenses } = useUser();
+	const { userProfile } = useAuth();
+	const { loadingData, setLoadingData } = useMonthly();
+	const { expenses, getLatestExpenses } = useExpenses();
 
 	useFocusEffect(
 		useCallback(() => {

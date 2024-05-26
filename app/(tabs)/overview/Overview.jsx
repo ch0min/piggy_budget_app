@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { ActivityIndicator, RefreshControl, StyleSheet, View, ScrollView } from "react-native";
-import { useUser } from "../../../context/UserContext";
 import colors from "../../../constants/colors";
 import OverviewHeader from "./header/OverviewHeader";
 import LineGraph from "./components/LineGraph";
 import LatestExpenses from "./components/LatestExpenses";
 
 const Overview = ({ navigation }) => {
-	const {} = useUser();
 	const [loadingOverview, setLoadingOverview] = useState(true);
 
 	useEffect(() => {
@@ -22,7 +20,7 @@ const Overview = ({ navigation }) => {
 				<ActivityIndicator size="large" style={{ marginVertical: "75%" }} color={colors.DARKGRAY} />
 			) : (
 				<View style={styles.subContainer}>
-					<OverviewHeader />
+					<OverviewHeader navigation={navigation}/>
 
 					<LineGraph />
 					<ScrollView style={styles.scrollContainer}>

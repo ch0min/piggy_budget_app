@@ -1,19 +1,20 @@
 import React, { useState, useEffect } from "react";
-import { ActivityIndicator, StyleSheet, View, Text, TouchableOpacity } from "react-native";
-import { useUser } from "../../../../context/UserContext";
+import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
+import { useAuth } from "../../../../contexts/AuthContext";
+import { useMonthly } from "../../../../contexts/MonthlyContext";
 import PieChart from "react-native-pie-chart";
 import colors from "../../../../constants/colors";
 import { MaterialCommunityIcons, FontAwesome } from "@expo/vector-icons";
 import FormatNumber from "../../../../utils/formatNumber";
 
-const PieGraph = ({ expenseAreas, expenses, colorIndex, setColorIndex }) => {
-	const { userProfile, totalSpentMonth, setTotalSpentMonth, totalBudgetMonth, setTotalBudgetMonth, getMonthlyBudget } =
-		useUser();
+const PieGraph = ({ expenseAreas, expenses }) => {
+	const { userProfile } = useAuth();
+	const { totalSpentMonth, setTotalSpentMonth, totalBudgetMonth, setTotalBudgetMonth, getMonthlyBudget } =
+		useMonthly();
 	const size = 120;
 	const [values, setValues] = useState([1]);
 	const [sliceColor, setSliceColor] = useState([colors.GRAY]);
 	const [toggleAllAreas, setToggleAllAreas] = useState(false);
-	const [loadingGraph, setLoadingGraph] = useState(true);
 
 	useEffect(() => {
 		calculatePieGraph();

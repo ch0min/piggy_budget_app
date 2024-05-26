@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { ActivityIndicator, Alert, StyleSheet, View, Text, TextInput, TouchableOpacity, Image } from "react-native";
-import { useUser } from "../../../context/UserContext";
+import { useAuth } from "../../../contexts/AuthContext";
 import { LinearGradient } from "expo-linear-gradient";
 import colors from "../../../constants/colors";
 import PickerWheel from "../../../components/modals/PickerWheel";
@@ -18,7 +18,7 @@ const CompleteProfile = ({ navigation }) => {
 		updateProfile,
 		valutas,
 		getValutas,
-	} = useUser();
+	} = useAuth();
 	const [selectedAvatar, setSelectedAvatar] = useState(PROFILE_AVATARS[16]);
 
 	const [avatarUrl, setAvatarUrl] = useState("");

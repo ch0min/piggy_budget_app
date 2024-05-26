@@ -1,7 +1,7 @@
 import "react-native-url-polyfill/auto";
 import React, { useEffect } from "react";
 import { ActivityIndicator, StatusBar, StyleSheet, View } from "react-native";
-import { useUser } from "../context/UserContext";
+import { useAuth } from "../contexts/AuthContext";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -16,11 +16,12 @@ import HomeTabs from "./(tabs)/HomeTabs";
 
 import AddExpense from "./(tabs)/expenses/AddExpense";
 import Expenses from "./(tabs)/expenses/Expenses";
+import Settings from "./(tabs)/settings/Settings";
 
 const Stack = createNativeStackNavigator();
 
 const RootNavigator = () => {
-	const { user, profileCompleted } = useUser();
+	const { user, profileCompleted } = useAuth();
 
 	// AsyncStorage.clear().then(() => console.log("Local storage cleared!"));
 
@@ -54,6 +55,14 @@ const RootNavigator = () => {
 									gestureEnabled: true,
 								}}
 							/>
+							<Stack.Screen
+								name="Settings"
+								component={Settings}
+								options={{
+									presentation: "modal",
+									gestureEnabled: true,
+								}}
+							/>
 						</>
 					) : (
 						<Stack.Screen name="CompleteProfile" component={CompleteProfile} />
@@ -68,48 +77,6 @@ const RootNavigator = () => {
 					)}
 				</Stack.Navigator>
 			</NavigationContainer>
-
-			{/* <NavigationContainer>
-				<Stack.Navigator
-					initialRouteName="Landing"
-					screenOptions={{
-						headerShown: false,
-						gestureEnabled: false,
-					}}
-				>
-					{session?.user ? (
-						profileCompleted ? (
-							<>
-								<Stack.Screen name="HomeTabs" component={HomeTabs} />
-								<Stack.Screen
-									name="Expenses"
-									component={Expenses}
-									options={{
-										gestureEnabled: true,
-									}}
-								/>
-								<Stack.Screen
-									name="AddExpense"
-									component={AddExpense}
-									options={{
-										presentation: "modal",
-										gestureEnabled: true,
-									}}
-								/>
-							</>
-						) : (
-							<Stack.Screen name="CompleteProfile" component={CompleteProfile} />
-						)
-					) : (
-						<>
-							<Stack.Screen name="Landing" component={Landing} />
-							<Stack.Screen name="Signup" component={Signup} />
-							<Stack.Screen name="Login" component={Login} />
-							<Stack.Screen name="VerifyEmail" component={VerifyEmail} />
-						</>
-					)}
-				</Stack.Navigator>
-			</NavigationContainer> */}
 		</View>
 	);
 };

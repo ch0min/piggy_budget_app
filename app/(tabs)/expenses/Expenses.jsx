@@ -10,11 +10,15 @@ import {
 	TouchableOpacity,
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
-import { useUser } from "../../../context/UserContext";
+import { useAuth } from "../../../contexts/AuthContext";
+import { useMonthly } from "../../../contexts/MonthlyContext";
+import { useExpenses } from "../../../contexts/ExpensesContext";
+import { useTransactions } from "../../../contexts/TransactionsContext";
+
 import { KeyboardAwareFlatList } from "react-native-keyboard-aware-scroll-view";
 import colors from "../../../constants/colors";
 import { FontAwesome, MaterialIcons, Entypo, AntDesign } from "@expo/vector-icons";
-import ProgressBar from "../expenses/components/ProgressBar";
+import ProgressBar from "./components/ProgressBar";
 import UpdateExpense from "./components/updateExpense";
 import AddTransaction from "./components/addTransaction";
 import UpdateTransaction from "./components/updateTransaction";
@@ -22,21 +26,18 @@ import FormatNumber from "../../../utils/formatNumber";
 import MONTH_NAMES from "../../../constants/months";
 
 const Expenses = ({ navigation, route }) => {
+	const { user, userProfile } = useAuth();
+	const { loadingData, setLoadingData } = useMonthly();
+	const { getExpenses, updateExpense, deleteExpense } = useExpenses();
 	const {
-		userProfile,
-		loadingData,
-		setLoadingData,
 		refresh,
 		setRefresh,
-		getExpenses,
-		updateExpense,
-		deleteExpense,
 		transactions,
 		getTransactions,
 		createTransaction,
 		updateTransaction,
 		deleteTransaction,
-	} = useUser();
+	} = useTransactions();
 
 	const { selectedExpense: selectedExpense } = route.params;
 	const [selectedExpenseId, setSelectedExpenseId] = useState(selectedExpense.id);

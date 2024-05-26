@@ -1,7 +1,6 @@
 import React from "react";
 import { ActivityIndicator, StyleSheet, View, Text, Modal, TextInput, TouchableOpacity } from "react-native";
 import colors from "../../../../constants/colors";
-// import { RefreshControl } from "react-native";
 import { MaterialIcons, AntDesign } from "@expo/vector-icons";
 
 const UpdateTransaction = ({

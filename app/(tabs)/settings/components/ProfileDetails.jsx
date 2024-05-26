@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
-import { useUser } from "../../../../context/UserContext";
+import { useAuth } from "../../../../contexts/AuthContext";
 import colors from "../../../../constants/colors";
 import PickerWheel from "../../../../components/modals/PickerWheel";
 import { FontAwesome5, Ionicons, Fontisto, Entypo } from "@expo/vector-icons";
 
 const ProfileDetails = () => {
-	const { user, userProfile, signOut, valutas, getValutas, updateValuta } = useUser();
+	const { user, userProfile, signOut, valutas, getValutas, updateValuta } = useAuth();
 	const isUserVerified = user?.confirmed_at !== null;
 
 	const [selectedValutaId, setSelectedValutaId] = useState(userProfile?.valuta_id || 1);

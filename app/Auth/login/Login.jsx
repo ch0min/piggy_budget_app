@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, View, Text, TextInput, TouchableOpacity, Image } from "react-native";
-import { useUser } from "../../../context/UserContext";
+import { useAuth } from "../../../contexts/AuthContext";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import colors from "../../../constants/colors";
 import logo2 from "../../../assets/images/logo2.png";
@@ -10,7 +10,7 @@ import PrimaryExecBtn from "../../../components/buttons/primaryExecBtn";
 import TextBtn from "../../../components/buttons/textBtn";
 
 const Login = ({ navigation }) => {
-	const { loading, signIn } = useUser();
+	const { loading, signIn } = useAuth();
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [message, setMessage] = useState("");
@@ -105,12 +105,6 @@ const styles = StyleSheet.create({
 	bgImage: {
 		width: "75%",
 		height: "75%",
-		// width: 200,
-		// height: 400,
-		// marginTop: 70,
-		// borderWidth: 5,
-		// borderRadius: 20,
-		// borderColor: "black",
 	},
 	heading: {
 		marginTop: "5%",

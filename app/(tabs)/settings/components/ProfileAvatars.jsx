@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Dimensions, StyleSheet, View, ScrollView, TouchableOpacity, Image } from "react-native";
-import { useUser } from "../../../../context/UserContext";
+import { useAuth } from "../../../../contexts/AuthContext";
 import colors from "../../../../constants/colors";
 import PROFILE_AVATARS from "../../../../constants/ProfileAvatars";
 import DotPagination from "./DotPagination";
@@ -8,7 +8,7 @@ import DotPagination from "./DotPagination";
 const screenWidth = Dimensions.get("window").width;
 
 const ProfileAvatars = ({ selectedAvatar, setSelectedAvatar, setAvatarUrl }) => {
-	const { loading } = useUser();
+	const { loading } = useAuth();
 	const [activeSlide, setActiveSlide] = useState(0);
 
 	const avatarsPerRow = 5;

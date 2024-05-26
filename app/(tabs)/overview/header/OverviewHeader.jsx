@@ -1,16 +1,21 @@
-import React, { useEffect } from "react";
-import { StyleSheet, View, Text, Image } from "react-native";
-import { useUser } from "../../../../context/UserContext";
+import React from "react";
+import { StyleSheet, View, Text, Image, TouchableOpacity } from "react-native";
+import { useAuth } from "../../../../contexts/AuthContext";
 import colors from "../../../../constants/colors";
 import { LinearGradient } from "expo-linear-gradient";
+import { Ionicons } from "@expo/vector-icons";
 import PROFILE_AVATARS from "../../../../constants/ProfileAvatars";
 
-const OverviewHeader = () => {
-	const { userProfile } = useUser();
+const OverviewHeader = ({ navigation }) => {
+	const { userProfile } = useAuth();
 
 	const getAvatar = (avatarName) => {
 		const avatar = PROFILE_AVATARS.find((a) => a.avatar === avatarName);
 		return avatar ? avatar.image : null;
+	};
+
+	const handleNavigateSettings = () => {
+		navigation.navigate("Profile");
 	};
 
 	return (
@@ -30,6 +35,9 @@ const OverviewHeader = () => {
 					<Text style={styles.userText}>{userProfile?.first_name}</Text>
 					<Text style={styles.text}>{userProfile?.last_name}</Text>
 				</View>
+				<TouchableOpacity onPress={handleNavigateSettings}>
+					<Ionicons name="settings-sharp" size={24} color={colors.WHITE} />
+				</TouchableOpacity>
 			</View>
 		</LinearGradient>
 	);

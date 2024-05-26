@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { ActivityIndicator, StyleSheet, View, Text, TextInput, TouchableOpacity } from "react-native";
-import { useUser } from "../../../context/UserContext";
+import { useAuth } from "../../../contexts/AuthContext";
+import { useExpenseAreas } from "../../../contexts/ExpenseAreasContext";
+import { useExpenses } from "../../../contexts/ExpensesContext";
+
 import colors from "../../../constants/colors";
 import NumericKeypad from "../../../components/modals/NumericKeypad";
 import PickerWheel from "../../../components/modals/PickerWheel";
@@ -12,7 +15,9 @@ import ICONS from "../../../constants/icons";
 import DarkPrimaryExecBtn from "../../../components/buttons/darkPrimaryExecBtn";
 
 const AddExpense = ({ navigation, route }) => {
-	const { loading, userProfile, expenseAreas, createExpense } = useUser();
+	const { userProfile } = useAuth();
+	const { expenseAreas } = useExpenseAreas();
+	const { loading, createExpense } = useExpenses();
 	const [creating, setCreating] = useState(false);
 
 	const [keypadVisible, setKeypadVisible] = useState(false);
