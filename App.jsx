@@ -1,4 +1,3 @@
-// import { UserProvider } from "./context/UserContext";
 import { AuthProvider } from "./contexts/AuthContext";
 import { MonthlyProvider } from "./contexts/MonthlyContext";
 import { ExpenseAreasProvider } from "./contexts/ExpenseAreasContext";

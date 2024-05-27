@@ -19,7 +19,6 @@ const AddExpense = ({ navigation, route }) => {
 	const { userProfile } = useAuth();
 	const { expenseAreas } = useExpenseAreas();
 	const { loading, setLoading, createExpense } = useExpenses();
-	// const [creating, setCreating] = useState(false);
 
 	const [keypadVisible, setKeypadVisible] = useState(false);
 	const [totalBudgetExpense, setTotalBudgetExpense] = useState("");

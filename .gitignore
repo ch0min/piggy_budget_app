@@ -73,4 +73,7 @@ yarn-error.*
 # typescript
 *.tsbuildinfo
 
+# Prevent supabase api from being pushed
+/lib/supabase.jsx
+
 # @end expo-cli

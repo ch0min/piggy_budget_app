@@ -1,9 +1,8 @@
 import "react-native-url-polyfill/auto";
-import React, { useEffect } from "react";
-import { ActivityIndicator, StatusBar, StyleSheet, View } from "react-native";
+import React from "react";
+import { StatusBar, StyleSheet, View } from "react-native";
 import { useAuth } from "../contexts/AuthContext";
 import { useExpenses } from "../contexts/ExpensesContext";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { NavigationContainer } from "@react-navigation/native";
 
@@ -23,8 +22,6 @@ const Stack = createNativeStackNavigator();
 const RootNavigator = () => {
 	const { user, profileCompleted } = useAuth();
 	const { loading } = useExpenses();
-
-	// AsyncStorage.clear().then(() => console.log("Local storage cleared!"));
 
 	return (
 		<View style={styles.container}>

@@ -88,62 +88,6 @@ export const TransactionsProvider = ({ children }) => {
 		await updateMonthlyBudget(areaData.monthly_budgets_id);
 	};
 
-	// const createTransaction = async (name, amount, note, expensesId) => {
-	// 	setLoading(true);
-	// 	const userId = user?.id;
-
-	// 	try {
-	// 		const { data: transactionData, error: transactionError } = await supabase
-	// 			.from("transactions")
-	// 			.insert([
-	// 				{
-	// 					created_at: new Date(),
-	// 					name: name,
-	// 					amount: amount,
-	// 					note: note,
-	// 					expenses_id: expensesId,
-	// 					user_id: userId,
-	// 				},
-	// 			])
-	// 			.single();
-
-	// 		if (transactionError) throw transactionError;
-
-	// 		if (transactionData) {
-	// 			const { data: expenseData, error: expenseError } = await supabase
-	// 				.from("expenses")
-	// 				.select("expense_areas_id")
-	// 				.eq("id", expensesId)
-	// 				.single();
-
-	// 			if (expenseError) throw expenseError;
-
-	// 			// Update the total budgets and spent after confirming expense total spent is updated:
-	// 			if (expenseData && expenseData.expense_areas_id) {
-	// 				await updateTotalBudgetForArea(expenseData.expense_areas_id);
-	// 				const { data: areaData, error: areaError } = await supabase
-	// 					.from("expense_areas")
-	// 					.select("monthly_budgets_id")
-	// 					.eq("id", expenseData.expense_areas_id)
-	// 					.single();
-
-	// 				if (areaError) throw areaError;
-
-	// 				if (areaData && areaData.monthly_budgets_id) {
-	// 					await updateMonthlyBudget(areaData.monthly_budgets_id);
-	// 					await updateMonthlySpent(areaData.monthly_budgets_id);
-	// 				}
-	// 			}
-	// 		}
-
-	// 		await updateExpenseTotalSpent(expensesId);
-	// 	} catch (error) {
-	// 		console.error("Error creating transaction:", error.message);
-	// 	} finally {
-	// 		setLoading(false);
-	// 	}
-	// };
-
 	const updateTransaction = async (id, name, amount, note, expensesId) => {
 		setLoading(true);
 
