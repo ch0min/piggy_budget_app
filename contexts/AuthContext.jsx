@@ -4,7 +4,7 @@ import { supabase } from "../lib/supabase";
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-	const [loading, setLoading] = useState(true);
+	const [loading, setLoading] = useState(false);
 	const [refresh, setRefresh] = useState(false);
 
 	const [session, setSession] = useState(null);
@@ -23,7 +23,7 @@ export const AuthProvider = ({ children }) => {
 				if (session) {
 					setSession(session);
 					setUser(session?.user);
-					await getProfile(session.user.id);
+					await getProfile(session?.user?.id);
 				} else {
 					console.log("No user in session...");
 				}
@@ -97,6 +97,7 @@ export const AuthProvider = ({ children }) => {
 	};
 
 	const getProfile = async (userId) => {
+		if (!userId) return;
 		setLoading(true);
 		try {
 			const { data, error } = await supabase
@@ -110,7 +111,7 @@ export const AuthProvider = ({ children }) => {
 			if (data) {
 				setUserProfile({
 					...data,
-					valutaName: data.valuta.name,
+					valutaName: data.valuta?.name,
 				});
 				setProfileCompleted(data.profile_completed);
 			}

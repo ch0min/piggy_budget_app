@@ -106,7 +106,7 @@ const BudgetExpenseAreasList = ({
 				<RefreshControl
 					refreshing={refresh}
 					onRefresh={onRefresh}
-					colors={colors.DARKGRAY}
+					colors={[colors.DARKGRAY]}
 					tintColor={colors.DARKGRAY}
 				/>
 			}

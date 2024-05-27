@@ -20,7 +20,7 @@ const Settings = () => {
 
 				<View style={styles.nameContainer}>
 					<Text style={styles.firstName}>{userProfile.first_name}</Text>
-					<Text style={styles.lastName}>{userProfile.last_name}</Text>
+					<Text style={styles.lastName}> {userProfile.last_name}</Text>
 				</View>
 				<Text style={styles.email}>{user?.email}</Text>
 				<TouchableOpacity style={styles.editProfileBtn}>
@@ -52,7 +52,6 @@ const styles = StyleSheet.create({
 	},
 	nameContainer: {
 		flexDirection: "row",
-		gap: "5%",
 	},
 	firstName: {
 		fontSize: 22,

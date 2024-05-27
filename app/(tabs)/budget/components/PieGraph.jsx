@@ -188,12 +188,12 @@ const styles = StyleSheet.create({
 	subContainer: {
 		flex: 1,
 		flexDirection: "row",
-		gap: "25%",
 	},
 	legendContainer: {
 		flex: 1,
 		alignItems: "flex-start",
 		justifyContent: "center",
+		marginLeft: "10%",
 	},
 	legendHeading: {
 		textTransform: "uppercase",
@@ -215,7 +215,6 @@ const styles = StyleSheet.create({
 		alignContent: "center",
 		justifyContent: "flex-start",
 		marginTop: "3%",
-		gap: "5%",
 	},
 	chartNameTextContainer: {
 		flex: 1,
@@ -224,6 +223,7 @@ const styles = StyleSheet.create({
 	},
 	chartNameText: {
 		marginTop: "1%",
+		marginLeft: "1%",
 	},
 	chartNameTotalBudgetText: {
 		marginTop: "1%",

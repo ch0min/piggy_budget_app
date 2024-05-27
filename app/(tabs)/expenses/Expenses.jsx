@@ -319,6 +319,7 @@ const Expenses = ({ navigation, route }) => {
 						<Text style={styles.transactionHeading}>Dine transaktioner</Text>
 
 						<KeyboardAwareFlatList
+							enableOnAndroid={true}
 							extraScrollHeight={150}
 							data={transactions.filter((tr) => tr.expenses_id === selectedExpenseId)}
 							renderItem={renderTransactions}
@@ -526,11 +527,11 @@ const styles = StyleSheet.create({
 		elevation: 1,
 	},
 	transactionItemsLeft: {
-		gap: "5%",
+		// justifyContent: "space-between",
 	},
 	transactionItemsRight: {
 		marginLeft: "5%",
-		gap: "25%",
+		// justifyContent: "space-between",
 	},
 	transactionItemsName: {
 		fontSize: 18,

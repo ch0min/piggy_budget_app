@@ -27,7 +27,7 @@ const OverviewHeader = ({ navigation }) => {
 			style={styles.container}
 		>
 			{userProfile?.avatar_url && (
-				<Image source={getAvatar(userProfile.avatar_url)} style={{ width: 50, height: 50 }} />
+				<Image source={getAvatar(userProfile?.avatar_url)} style={{ width: 50, height: 50 }} />
 			)}
 
 			<View style={styles.header}>
@@ -50,7 +50,6 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 		height: "20%",
 		padding: "5%",
-		gap: "10%",
 	},
 	header: {
 		display: "flex",
@@ -60,10 +59,12 @@ const styles = StyleSheet.create({
 		width: "85%",
 	},
 	text: {
+		marginLeft: "10%",
 		fontSize: 16,
 		color: colors.WHITE,
 	},
 	userText: {
+		marginLeft: "10%",
 		fontSize: 18,
 		fontWeight: "bold",
 		color: colors.WHITE,

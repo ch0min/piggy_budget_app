@@ -24,11 +24,11 @@ const CompleteProfile = ({ navigation }) => {
 	const [avatarUrl, setAvatarUrl] = useState("");
 	const [firstName, setFirstName] = useState("");
 	const [lastName, setLastName] = useState("");
-	const [selectedValutaId, setSelectedValutaId] = useState(1);
-	const [valutaPickerVisible, setValutaPickerVisible] = useState(userProfile?.valuta_id);
+	const [selectedValutaId, setSelectedValutaId] = useState(userProfile?.valuta_id || 1);
+	const [valutaPickerVisible, setValutaPickerVisible] = useState(false);
 
 	// Splash Loading:
-	if (loading) {
+	if (profileCompleted) {
 		return (
 			<LinearGradient colors={[colors.SECONDARY, colors.PRIMARY]} locations={[0.3, 1.0]} style={styles.container}>
 				<View style={styles.loadingContainer}>

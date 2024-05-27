@@ -83,7 +83,7 @@ const PiggyBankGoal = () => {
 				await createOrUpdateMonthlyGoal({ goalName, savingsGoal, image: fileUrl });
 				setGoalModalVisible(false);
 
-				console.log(data);
+				// console.log(data);
 			}
 		} catch (error) {
 			console.error("Error handleSaveGoal", error);

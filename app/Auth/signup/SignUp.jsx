@@ -45,7 +45,7 @@ const Signup = ({ navigation }) => {
 	};
 
 	return (
-		<KeyboardAwareScrollView contentContainerStyle={styles.container}>
+		<KeyboardAwareScrollView enableOnAndroid={true} contentContainerStyle={styles.container}>
 			<View style={styles.headerContainer}>
 				<TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
 					<Image style={styles.arrowLeft} source={arrowLeft} />
