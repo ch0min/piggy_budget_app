@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, View, Modal, TextInput, TouchableOpacity } from "react-native";
+import { ActivityIndicator, StyleSheet, View, Modal, TextInput, TouchableOpacity } from "react-native";
 import colors from "../../../../constants/colors";
 // import { RefreshControl } from "react-native";
 import { FontAwesome, MaterialIcons, AntDesign } from "@expo/vector-icons";
@@ -8,6 +8,7 @@ import ColorPicker from "../../../../components/colorPicker";
 import ICONS from "../../../../constants/icons";
 
 const UpdateExpense = ({
+	loading,
 	updateExpenseVisible,
 	currentExpense,
 	editableExpenseName,
@@ -88,7 +89,11 @@ const UpdateExpense = ({
 						</View>
 					</View>
 					<TouchableOpacity style={styles.addBtn} onPress={handleUpdateExpense}>
-						<AntDesign name="check" size={34} color={colors.BLACK} />
+						{loading ? (
+							<ActivityIndicator size="small" style={{ marginVertical: "2%" }} color={colors.DARKGRAY} />
+						) : (
+							<AntDesign name="check" size={34} color={colors.BLACK} />
+						)}
 					</TouchableOpacity>
 				</View>
 			</TouchableOpacity>

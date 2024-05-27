@@ -2,14 +2,7 @@
 
 NEXT: Rækkefølge Mandag:
 
--  Fix: Activity Indicators buttons: update expense, delete transaction
-   -  Fix loading state for expense areas input field checkmark.
-   -  Create Monthly budget btn
-   -  CUD: Expenses
-   -  CUD: Transactions
 -
-
--  nå du ændrer valuta vis det i budget og expense.
 -  Lav Overview Screen Resten af ugen:
 -  Lav splash screen.
 -  Email redirection
@@ -18,6 +11,12 @@ NEXT: Rækkefølge Mandag:
 -  ÆNDRE ALT MARGIN OSV TIL PERCENTAGE
 -  Change fonts
 -  Fix details on both iOS and Android so they look the same.
+
+-  AFTER EXAM
+   -  Fix multiple create monthly budget fast clicking.
+   -  Fix: Activity Indicators buttons.
+   -  Når du ændrer valuta vis det i budget og expense.
+   -  Fix user_id i stedet for at have det i alle, så lav joins.
 
 Exam:
 
@@ -52,11 +51,13 @@ MINOR BUGS:
 -  react-native-linear-gradient: used for gradient colors.
 -  react-native-gesture-handler: used for gestures.
 -  react-native-reanimated: used for animations.
--  react-native-svg: used for SVG's.
+-  react-native-svg: used for SVG'sk
 -  react-native-pie-chart: pie chart.
 -  react-native-gifted-charts: graphs
 -  react-native-picker/picker: used for scroll wheel picker.
 -  react-native-swiper: used for monthly swiper. npm install react-native-keyboard-aware-scroll-view --save
+-  expo-image-picker: used for saving images from a user's library.
+-  base64-arraybuffer: used for images.
 
 **_ BUG HELPER _**
 
@@ -64,18 +65,20 @@ MINOR BUGS:
 
 **_ DATABASE STRUCTURE _**
 
-expense_areas - id: uuid, user_id (foreign key->profiles): uuid, name: text, total_budget: numeric
+expense_areas - id: int, user_id (foreign key->profiles): uuid, name: text, total_budget: numeric
 
-expenses - id: uuid, created_at: date, user_id (foreign key->profiles): uuid, name: text, icon: text, color: text, total_spent: numeric, max_budget: numeric, expense_areas_id (foreign key->expense_areas): int
+expenses - id: int, created_at: date, user_id (foreign key->profiles): uuid, name: text, icon: text, color: text, total_spent: numeric, max_budget: numeric, expense_areas_id (foreign key->expense_areas): int
 
-transactions - id: uuid, created_at: date, user_id (foreign key->profiles): uuid, amount: numeric, note: text, expenses_id (foreign key->expenses): int
+transactions - id: int, created_at: date, user_id (foreign key->profiles): uuid, amount: numeric, note: text, expenses_id (foreign key->expenses): int
 
 profiles - id: uuid, updated_at: date, avatar: text, first_name: text, last_name: text, profile_completed: bool, valuta_id: int (foreign key->valuta)
 
-valuta - id: uuid, name: text
+valuta - id: int, name: text
 
-monthly_budgets - id: uuid, month: int, year: int, user_id: uuid (foreign key to profile), total_spent_month: numeric, total_budget_month: numeric
+monthly_budgets - id: int, month: int, year: int, user_id: uuid (foreign key to profile), total_spent_month: numeric, total_budget_month: numeric
 
-piggy_bank - id: uuid, total_savings: numeric, monthly_budgets_id (foreign key->monthly_budgets), user_id(foreign key->profiles)
+monthly_goals - id: int, name: text, savings_goal: numeric, image: text, monthly_budgets_id (foreign key->monthly_budgets), user_id(foreign key->profiles)
+
+piggy_bank - id: int, name: text, monthly_budgets_id (foreign key->monthly_budgets)
 
 AUTH TABLE: users

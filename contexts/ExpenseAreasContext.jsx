@@ -39,8 +39,8 @@ export const ExpenseAreasProvider = ({ children }) => {
 				.maybeSingle();
 
 			if (budgetError) {
-				console.error("Error fetching monthly budget:", budgetError.message);
-				setBudgetExists(False);
+				console.error("Error getExpenseAreas:", budgetError.message);
+				setBudgetExists(false);
 			}
 
 			if (budgetData) {
@@ -58,7 +58,7 @@ export const ExpenseAreasProvider = ({ children }) => {
 				setBudgetExists(false);
 			}
 		} catch (error) {
-			console.error("Error fetching expense_areas:", error.message);
+			console.error("Error getExpenseAreas:", error.message);
 		} finally {
 			setLoading(false);
 		}
@@ -88,7 +88,7 @@ export const ExpenseAreasProvider = ({ children }) => {
 
 			getExpenseAreas();
 		} catch (error) {
-			console.error("Error creating expense area", error.message);
+			console.error("Error createExpenseArea", error.message);
 		} finally {
 			setLoading(false);
 		}
@@ -104,7 +104,7 @@ export const ExpenseAreasProvider = ({ children }) => {
 			setLoading(false);
 			return data;
 		} catch (error) {
-			console.error("Error updating expense area", error.message);
+			console.error("Error updateExpenseArea", error.message);
 			setLoading(false);
 			throw error;
 		}
@@ -131,7 +131,7 @@ export const ExpenseAreasProvider = ({ children }) => {
 			await getMonthlyBudgetLineChart();
 			await updatePiggyBankSavings();
 		} catch (error) {
-			console.error("Error deleting expense area:", error.message);
+			console.error("Error deleteExpenseArea:", error.message);
 		} finally {
 			setLoading(false);
 		}

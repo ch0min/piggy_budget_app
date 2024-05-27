@@ -5,7 +5,7 @@ import { useMonthly } from "../../../contexts/MonthlyContext";
 import { useExpenseAreas } from "../../../contexts/ExpenseAreasContext";
 import { useExpenses } from "../../../contexts/ExpensesContext";
 import colors from "../../../constants/colors";
-import ExpenseAreasList from "./components/expenseAreasList";
+import BudgetExpenseAreasList from "./components/budgetExpenseAreasList";
 
 const Budget = ({ navigation }) => {
 	const { loading, setLoading, loadingData, setLoadingData, refresh, setRefresh, currentMonth } = useMonthly();
@@ -18,8 +18,8 @@ const Budget = ({ navigation }) => {
 
 	useFocusEffect(
 		useCallback(() => {
-			// setLoading(true);
-			// setLoadingData(true);
+			setLoading(true);
+			setLoadingData(true);
 			getExpenseAreas().finally(() => setLoadingData(false));
 			getExpenses();
 		}, [currentMonth])
@@ -83,7 +83,7 @@ const Budget = ({ navigation }) => {
 		<View style={styles.container}>
 			{/* { ? ( */}
 			{/* <ActivityIndicator size="large" style={{ marginVertical: "50%" }} color={colors.DARKGRAY} /> */}
-			<ExpenseAreasList
+			<BudgetExpenseAreasList
 				loading={loading}
 				refresh={refresh}
 				onRefresh={onRefresh}

@@ -9,7 +9,11 @@ import SecondaryNavBtn from "../../components/buttons/secondaryNavBtn";
 
 const Landing = ({ navigation }) => {
 	return (
-		<LinearGradient colors={[colors.SECONDARY, colors.PRIMARY]} locations={[0.3, 1.0]} style={styles.container}>
+		<LinearGradient
+			colors={[colors.SECONDARY, colors.TERTIARY, colors.PRIMARY]}
+			locations={[0.2, 0.4, 1.0]}
+			style={styles.container}
+		>
 			<View style={styles.subContainer}>
 				<Text style={styles.heading}>Velkommen til Piggy</Text>
 				<Text style={styles.subheading}>Lad os få kontrol over din økonomi!</Text>

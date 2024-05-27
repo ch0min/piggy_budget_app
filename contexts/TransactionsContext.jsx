@@ -13,7 +13,7 @@ export const TransactionsProvider = ({ children }) => {
 	const { updateTotalBudgetForArea } = useExpenseAreas();
 	const { updateExpenseTotalSpent } = useExpenses();
 
-	const [loading, setLoading] = useState(false);
+	const [loading, setLoading] = useState(true);
 	const [refresh, setRefresh] = useState(false);
 
 	/*** TRANSACTIONS FUNCTIONS ***/

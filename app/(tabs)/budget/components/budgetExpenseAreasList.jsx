@@ -5,8 +5,9 @@ import colors from "../../../../constants/colors";
 import { MaterialIcons, AntDesign, Entypo } from "@expo/vector-icons";
 
 import BudgetHeader from "./budgetHeader";
-import ExpensesList from "./expensesList";
-const ExpenseAreasList = ({
+import BudgetExpensesList from "./budgetExpensesList";
+
+const BudgetExpenseAreasList = ({
 	loading,
 	refresh,
 	onRefresh,
@@ -69,7 +70,7 @@ const ExpenseAreasList = ({
 			)}
 
 			<View style={styles.horizontalLine} />
-			<ExpensesList item={item} expenses={expenses} handleExpense={handleExpense} />
+			<BudgetExpensesList item={item} expenses={expenses} handleExpense={handleExpense} />
 
 			<View style={styles.addExpenseBtnContainer}>
 				<TouchableOpacity style={styles.addExpenseBtn} onPress={() => handleAddExpense(item)}>
@@ -183,4 +184,4 @@ const styles = StyleSheet.create({
 	},
 });
 
-export default ExpenseAreasList;
+export default BudgetExpenseAreasList;

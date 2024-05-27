@@ -6,7 +6,7 @@ import { FontAwesome } from "@expo/vector-icons";
 import FormatNumber from "../../../../utils/formatNumber";
 import ProgressBarMini from "./ProgressBarMini";
 
-const ExpensesList = ({ item, expenses, handleExpense }) => {
+const BudgetExpensesList = ({ item, expenses, handleExpense }) => {
 	const { userProfile } = useAuth();
 
 	const renderExpenses = ({ item }) => (
@@ -104,4 +104,4 @@ const styles = StyleSheet.create({
 	},
 });
 
-export default ExpensesList;
+export default BudgetExpensesList;

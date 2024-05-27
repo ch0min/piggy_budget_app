@@ -1,4 +1,5 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useCallback, useRef } from "react";
+import { useFocusEffect } from "@react-navigation/native";
 import { ActivityIndicator, StyleSheet, View, Text, TextInput, TouchableOpacity, Keyboard } from "react-native";
 import { useMonthly } from "../../../../contexts/MonthlyContext";
 import { useExpenseAreas } from "../../../../contexts/ExpenseAreasContext";
@@ -20,6 +21,7 @@ const BudgetHeader = ({
 	const { setCurrentMonth, createMonthlyBudget, budgetExists, setBudgetExists } = useMonthly();
 	const { createExpenseArea } = useExpenseAreas();
 	const inputRef = useRef(null);
+	const [creating, setCreating] = useState(false);
 	const [showCheckmark, setShowCheckmark] = useState(false);
 
 	const handleCreateExpenseArea = async () => {
@@ -35,16 +37,25 @@ const BudgetHeader = ({
 	};
 
 	const handleCreateMonthlyBudget = async () => {
-		const budgetId = await createMonthlyBudget(currentMonth);
-		if (budgetId) {
-			setBudgetExists(true);
+		if (creating) return;
+
+		setCreating(true);
+		try {
+			const budgetId = await createMonthlyBudget(currentMonth);
+			if (budgetId) {
+				setBudgetExists(true);
+			}
+		} catch (error) {
+			console.error("Error handleCreateMonthlyBudget", error.message);
+		} finally {
 			getExpenseAreas();
+			setCreating(false);
 		}
 	};
 
 	return (
 		<View style={styles.graphContainer}>
-			<MonthlyBudgetSwiper loading={loading} currentMonth={currentMonth} setCurrentMonth={setCurrentMonth} />
+			<MonthlyBudgetSwiper currentMonth={currentMonth} setCurrentMonth={setCurrentMonth} />
 
 			{budgetExists && expenseAreas === 0 && (
 				<View style={styles.noExpenseAreas}>
@@ -59,8 +70,16 @@ const BudgetHeader = ({
 					<View style={styles.createBudgetContainer}>
 						<Text style={styles.createBudgetHeading}>Kom igang med det samme!</Text>
 						<Text style={styles.createBudgetSubheading}>Sæt op et nyt månedligt budget</Text>
-						<TouchableOpacity style={styles.createBudgetButton} onPress={handleCreateMonthlyBudget}>
-							<Text style={styles.createBudgetBtnText}>Opret Budget</Text>
+						<TouchableOpacity
+							style={styles.createBudgetButton}
+							onPress={() => handleCreateMonthlyBudget()}
+							disabled={creating}
+						>
+							{creating ? (
+								<ActivityIndicator size="small" color={colors.DARKGRAY} />
+							) : (
+								<Text style={styles.createBudgetBtnText}>Opret Budget</Text>
+							)}
 						</TouchableOpacity>
 					</View>
 				) : (

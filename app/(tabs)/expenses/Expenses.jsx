@@ -28,7 +28,7 @@ import MONTH_NAMES from "../../../constants/months";
 const Expenses = ({ navigation, route }) => {
 	const { user, userProfile } = useAuth();
 	const { loadingData, setLoadingData } = useMonthly();
-	const { getExpenses, updateExpense, deleteExpense } = useExpenses();
+	const { loading, getExpenses, updateExpense, deleteExpense } = useExpenses();
 	const {
 		refresh,
 		setRefresh,
@@ -58,6 +58,7 @@ const Expenses = ({ navigation, route }) => {
 	const [updateTransactionVisible, setUpdateTransactionVisible] = useState(false);
 	const [currentTransaction, setCurrentTransaction] = useState(null);
 
+	const [isDeleting, setIsDeleting] = useState(false);
 	const [loadingTransactionCreationAndUpdating, setLoadingTransactionCreationAndUpdating] = useState(false);
 
 	useFocusEffect(
@@ -351,6 +352,7 @@ const Expenses = ({ navigation, route }) => {
 					{/* Update Expense Modal */}
 					{updateExpenseVisible && (
 						<UpdateExpense
+							loading={loading}
 							updateExpenseVisible={updateExpenseVisible}
 							currentExpense={currentExpense}
 							editableExpenseName={editableExpenseName}
@@ -409,6 +411,16 @@ const Expenses = ({ navigation, route }) => {
 };
 
 const styles = StyleSheet.create({
+	overlayStyle: {
+		position: "absolute",
+		left: 0,
+		right: 0,
+		top: 0,
+		bottom: 0,
+		alignItems: "center",
+		justifyContent: "center",
+		backgroundColor: "rgba(0, 0, 0, 0.5)", // Semi-transparent background
+	},
 	container: {
 		flex: 1,
 	},

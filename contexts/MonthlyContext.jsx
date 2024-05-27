@@ -27,7 +27,7 @@ const calculateMonths = () => {
 
 export const MonthlyProvider = ({ children }) => {
 	const { user } = useAuth();
-	const [loading, setLoading] = useState(false);
+	const [loading, setLoading] = useState(true);
 	const [loadingData, setLoadingData] = useState(true);
 	const [refresh, setRefresh] = useState(false);
 
@@ -37,7 +37,6 @@ export const MonthlyProvider = ({ children }) => {
 	const [budgetExists, setBudgetExists] = useState(false);
 	const [totalSpentMonth, setTotalSpentMonth] = useState(0);
 	const [totalBudgetMonth, setTotalBudgetMonth] = useState(0);
-	// const [expenseAreasForMonth, setExpenseAreasForMonth] = useState([]);
 
 	const getMonthlyBudgetId = async () => {
 		setLoading(true);
@@ -309,13 +308,15 @@ export const MonthlyProvider = ({ children }) => {
 		try {
 			const { data, error } = await supabase
 				.from("piggy_bank")
-				.select(`*`)
+				.select(`total_savings`)
 				.eq("user_id", userId)
 				.order("id", { ascending: true });
 
 			if (error) {
 				console.error("Error fetching monthly_budgets for piggy bank savings:", error.message);
 			}
+
+			await updatePiggyBankSavings();
 			return data;
 		} catch (error) {
 			console.error("Error getTotalSavings:", error.message);
@@ -356,11 +357,80 @@ export const MonthlyProvider = ({ children }) => {
 			if (savingsError) {
 				console.error("Error updating piggy bank savings:", savingsError.message);
 			} else {
-				console.log("Piggy bank savings updated successfully", savingsData);
+				// console.log("Piggy bank savings updated successfully", savingsData);
 			}
 			setTotalSavings(totalSavings);
 		} catch (error) {
 			console.error("Error updatePiggyBankSavings:", error.message);
+		}
+	};
+	/*** END ***/
+
+	/*** MONTHLY GOAL FUNCTIONALITY ***/
+	const createOrUpdateMonthlyGoal = async ({ goalName, savingsGoal, image }) => {
+		setLoading(true);
+		const userId = user?.id;
+		const month = currentMonth.getMonth() + 1;
+		const year = currentMonth.getFullYear();
+
+		try {
+			// Check if there's an existing monthly budget for user:
+			const { data: budgetData, error: budgetError } = await supabase
+				.from("monthly_budgets")
+				.select("id")
+				.eq("user_id", userId)
+				.eq("month", month)
+				.eq("year", year)
+				.single();
+
+			if (budgetError) {
+				console.error("Error fetching monthly budgets for goal:", budgetError);
+				throw new Error(`Failed to fetch budget: ${budgetError.message}`);
+			}
+
+			if (!budgetData) {
+				// If no monthly budget exists, create new:
+				const { data: newBudgetData, error: newBudgetError } = await supabase
+					.from("monthly_budgets")
+					.insert({
+						user_id: userId,
+						month,
+						year,
+						total_spent_month: 0,
+						totalBudgetMonth: 0,
+					})
+					.single();
+
+				if (newBudgetError) {
+					console.error("Error creating monthly budget for goal:", newBudgetError);
+					throw new Error(`Failed to create budget: ${newBudgetError.message}`);
+				}
+				budgetData = newBudgetData;
+			}
+
+			// Create or update the monthly goal linked to the budget:
+			const { data, error } = await supabase.from("monthly_goal").upsert(
+				{
+					name: goalName,
+					savings_goal: savingsGoal,
+					image,
+					monthly_budgets_id: budgetData.id,
+					user_id: userId,
+				},
+				{
+					onConflict: "monthly_budgets_id, user_id",
+				}
+			);
+
+			if (error) {
+				console.error("Error upserting goal:", error);
+				throw new Error(`Failed to upsert goal: ${error.message}`);
+			}
+			return data;
+		} catch (error) {
+			console.error("Error createOrUpdateMonthlyGoal", error);
+		} finally {
+			setLoading(false);
 		}
 	};
 
@@ -398,12 +468,17 @@ export const MonthlyProvider = ({ children }) => {
 				updateMonthlyBudget,
 				getMonthlyBudgetLineChart,
 
-				// // Piggy Bank States
+				// Piggy Bank States
 				totalSavings,
 				setTotalSavings,
-				// // Piggy Bank Functions
+				// Piggy Bank Functions
 				getTotalPiggyBankSavings,
 				updatePiggyBankSavings,
+
+				// Monthly Goal States
+
+				// Monthly Goal Functions
+				createOrUpdateMonthlyGoal,
 			}}
 		>
 			{children}

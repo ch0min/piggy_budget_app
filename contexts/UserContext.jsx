@@ -471,7 +471,7 @@ export const UserProvider = ({ children }) => {
 
 			if (budgetError) {
 				console.error("Error fetching monthly budget:", budgetError.message);
-				setBudgetExists(False);
+				setBudgetExists(false);
 			}
 
 			if (budgetData) {
