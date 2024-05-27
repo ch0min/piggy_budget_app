@@ -24,6 +24,7 @@ const PiggyBankGoal = () => {
 	const { getMonthlyGoal, createOrUpdateMonthlyGoal, totalSavings } = useMonthly();
 	const [goalModalVisible, setGoalModalVisible] = useState(false);
 	const [loading, setLoading] = useState(false);
+	const [goalExist, setGoalExist] = useState(false);
 	const [goalName, setGoalName] = useState("");
 	const [savingsGoal, setSavingsGoal] = useState("");
 
@@ -36,11 +37,13 @@ const PiggyBankGoal = () => {
 			const goalData = await getMonthlyGoal();
 
 			if (goalData) {
+				setGoalExist(true);
 				setGoalName(goalData.name);
 				setSavingsGoal(goalData.savings_goal.toString());
 				setImage(goalData.image || require("../../../../assets/images/placeholder.png"));
 				setPreviewImage(goalData.image || require("../../../../assets/images/placeholder.png"));
 			} else {
+				setGoalExist(false);
 				setGoalName("");
 				setSavingsGoal("");
 				setImage(require("../../../../assets/images/placeholder.png"));
@@ -107,7 +110,9 @@ const PiggyBankGoal = () => {
 			imageStyle={{ borderRadius: 15 }}
 			style={styles.container}
 		>
-			<Text style={styles.heading}>Månedligt mål </Text>
+			<Text style={[styles.heading, !goalExist && { fontSize: 16, color: colors.SECONDARY }]}>
+				{goalExist ? "Månedligt mål" : "Sæt dit helt eget månedligt mål"}
+			</Text>
 
 			<TouchableOpacity style={styles.button} onPress={() => setGoalModalVisible(true)}>
 				<View style={styles.centerContainer}>{showCheckmark}</View>
