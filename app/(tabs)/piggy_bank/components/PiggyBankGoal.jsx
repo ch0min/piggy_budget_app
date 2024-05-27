@@ -110,7 +110,12 @@ const PiggyBankGoal = () => {
 			imageStyle={{ borderRadius: 15 }}
 			style={styles.container}
 		>
-			<Text style={[styles.heading, !goalExist && { fontSize: 16, color: colors.SECONDARY }]}>
+			<Text
+				style={[
+					styles.heading,
+					!goalExist && { alignSelf: "center", marginBottom: "5%", fontSize: 14, color: colors.DARKGRAY },
+				]}
+			>
 				{goalExist ? "Månedligt mål" : "Sæt dit helt eget månedligt mål"}
 			</Text>
 
