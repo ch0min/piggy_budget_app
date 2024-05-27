@@ -79,6 +79,6 @@ monthly_budgets - id: int, month: int, year: int, user_id: uuid (foreign key to 
 
 monthly_goals - id: int, name: text, savings_goal: numeric, image: text, monthly_budgets_id (foreign key->monthly_budgets), user_id(foreign key->profiles)
 
-piggy_bank - id: int, name: text, monthly_budgets_id (foreign key->monthly_budgets)
+piggy_bank - id: int, created_at: date, name: text, user_id(foreign key->profiles)
 
 AUTH TABLE: users

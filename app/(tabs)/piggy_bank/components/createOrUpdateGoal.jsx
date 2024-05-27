@@ -11,25 +11,22 @@ import {
 	Image,
 } from "react-native";
 import colors from "../../../../constants/colors";
-import { MaterialIcons, AntDesign } from "@expo/vector-icons";
+import { FontAwesome, MaterialIcons, AntDesign } from "@expo/vector-icons";
 
 const CreateOrUpdateGoalModal = ({
 	loading,
 	goalModalVisible,
-	setGoalModalVisible,
 	goalName,
 	setGoalName,
 	savingsGoal,
 	setSavingsGoal,
-	image,
 	previewImage,
 	onImagePicker,
-	handleAddImageToGoal,
 	handleSaveGoal,
+	imagePlaceholder,
 	onClose,
 }) => {
 	const handleSave = async () => {
-		await handleAddImageToGoal();
 		handleSaveGoal();
 	};
 
@@ -57,15 +54,15 @@ const CreateOrUpdateGoalModal = ({
 							value={savingsGoal}
 							inputMode="decimal"
 						/>
-						{/* <TextInput
-							style={styles.imageInput}
-							placeholder="Billede"
-							placeholderTextColor={colors.DARKGRAY}
-							onChangeText={setImage}
-							value={image}
-						/> */}
+
 						<TouchableOpacity onPress={() => onImagePicker()}>
-							<Image source={{ uri: previewImage }} style={styles.imageInput} />
+							{previewImage === imagePlaceholder ? (
+								<View style={[styles.imageInput, styles.imagePlaceholder]}>
+									<FontAwesome name="image" size={60} color={colors.DARKGRAY} />
+								</View>
+							) : (
+								<Image source={{ uri: previewImage || imagePlaceholder }} style={styles.imageInput} />
+							)}
 						</TouchableOpacity>
 
 						<TouchableOpacity style={styles.saveButton} onPress={handleSave}>
@@ -93,8 +90,7 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 		marginHorizontal: "8%",
 		width: "90%",
-
-		marginVertical: "5%",
+		marginBottom: "50%",
 		padding: "5%",
 		borderRadius: 15,
 		backgroundColor: colors.WHITE,
@@ -128,16 +124,15 @@ const styles = StyleSheet.create({
 		borderBottomColor: colors.GRAY,
 	},
 	imageInput: {
-		width: 150,
+		alignSelf: "center",
+		width: 275,
 		height: 150,
+		marginTop: "10%",
 		borderRadius: 15,
-		backgroundColor: colors.DARKGRAY,
-
-		// flexDirection: "row",
-		// justifyContent: "space-between",
-		// paddingVertical: "5%",
-		// borderBottomWidth: 1,
-		// borderBottomColor: colors.GRAY,
+	},
+	imagePlaceholder: {
+		alignItems: "center",
+		justifyContent: "center",
 	},
 	saveButton: {
 		alignItems: "center",

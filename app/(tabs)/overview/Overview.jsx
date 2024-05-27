@@ -3,10 +3,10 @@ import { ActivityIndicator, RefreshControl, StyleSheet, View, ScrollView } from 
 import colors from "../../../constants/colors";
 import OverviewHeader from "./header/OverviewHeader";
 import LineGraph from "./components/LineGraph";
+import PiggyBankGoal from "../piggy_bank/components/PiggyBankGoal";
 import LatestExpenses from "./components/LatestExpenses";
 
 const Overview = ({ navigation }) => {
-
 	const [loadingOverview, setLoadingOverview] = useState(true);
 
 	useEffect(() => {
@@ -26,6 +26,8 @@ const Overview = ({ navigation }) => {
 					<LineGraph />
 
 					<ScrollView style={styles.scrollContainer}>
+						<PiggyBankGoal />
+
 						<LatestExpenses navigation={navigation} />
 					</ScrollView>
 				</View>
@@ -42,7 +44,7 @@ const styles = StyleSheet.create({
 		flex: 1,
 	},
 	scrollContainer: {
-		flex: 1,
+		flex: 2,
 	},
 });
 

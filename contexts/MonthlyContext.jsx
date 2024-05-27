@@ -367,6 +367,51 @@ export const MonthlyProvider = ({ children }) => {
 	/*** END ***/
 
 	/*** MONTHLY GOAL FUNCTIONALITY ***/
+	const getMonthlyGoal = async () => {
+		setLoading(true);
+		const userId = user?.id;
+		const month = currentMonth.getMonth() + 1;
+		const year = currentMonth.getFullYear();
+
+		try {
+			const { data: budgetData, error: budgetError } = await supabase
+				.from("monthly_budgets")
+				.select("id")
+				.eq("user_id", userId)
+				.eq("month", month)
+				.eq("year", year)
+				.maybeSingle();
+
+			if (budgetError) {
+				console.error("Error fetching monthly budget ID:", budgetError);
+				throw budgetError;
+			}
+
+			const { data, error } = await supabase
+				.from("monthly_goal")
+				.select(`*`)
+				.eq("monthly_budgets_id", budgetData.id)
+				.maybeSingle();
+
+			if (error) {
+				console.error("Error getting goal:", error);
+				throw error;
+			}
+
+			if (data) {
+				// console.log("Fetched monthly goal:", data);
+				return data;
+			} else {
+				console.log("No monthly goal fetched", data);
+				return null;
+			}
+		} catch (error) {
+			console.error("Error createOrUpdateMonthlyGoal", error);
+		} finally {
+			setLoading(false);
+		}
+	};
+
 	const createOrUpdateMonthlyGoal = async ({ goalName, savingsGoal, image }) => {
 		setLoading(true);
 		const userId = user?.id;
@@ -409,18 +454,21 @@ export const MonthlyProvider = ({ children }) => {
 			}
 
 			// Create or update the monthly goal linked to the budget:
-			const { data, error } = await supabase.from("monthly_goal").upsert(
-				{
-					name: goalName,
-					savings_goal: savingsGoal,
-					image,
-					monthly_budgets_id: budgetData.id,
-					user_id: userId,
-				},
-				{
-					onConflict: "monthly_budgets_id, user_id",
-				}
-			);
+			const { data, error } = await supabase
+				.from("monthly_goal")
+				.upsert(
+					{
+						name: goalName,
+						savings_goal: savingsGoal,
+						image: image,
+						monthly_budgets_id: budgetData.id,
+						user_id: userId,
+					},
+					{
+						onConflict: "monthly_budgets_id, user_id",
+					}
+				)
+				.select();
 
 			if (error) {
 				console.error("Error upserting goal:", error);
@@ -476,7 +524,7 @@ export const MonthlyProvider = ({ children }) => {
 				updatePiggyBankSavings,
 
 				// Monthly Goal States
-
+				getMonthlyGoal,
 				// Monthly Goal Functions
 				createOrUpdateMonthlyGoal,
 			}}

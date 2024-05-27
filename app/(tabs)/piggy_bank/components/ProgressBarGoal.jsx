@@ -3,17 +3,12 @@ import { StyleSheet, View, Text } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import colors from "../../../../constants/colors";
 
-const ProgressBarMini = ({ totalSpentExpense, totalBudgetExpense }) => {
-	const totalPercentage = totalBudgetExpense > 0 ? (totalSpentExpense / totalBudgetExpense) * 100 : 0;
-	
+const ProgressBarGoal = ({ totalPercentage, backgroundColor }) => {
 	return (
 		<View style={styles.container}>
 			<View style={styles.progressBarContainer}>
 				<View style={styles.progressBarBackground}>
-					<LinearGradient
-						colors={[colors.PRIMARY, colors.SECONDARY]}
-						style={[styles.progressBarFill, { width: `${totalPercentage}%` }]}
-					/>
+					<View style={[styles.progressBarFill, { width: `${totalPercentage}%`, backgroundColor }]} />
 				</View>
 			</View>
 		</View>
@@ -24,9 +19,9 @@ const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 		justifyContent: "center",
-		marginBottom: "2%",
 	},
 	progressBarContainer: {
+		flexDirection: "column",
 		alignItems: "center",
 		justifyContent: "center",
 		height: 12,
@@ -44,4 +39,4 @@ const styles = StyleSheet.create({
 	},
 });
 
-export default ProgressBarMini;
+export default ProgressBarGoal;

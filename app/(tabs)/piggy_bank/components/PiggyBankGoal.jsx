@@ -1,31 +1,60 @@
 import React, { useState, useEffect } from "react";
 import { supabase } from "../../../../lib/supabase";
 import { decode } from "base64-arraybuffer";
-import { Alert, ActivityIndicator, StyleSheet, View, Modal, Text, TextInput, TouchableOpacity } from "react-native";
+import {
+	Alert,
+	ActivityIndicator,
+	StyleSheet,
+	View,
+	Text,
+	TextInput,
+	TouchableOpacity,
+	ImageBackground,
+} from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import colors from "../../../../constants/colors";
 import { useAuth } from "../../../../contexts/AuthContext";
 import { useMonthly } from "../../../../contexts/MonthlyContext";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import CreateOrUpdateGoalModal from "./createOrUpdateGoal";
-import placeholder from "../../../../assets/images/placeholder.png";
+import ProgressBarGoal from "./ProgressBarGoal";
 
 const PiggyBankGoal = () => {
 	const { user } = useAuth;
-	const { getMonthlyBudget, createOrUpdateMonthlyGoal, totalSavings } = useMonthly();
+	const { getMonthlyGoal, createOrUpdateMonthlyGoal, totalSavings } = useMonthly();
 	const [goalModalVisible, setGoalModalVisible] = useState(false);
 	const [loading, setLoading] = useState(false);
 	const [goalName, setGoalName] = useState("");
 	const [savingsGoal, setSavingsGoal] = useState("");
 
-	const imagePlaceholder = placeholder;
-	const [image, setImage] = useState(imagePlaceholder);
-	const [previewImage, setPreviewImage] = useState(placeholder);
+	const imagePlaceholder = require("../../../../assets/images/placeholder.png");
+	const [image, setImage] = useState(null);
+	const [previewImage, setPreviewImage] = useState(null);
+
+	useEffect(() => {
+		const fetchGoal = async () => {
+			const goalData = await getMonthlyGoal();
+
+			if (goalData) {
+				setGoalName(goalData.name);
+				setSavingsGoal(goalData.savings_goal.toString());
+				setImage(goalData.image || require("../../../../assets/images/placeholder.png"));
+				setPreviewImage(goalData.image || require("../../../../assets/images/placeholder.png"));
+			} else {
+				setGoalName("");
+				setSavingsGoal("");
+				setImage(require("../../../../assets/images/placeholder.png"));
+				setPreviewImage(require("../../../../assets/images/placeholder.png"));
+			}
+		};
+		fetchGoal();
+	}, []);
 
 	const onImagePicker = async () => {
 		let result = await ImagePicker.launchImageLibraryAsync({
 			mediaTypes: ImagePicker.MediaTypeOptions.All,
 			allowsEditing: true,
-			quality: 0.7,
+			quality: 0.3,
 			base64: true,
 		});
 
@@ -35,62 +64,77 @@ const PiggyBankGoal = () => {
 		}
 	};
 
-	const handleAddImageToGoal = async () => {
+	const handleSaveGoal = async () => {
 		setLoading(true);
 		const imgFileName = Date.now();
 		try {
 			const { data, error } = await supabase.storage
 				.from("goal_images")
-				.upload("goal_" + imgFileName + ".png", decode(image), {
+				.upload(imgFileName + ".png", decode(image), {
 					contentType: "image/png",
 				});
 
-			console.log("File upload:", data);
+			if (data) {
+				const fileUrl =
+					"https://pyleapvvcehmbucjsbhe.supabase.co/storage/v1/object/public/goal_images/" + imgFileName + ".png";
+				await createOrUpdateMonthlyGoal({ goalName, savingsGoal, image: fileUrl });
+				setGoalModalVisible(false);
+
+				console.log(data);
+			}
 		} catch (error) {
-			console.error("Error handleAddImageToGoal", error);
+			console.error("Error handleSaveGoal", error);
 		} finally {
 			setLoading(false);
 		}
 	};
 
-	const handleSaveGoal = async () => {
-		if (parseFloat(savingsGoal) > totalSavings) {
-			Alert.alert("Dit opsparingsmål kan ikke overskride din totale opsparing.");
-			return;
-		}
-		setLoading(true);
-		try {
-			await createOrUpdateMonthlyGoal({ goalName, savingsGoal, image });
-			setGoalModalVisible(false);
-		} catch (error) {
-			console.error("Error handleSaveGoal", error.message);
-		} finally {
-			setLoading(false);
-		}
-	};
+	// Progress bar additionals:
+	const positiveSavings = Math.max(0, totalSavings);
+	const totalPercentage = savingsGoal > 0 ? (positiveSavings / savingsGoal) * 100 : 0;
+
+	const backgroundColor = totalPercentage >= 100 ? colors.DARKGREEN : colors.SECONDARY;
+	const showCheckmark =
+		totalPercentage >= 100 ? (
+			<Ionicons name="checkmark-circle" size={54} color={colors.GREEN} />
+		) : (
+			<MaterialCommunityIcons name="timer-sand-complete" size={54} color={colors.WHITE} />
+		);
 
 	return (
-		<View style={styles.container}>
-			<TouchableOpacity style={styles.button} onPress={() => setGoalModalVisible(true)}>
-				<Text>Sæt et månedligt mål</Text>
-			</TouchableOpacity>
+		<ImageBackground
+			source={previewImage ? { uri: previewImage } : imagePlaceholder}
+			imageStyle={{ borderRadius: 15 }}
+			style={styles.container}
+		>
+			<Text style={styles.heading}>Månedligt mål </Text>
 
-			<CreateOrUpdateGoalModal
-				loading={loading}
-				goalModalVisible={goalModalVisible}
-				setGoalModalVisible={setGoalModalVisible}
-				goalName={goalName}
-				setGoalName={setGoalName}
-				savingsGoal={savingsGoal}
-				setSavingsGoal={setSavingsGoal}
-				image={image}
-				previewImage={previewImage}
-				onImagePicker={onImagePicker}
-				handleAddImageToGoal={handleAddImageToGoal}
-				handleSaveGoal={handleSaveGoal}
-				onClose={() => setGoalModalVisible(false)}
-			/>
-		</View>
+			<TouchableOpacity style={styles.button} onPress={() => setGoalModalVisible(true)}>
+				<View style={styles.centerContainer}>{showCheckmark}</View>
+				<CreateOrUpdateGoalModal
+					loading={loading}
+					goalModalVisible={goalModalVisible}
+					setGoalModalVisible={setGoalModalVisible}
+					goalName={goalName}
+					setGoalName={setGoalName}
+					savingsGoal={savingsGoal}
+					setSavingsGoal={setSavingsGoal}
+					image={image}
+					previewImage={previewImage}
+					onImagePicker={onImagePicker}
+					handleSaveGoal={handleSaveGoal}
+					imagePlaceholder={imagePlaceholder}
+					onClose={() => setGoalModalVisible(false)}
+				/>
+			</TouchableOpacity>
+			<View style={styles.progressBarContainer}>
+				<ProgressBarGoal
+					totalPercentage={totalPercentage}
+					backgroundColor={backgroundColor}
+					showCheckmark={showCheckmark}
+				/>
+			</View>
+		</ImageBackground>
 	);
 };
 
@@ -99,7 +143,6 @@ const styles = StyleSheet.create({
 		flex: 1,
 		justifyContent: "space-between",
 		marginHorizontal: "5%",
-		marginTop: "15%",
 		padding: 20,
 		borderRadius: 15,
 		backgroundColor: colors.WHITE,
@@ -109,11 +152,16 @@ const styles = StyleSheet.create({
 		shadowRadius: 3,
 		elevation: 1,
 	},
+	centerContainer: {
+		flex: 1,
+		alignItems: "center",
+		justifyContent: "center",
+		marginBottom: "10%",
+	},
 	button: {
-		margin: 10,
-		padding: 10,
-		borderRadius: 5,
-		backgroundColor: colors.PRIMARY,
+		flex: 1,
+		alignItems: "center",
+		justifyContent: "center",
 	},
 	modalOverlay: {
 		flex: 1,
@@ -126,6 +174,13 @@ const styles = StyleSheet.create({
 		padding: 20,
 		borderRadius: 10,
 		backgroundColor: colors.WHITE,
+	},
+	heading: {
+		fontSize: 18,
+		color: colors.WHITE,
+	},
+	progressBarContainer: {
+		// marginTop: "35%",
 	},
 	input: {
 		width: "100%",
