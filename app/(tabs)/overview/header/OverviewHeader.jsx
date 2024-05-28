@@ -35,7 +35,7 @@ const OverviewHeader = ({ navigation }) => {
 					<Text style={styles.userText}>{userProfile?.first_name}</Text>
 					<Text style={styles.text}>{userProfile?.last_name}</Text>
 				</View>
-				<TouchableOpacity onPress={handleNavigateSettings}>
+				<TouchableOpacity onPress={() => handleNavigateSettings()}>
 					<Ionicons name="settings-sharp" size={24} color={colors.WHITE} />
 				</TouchableOpacity>
 			</View>
@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
 		display: "flex",
 		flexDirection: "row",
 		alignItems: "center",
-		height: "20%",
+		height: 175,
 		padding: "5%",
 	},
 	header: {

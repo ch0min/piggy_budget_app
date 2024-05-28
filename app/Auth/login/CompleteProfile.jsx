@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { ActivityIndicator, Alert, StyleSheet, View, Text, TextInput, TouchableOpacity, Image } from "react-native";
+import { Alert, StyleSheet, View, Text, TextInput, TouchableOpacity, Image } from "react-native";
 import { useAuth } from "../../../contexts/AuthContext";
 import { LinearGradient } from "expo-linear-gradient";
 import colors from "../../../constants/colors";
 import PickerWheel from "../../../components/modals/PickerWheel";
-import logo from "../../../assets/images/logo2.png";
 import ProfileAvatars from "../../(tabs)/settings/components/ProfileAvatars";
 import PROFILE_AVATARS from "../../../constants/ProfileAvatars";
 
@@ -19,26 +18,14 @@ const CompleteProfile = ({ navigation }) => {
 		valutas,
 		getValutas,
 	} = useAuth();
-	const [selectedAvatar, setSelectedAvatar] = useState(PROFILE_AVATARS[16]);
+	const initialAvatar = PROFILE_AVATARS.find((avatar) => avatar.avatar === "questionmark");
+	const [selectedAvatar, setSelectedAvatar] = useState(initialAvatar);
 
-	const [avatarUrl, setAvatarUrl] = useState("");
+	const [avatarUrl, setAvatarUrl] = useState(initialAvatar.avatar);
 	const [firstName, setFirstName] = useState("");
 	const [lastName, setLastName] = useState("");
 	const [selectedValutaId, setSelectedValutaId] = useState(userProfile?.valuta_id || 1);
 	const [valutaPickerVisible, setValutaPickerVisible] = useState(false);
-
-	// Splash Loading:
-	if (profileCompleted) {
-		return (
-			<LinearGradient colors={[colors.SECONDARY, colors.PRIMARY]} locations={[0.3, 1.0]} style={styles.container}>
-				<View style={styles.loadingContainer}>
-					<Text style={styles.heading}>Velkommen tilbage</Text>
-					<Text style={styles.subheading}>Vi har savnet dig!</Text>
-					<Image source={logo} style={styles.logo} />
-				</View>
-			</LinearGradient>
-		);
-	}
 
 	useEffect(() => {
 		getValutas();
@@ -66,7 +53,7 @@ const CompleteProfile = ({ navigation }) => {
 
 		await updateProfile(updates);
 		if (profileCompleted) {
-			navigation.navigate("HomeTabs");
+			navigation.reset({ index: 0, routes: [{ name: "HomeTabs" }] });
 		}
 	};
 
@@ -90,7 +77,7 @@ const CompleteProfile = ({ navigation }) => {
 					</View>
 
 					<View style={styles.textInputContainer}>
-						<View style={styles.textInput}>
+						<View style={styles.textInputFirstName}>
 							<TextInput
 								label="FirstName"
 								placeholder="Fornavn"
@@ -100,7 +87,7 @@ const CompleteProfile = ({ navigation }) => {
 							/>
 						</View>
 
-						<View style={styles.textInput}>
+						<View style={styles.textInputLastName}>
 							<TextInput
 								label="LastName"
 								placeholder="Efternavn"
@@ -214,9 +201,16 @@ const styles = StyleSheet.create({
 		flexDirection: "row",
 		width: "100%",
 		padding: "5%",
-		gap: "10%",
+		// gap: "10%",
 	},
-	textInput: {
+	textInputFirstName: {
+		flex: 1,
+		marginRight: "5%",
+		padding: "5%",
+		borderRadius: 10,
+		backgroundColor: colors.WHITE,
+	},
+	textInputLastName: {
 		flex: 1,
 		padding: "5%",
 		borderRadius: 10,
@@ -226,7 +220,7 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 		justifyContent: "center",
 		padding: "5%",
-		gap: "10%",
+		// gap: "10%",
 	},
 	pickerInput: {
 		alignItems: "center",
@@ -238,6 +232,8 @@ const styles = StyleSheet.create({
 		backgroundColor: colors.WHITE,
 	},
 	pickerHeading: {
+		marginBottom: "2%",
+
 		fontSize: 18,
 		color: colors.WHITE,
 	},

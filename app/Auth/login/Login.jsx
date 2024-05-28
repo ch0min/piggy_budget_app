@@ -75,7 +75,7 @@ const Login = ({ navigation }) => {
 							navigateTo={"Signup"}
 							text={"Ikke et medlem endnu?"}
 							colorText={colors.BLACK}
-							btnText={"REGISTRER NU"}
+							btnText={"Registrer her"}
 						/>
 					</View>
 				</View>

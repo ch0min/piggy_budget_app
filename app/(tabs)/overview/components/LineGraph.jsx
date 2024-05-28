@@ -10,7 +10,7 @@ import FormatNumber from "../../../../utils/formatNumber";
 
 const LineGraph = ({}) => {
 	const { userProfile } = useAuth();
-	const { totalMonthlyBudget, chartData, savings, getMonthlyBudgetLineChart } = useMonthly();
+	const { chartData, savings, getMonthlyBudgetLineChart } = useMonthly();
 	const { expenses } = useExpenses();
 
 	const [currentDate, setCurrentDate] = useState(new Date());
@@ -28,13 +28,20 @@ const LineGraph = ({}) => {
 	}, [currentDate]);
 
 	useEffect(() => {
-		setLoadingGraph(true);
-		const fetchData = async () => {
-			await getMonthlyBudgetLineChart();
-			setLoadingGraph(false);
-		};
-		fetchData();
-	}, []);
+		console.log("Current user profile: ", userProfile);
+
+		if (userProfile && userProfile.valuta) {
+			// setLoadingGraph(true);
+			const fetchData = async () => {
+				try {
+					await getMonthlyBudgetLineChart();
+				} catch (error) {
+					console.error("Failed to fetch data for LineGraph:", error);
+				}
+			};
+			fetchData();
+		}
+	}, [userProfile]);
 
 	const formatNumber = (num) => {
 		num = parseFloat(num);
@@ -47,7 +54,7 @@ const LineGraph = ({}) => {
 		}
 	};
 
-	if (loadingGraph) {
+	if (!userProfile || !userProfile.valuta) {
 		return (
 			<ActivityIndicator size="large" style={{ marginTop: "30%", marginBottom: "40%" }} color={colors.DARKGRAY} />
 		);
@@ -59,7 +66,8 @@ const LineGraph = ({}) => {
 				<View style={styles.legendContainer}>
 					<Text style={styles.legendSubheading}>Sidste 5 måneder</Text>
 					<Text style={styles.legendHeading}>
-						Du har sparet: {FormatNumber(savings)} {userProfile.valuta.name}
+						Du har sparet: {FormatNumber(savings)}{" "}
+						{userProfile && userProfile.valuta ? userProfile.valuta.name : ""}
 					</Text>
 				</View>
 

@@ -36,7 +36,7 @@ const ProgressBar = ({ totalSpentExpense, totalBudgetExpense }) => {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		marginBottom: "5%",
+		marginBottom: "2%",
 	},
 	textContainer: {
 		flexDirection: "row",

@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const AuthContext = createContext();
 
@@ -10,32 +11,83 @@ export const AuthProvider = ({ children }) => {
 	const [session, setSession] = useState(null);
 	const [user, setUser] = useState(null);
 	const [userProfile, setUserProfile] = useState(null);
-	const [profileCompleted, setProfileCompleted] = useState(false);
+	const [profileCompleted, setProfileCompleted] = useState(null);
 
 	/*** AUTH FUNCTIONALITY ***/
+	// AsyncStorage.clear().then(() => console.log("Local storage cleared!"));
+
 	useEffect(() => {
-		const fetchSession = async () => {
+		const loadingInitialState = async () => {
 			setLoading(true);
 			try {
-				const {
-					data: { session },
-				} = await supabase.auth.getSession();
-				if (session) {
-					setSession(session);
-					setUser(session?.user);
-					await getProfile(session?.user?.id);
-				} else {
-					console.log("No user in session...");
+				// Get user as profile completion status from AsyncStorage:
+				const storedUser = await AsyncStorage.getItem("user");
+				const storedProfileCompleted = await AsyncStorage.getItem("profile_completed");
+
+				if (storedUser) {
+					setUser(JSON.parse(storedUser));
+				}
+				if (storedProfileCompleted !== null) {
+					setProfileCompleted(JSON.parse(storedProfileCompleted));
 				}
 			} catch (error) {
-				console.error("Error initializing session and profile", error.message);
-			} finally {
-				setLoading(false);
+				console.error("Failed to load user data from storage:", error);
 			}
+			fetchSessionAndProfile();
 		};
-
-		fetchSession();
+		loadingInitialState();
 	}, []);
+
+	const fetchSessionAndProfile = async () => {
+		try {
+			const sessionResponse = await supabase.auth.getSession();
+			if (sessionResponse.data && sessionResponse.data.session) {
+				setSession(sessionResponse.data.session);
+				setUser(sessionResponse.data.session.user);
+				setProfileCompleted(true);
+
+				// Save to AsyncStorage
+				AsyncStorage.setItem("user", JSON.stringify(sessionResponse.data.session.user));
+				AsyncStorage.setItem("profile_completed", JSON.stringify(true));
+				await getProfile(sessionResponse.data.session.user?.id);
+			} else {
+				setUser(null);
+				setProfileCompleted(null);
+				AsyncStorage.setItem("user", JSON.stringify(null));
+				AsyncStorage.setItem("profile_completed", JSON.stringify(false));
+			}
+		} catch (error) {
+			console.error("Error initializing session and profile", error.message);
+		} finally {
+			setLoading(false);
+		}
+	};
+
+	// useEffect(() => {
+	// 	const fetchSessionAndProfile = async () => {
+	// 		setLoading(true);
+	// 		try {
+	// 			const sessionResponse = await supabase.auth.getSession();
+	// 			if (sessionResponse.data.session) {
+	// 				setSession(sessionResponse.data.session);
+	// 				setUser(sessionResponse.data.session.user);
+	// 				await getProfile(sessionResponse.data.session.user?.id);
+	// 				console.log("fetchSessionAndProfile executed true");
+	// 			} else {
+	// 				setUser(null);
+	// 				setProfileCompleted(null);
+	// 				await getProfile(user.id);
+	// 				console.log("fetchSessionAndProfile executed false");
+	// 			}
+	// 		} catch (error) {
+	// 			console.error("Error initializing session and profile", error.message);
+	// 		} finally {
+	// 			setLoading(false);
+	// 		}
+	// 	};
+
+	// 	fetchSessionAndProfile();
+	// }, []);
 
 	const signIn = async (email, password) => {
 		setLoading(true);
@@ -97,12 +149,11 @@ export const AuthProvider = ({ children }) => {
 	};
 
 	const getProfile = async (userId) => {
-		if (!userId) return;
 		setLoading(true);
 		try {
 			const { data, error } = await supabase
 				.from("profiles")
-				.select("profile_completed, avatar_url, first_name, last_name, valuta_id, valuta:valuta_id (name)")
+				.select(`profile_completed, avatar_url, first_name, last_name, valuta_id, valuta:valuta_id (name)`)
 				.eq("id", userId)
 				.single();
 
@@ -115,6 +166,7 @@ export const AuthProvider = ({ children }) => {
 				});
 				setProfileCompleted(data.profile_completed);
 			}
+			console.log("getProfile executed true");
 		} catch (error) {
 			console.error("Error fetching profile", error.message);
 		} finally {
@@ -129,7 +181,11 @@ export const AuthProvider = ({ children }) => {
 
 			const { data, error } = await supabase.from("profiles").upsert({
 				id: session.user.id,
-				...fullProfileUpdates,
+				avatar_url: updates.avatar_url,
+				first_name: updates.first_name,
+				last_name: updates.last_name,
+				valuta_id: updates.valuta_id,
+				profile_completed: updates.profile_completed,
 				updated_at: new Date(),
 			});
 

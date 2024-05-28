@@ -103,7 +103,7 @@ const Signup = ({ navigation }) => {
 						navigateTo={"Login"}
 						text={"Allerede medlem?"}
 						colorText={colors.BLACK}
-						btnText={"LOG IND"}
+						btnText={"Log ind"}
 					/>
 				</View>
 			</View>

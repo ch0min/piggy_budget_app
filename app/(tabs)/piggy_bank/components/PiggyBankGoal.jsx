@@ -40,8 +40,8 @@ const PiggyBankGoal = () => {
 				setGoalExist(true);
 				setGoalName(goalData.name);
 				setSavingsGoal(goalData.savings_goal.toString());
-				setImage(goalData.image || require("../../../../assets/images/placeholder.png"));
-				setPreviewImage(goalData.image || require("../../../../assets/images/placeholder.png"));
+				setImage(goalData.image);
+				setPreviewImage(goalData.image);
 			} else {
 				setGoalExist(false);
 				setGoalName("");
@@ -83,7 +83,7 @@ const PiggyBankGoal = () => {
 				await createOrUpdateMonthlyGoal({ goalName, savingsGoal, image: fileUrl });
 				setGoalModalVisible(false);
 
-				// console.log(data);
+				console.log(data);
 			}
 		} catch (error) {
 			console.error("Error handleSaveGoal", error);
@@ -96,7 +96,7 @@ const PiggyBankGoal = () => {
 	const positiveSavings = Math.max(0, totalSavings);
 	const totalPercentage = savingsGoal > 0 ? (positiveSavings / savingsGoal) * 100 : 0;
 
-	const backgroundColor = totalPercentage >= 100 ? colors.DARKGREEN : colors.SECONDARY;
+	const backgroundColor = totalPercentage >= 100 ? colors.DARKGREEN : colors.PRIMARY;
 	const showCheckmark =
 		totalPercentage >= 100 ? (
 			<Ionicons name="checkmark-circle" size={54} color={colors.GREEN} />
@@ -113,7 +113,7 @@ const PiggyBankGoal = () => {
 			<Text
 				style={[
 					styles.heading,
-					!goalExist && { alignSelf: "center", marginBottom: "5%", fontSize: 14, color: colors.DARKGRAY },
+					!goalExist && { alignSelf: "center", marginBottom: "5%", fontSize: 16, color: colors.DARKGRAY },
 				]}
 			>
 				{goalExist ? "Månedligt mål" : "Sæt dit helt eget månedligt mål"}

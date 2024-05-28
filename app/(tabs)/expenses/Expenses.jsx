@@ -296,7 +296,7 @@ const Expenses = ({ navigation, route }) => {
 								<Text style={styles.expenseName}>{currentExpense.name}</Text>
 								<Text style={styles.expenseItemText}>
 									{currentExpense.transaction_count} transaktion
-									{currentExpense.transaction_count !== 1 ? "s" : ""}
+									{currentExpense.transaction_count !== 1 ? "er" : ""}
 								</Text>
 							</View>
 							<TouchableOpacity
@@ -342,7 +342,7 @@ const Expenses = ({ navigation, route }) => {
 								<RefreshControl
 									refreshing={refresh}
 									onRefresh={onRefresh}
-									colors={colors.DARKGRAY}
+									// colors={[colors.DARKGRAY]}
 									tintColor={colors.DARKGRAY}
 								/>
 							}

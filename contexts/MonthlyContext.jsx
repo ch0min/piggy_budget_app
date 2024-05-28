@@ -387,6 +387,11 @@ export const MonthlyProvider = ({ children }) => {
 				throw budgetError;
 			}
 
+			if (!budgetData) {
+				console.log("No monthly budget made for the user yet.");
+				return null;
+			}
+
 			const { data, error } = await supabase
 				.from("monthly_goal")
 				.select(`*`)
@@ -426,7 +431,7 @@ export const MonthlyProvider = ({ children }) => {
 				.eq("user_id", userId)
 				.eq("month", month)
 				.eq("year", year)
-				.single();
+				.maybeSingle();
 
 			if (budgetError) {
 				console.error("Error fetching monthly budgets for goal:", budgetError);
@@ -442,7 +447,7 @@ export const MonthlyProvider = ({ children }) => {
 						month,
 						year,
 						total_spent_month: 0,
-						totalBudgetMonth: 0,
+						total_budget_month: 0,
 					})
 					.single();
 
@@ -454,27 +459,26 @@ export const MonthlyProvider = ({ children }) => {
 			}
 
 			// Create or update the monthly goal linked to the budget:
-			const { data, error } = await supabase
-				.from("monthly_goal")
-				.upsert(
+			if (budgetData && budgetData?.id) {
+				const { data, error } = await supabase.from("monthly_goal").upsert(
 					{
 						name: goalName,
 						savings_goal: savingsGoal,
 						image: image,
-						monthly_budgets_id: budgetData.id,
+						monthly_budgets_id: budgetData?.id,
 						user_id: userId,
 					},
 					{
 						onConflict: "monthly_budgets_id, user_id",
 					}
-				)
-				.select();
+				);
 
-			if (error) {
-				console.error("Error upserting goal:", error);
-				throw new Error(`Failed to upsert goal: ${error.message}`);
+				if (error) {
+					console.error("Error upserting goal:", error);
+					throw new Error(`Failed to upsert goal: ${error.message}`);
+				}
+				return data;
 			}
-			return data;
 		} catch (error) {
 			console.error("Error createOrUpdateMonthlyGoal", error);
 		} finally {
