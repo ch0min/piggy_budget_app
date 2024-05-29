@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { ActivityIndicator, RefreshControl, StyleSheet, View, ScrollView } from "react-native";
+import { useIsFocused } from "@react-navigation/native";
 import { useAuth } from "../../../contexts/AuthContext";
+import { useMonthly } from "../../../contexts/MonthlyContext";
 import colors from "../../../constants/colors";
 import OverviewHeader from "./header/OverviewHeader";
 import LineGraph from "./components/LineGraph";
@@ -8,7 +10,9 @@ import PiggyBankGoal from "../piggy_bank/components/PiggyBankGoal";
 import LatestExpenses from "./components/LatestExpenses";
 
 const Overview = ({ navigation }) => {
-	const { userProfile } = useAuth();
+	const { user, userProfile, getProfile } = useAuth();
+	const { currentMonth, getMonthlyBudgetLineChart, getMonthlyBudget, getMonthlyGoal } = useMonthly();
+	const isFocused = useIsFocused();
 	const [loadingOverview, setLoadingOverview] = useState(true);
 	const [refresh, setRefresh] = useState(false);
 
@@ -23,10 +27,25 @@ const Overview = ({ navigation }) => {
 
 	useEffect(() => {
 		setLoadingOverview(true);
-		setTimeout(() => {
-			setLoadingOverview(false);
-		}, 1000);
-	}, [userProfile]);
+		if (!userProfile && user) {
+			getProfile(user.id);
+			setTimeout(() => {
+				setLoadingOverview(false);
+			}, 1000);
+		}
+	}, [user, userProfile]);
+
+	useEffect(() => {
+		const fetchMonthlyBudgetAndGoalAndLineChart = async () => {
+			await getMonthlyBudgetLineChart();
+			await getMonthlyBudget();
+			await getMonthlyGoal();
+		};
+
+		if (isFocused && userProfile && user && currentMonth) {
+			fetchMonthlyBudgetAndGoalAndLineChart();
+		}
+	}, [isFocused, user, currentMonth]);
 
 	return (
 		<ScrollView
@@ -40,21 +59,21 @@ const Overview = ({ navigation }) => {
 				/>
 			}
 		>
-			{loadingOverview ? (
+			{/* {loadingOverview ? (
 				<ActivityIndicator size="large" style={{ marginVertical: "70%" }} color={colors.DARKGRAY} />
-			) : (
-				<View style={styles.subContainer}>
-					<OverviewHeader navigation={navigation} />
+			) : ( */}
+			<View style={styles.subContainer}>
+				<OverviewHeader navigation={navigation} />
 
-					<LineGraph />
+				<LineGraph />
 
-					<ScrollView style={styles.scrollContainer}>
-						<PiggyBankGoal />
+				<ScrollView style={styles.scrollContainer}>
+					<PiggyBankGoal />
 
-						<LatestExpenses navigation={navigation} />
-					</ScrollView>
-				</View>
-			)}
+					<LatestExpenses navigation={navigation} />
+				</ScrollView>
+			</View>
+			{/* )} */}
 		</ScrollView>
 	);
 };

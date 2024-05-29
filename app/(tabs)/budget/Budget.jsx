@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useFocusEffect } from "@react-navigation/native";
-import { ActivityIndicator, StyleSheet, View } from "react-native";
+import {  StyleSheet, View } from "react-native";
 import { useMonthly } from "../../../contexts/MonthlyContext";
 import { useExpenseAreas } from "../../../contexts/ExpenseAreasContext";
 import { useExpenses } from "../../../contexts/ExpensesContext";
@@ -8,7 +8,8 @@ import colors from "../../../constants/colors";
 import BudgetExpenseAreasList from "./components/budgetExpenseAreasList";
 
 const Budget = ({ navigation }) => {
-	const { loading, setLoading, loadingData, setLoadingData, refresh, setRefresh, currentMonth } = useMonthly();
+	const { loading, setLoading, loadingData, setLoadingData, refresh, setRefresh, currentMonth, getMonthlyBudget } =
+		useMonthly();
 	const { expenseAreas, getExpenseAreas, updateExpenseArea, deleteExpenseArea } = useExpenseAreas();
 	const { expenses, getExpenses } = useExpenses();
 
@@ -22,6 +23,7 @@ const Budget = ({ navigation }) => {
 			setLoadingData(true);
 			getExpenseAreas().finally(() => setLoadingData(false));
 			getExpenses();
+			getMonthlyBudget();
 		}, [currentMonth])
 	);
 

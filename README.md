@@ -1,10 +1,8 @@
 **_ TODO _**
 
-NEXT: Rækkefølge Mandag:
+NEXT:
 
--
--  Lav Overview Screen Resten af ugen:
--  Lav splash screen.
+-  Fix so that a user can make a monthly goal on each month / or atleast the Piggy Bank screen show refresh as a whole.
 -  Email redirection
 -  Complete Profile "cannot find property "name" of null, pga. valuta.
 -  CAPTCHA

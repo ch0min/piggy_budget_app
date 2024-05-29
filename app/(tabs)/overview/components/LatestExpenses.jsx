@@ -35,9 +35,9 @@ const LatestExpenses = ({ navigation }) => {
 				<View style={styles.latestExpensesBudgetNameBox}>
 					<Text style={styles.latestExpensesTotalSpent}>
 						{item.total_spent_expense > 0 ? (
-							`-${FormatNumber(item.total_spent_expense)} ${userProfile.valutaName}`
+							`-${FormatNumber(item.total_spent_expense)} ${userProfile ? userProfile.valutaName : ""}`
 						) : (
-							<Text style={{ color: colors.BLACK }}>0 {userProfile.valutaName}</Text>
+							<Text style={{ color: colors.BLACK }}>0 {userProfile ? userProfile.valutaName : ""}</Text>
 						)}
 					</Text>
 				</View>

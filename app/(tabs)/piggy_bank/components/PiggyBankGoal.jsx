@@ -1,16 +1,8 @@
 import React, { useState, useEffect } from "react";
+import { useIsFocused } from "@react-navigation/native";
 import { supabase } from "../../../../lib/supabase";
 import { decode } from "base64-arraybuffer";
-import {
-	Alert,
-	ActivityIndicator,
-	StyleSheet,
-	View,
-	Text,
-	TextInput,
-	TouchableOpacity,
-	ImageBackground,
-} from "react-native";
+import { StyleSheet, View, Text, TouchableOpacity, ImageBackground } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import colors from "../../../../constants/colors";
 import { useAuth } from "../../../../contexts/AuthContext";
@@ -20,8 +12,9 @@ import CreateOrUpdateGoalModal from "./createOrUpdateGoal";
 import ProgressBarGoal from "./ProgressBarGoal";
 
 const PiggyBankGoal = () => {
-	const { user } = useAuth;
-	const { getMonthlyGoal, createOrUpdateMonthlyGoal, totalSavings } = useMonthly();
+	const isFocused = useIsFocused();
+	const { user, userProfile } = useAuth;
+	const { currentMonth, getMonthlyBudget, getMonthlyGoal, createOrUpdateMonthlyGoal, totalSavings } = useMonthly();
 	const [goalModalVisible, setGoalModalVisible] = useState(false);
 	const [loading, setLoading] = useState(false);
 	const [goalExist, setGoalExist] = useState(false);
@@ -51,7 +44,7 @@ const PiggyBankGoal = () => {
 			}
 		};
 		fetchGoal();
-	}, []);
+	}, [currentMonth]);
 
 	const onImagePicker = async () => {
 		let result = await ImagePicker.launchImageLibraryAsync({
@@ -66,6 +59,8 @@ const PiggyBankGoal = () => {
 			setImage(result.assets[0].base64);
 		}
 	};
+
+	console.log("Month", currentMonth.getMonth() + 1);
 
 	const handleSaveGoal = async () => {
 		setLoading(true);

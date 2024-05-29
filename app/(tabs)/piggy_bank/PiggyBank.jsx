@@ -1,13 +1,29 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { StyleSheet, View, Text } from "react-native";
+import { useIsFocused } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import colors from "../../../constants/colors";
+import { useAuth } from "../../../contexts/AuthContext";
 import { useMonthly } from "../../../contexts/MonthlyContext";
 import PiggyBankGoal from "./components/PiggyBankGoal";
 import PiggyBankSavings from "./components/PiggyBankSavings";
 
 const PiggyBank = () => {
-	const { totalSavings, getTotalPiggyBankSavings } = useMonthly();
+	const isFocused = useIsFocused();
+	const { user, userProfile } = useAuth();
+	const { totalSavings, getTotalPiggyBankSavings, currentMonth, getMonthlyBudget, getMonthlyGoal } = useMonthly();
+
+	useEffect(() => {
+		if (isFocused) {
+			const fetchData = async () => {
+				await getMonthlyBudget();
+				await getMonthlyGoal();
+				await getTotalPiggyBankSavings();
+			};
+
+			fetchData();
+		}
+	}, [isFocused]);
 
 	return (
 		<LinearGradient colors={[colors.SECONDARY, colors.PRIMARY]} locations={[0.3, 1.0]} style={styles.container}>

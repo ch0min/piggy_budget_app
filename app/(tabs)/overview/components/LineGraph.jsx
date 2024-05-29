@@ -11,10 +11,8 @@ import FormatNumber from "../../../../utils/formatNumber";
 const LineGraph = ({}) => {
 	const { userProfile } = useAuth();
 	const { chartData, savings, getMonthlyBudgetLineChart } = useMonthly();
-	const { expenses } = useExpenses();
 
 	const [currentDate, setCurrentDate] = useState(new Date());
-	const [loadingGraph, setLoadingGraph] = useState(true);
 
 	useEffect(() => {
 		const interval = setInterval(() => {
@@ -28,10 +26,7 @@ const LineGraph = ({}) => {
 	}, [currentDate]);
 
 	useEffect(() => {
-		console.log("Current user profile: ", userProfile);
-
 		if (userProfile && userProfile.valuta) {
-			// setLoadingGraph(true);
 			const fetchData = async () => {
 				try {
 					await getMonthlyBudgetLineChart();
@@ -43,7 +38,7 @@ const LineGraph = ({}) => {
 		}
 	}, [userProfile]);
 
-	const formatNumber = (num) => {
+	const formatNumberYGraph = (num) => {
 		num = parseFloat(num);
 		if (num >= 1000000) {
 			return (num / 1000000).toFixed(1) + "M";
@@ -75,8 +70,7 @@ const LineGraph = ({}) => {
 					data={chartData}
 					width={Dimensions.get("window").width - 40}
 					height={220}
-					yAxisSuffix={userProfile.valuta.name}
-					formatYLabel={formatNumber}
+					formatYLabel={formatNumberYGraph}
 					withInnerLines={false}
 					fromZero={true}
 					withShadow={true}
